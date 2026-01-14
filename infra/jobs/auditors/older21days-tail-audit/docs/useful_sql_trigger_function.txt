@@ -1,0 +1,48 @@
+-- docs/sql/sweeper_run_log_queries.sql
+--
+-- Public template: use the sweeper run log to anchor each sweep, then list rows marked stale.
+
+-- 1) Recent sweeper runs
+SELECT run_id, ran_at, reason, eligible_total, updated_rows, dry_run, min_gap, batch
+FROM marketplace.stale_sweep_runs
+ORDER BY run_id DESC
+LIMIT 50;
+
+-- 2) Rows marked stale by sweeper runs (heuristic join on last_seen == ran_at)
+WITH upd_runs AS (
+  SELECT run_id, ran_at
+  FROM marketplace.stale_sweep_runs
+  WHERE reason = 'updated'
+    AND dry_run = false
+),
+marked AS (
+  SELECT
+    r.run_id,
+    r.ran_at AS marked_at,
+    l.generation,
+    l.listing_id,
+    l.status,
+    l.edited_date,
+    l.first_seen,
+    l.last_seen,
+    l.external_url
+  FROM upd_runs r
+  JOIN marketplace.listings l
+    ON l.last_seen = r.ran_at
+   AND l.status   = 'older21days'
+)
+SELECT
+  run_id,
+  marked_at,
+  generation,
+  listing_id,
+  status,
+  edited_date,
+  first_seen,
+  last_seen,
+  round((extract(epoch FROM (now() - edited_date)) / 86400.0)::numeric, 4) AS age_days_from_edited_now,
+  round((extract(epoch FROM (now() - first_seen)) / 86400.0)::numeric, 4)  AS age_days_from_first_seen_now,
+  external_url
+FROM marked
+ORDER BY marked_at DESC, generation, listing_id
+LIMIT 200;

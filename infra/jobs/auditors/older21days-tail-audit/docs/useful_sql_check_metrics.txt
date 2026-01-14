@@ -1,0 +1,112 @@
+-- docs/sql/metrics_dashboard.sql
+--
+-- Public template: a single statement that prints a compact dashboard of audit-job metrics.
+-- Output columns: generation | section | metric | value
+--
+-- Edit the `gens` CTE to match your cohort keys, or replace it with a table-driven cohort list.
+
+WITH
+p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC')                    AS d0,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '5 min' AS bucket,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '1 day' AS d1
+),
+gens AS (
+  SELECT unnest(ARRAY[0])::int AS generation  -- TODO: replace with your cohort list
+),
+
+tail_now AS (
+  SELECT
+    l.generation,
+    COUNT(*)                                            AS stale_total_now,
+    COUNT(*) FILTER (WHERE l.marketplace_is_inactive)    AS stale_inactive_now,
+    COUNT(*) FILTER (WHERE l.marketplace_is_bidding)     AS stale_bidding_now
+  FROM marketplace.listings l
+  JOIN gens g ON g.generation = l.generation
+  WHERE l.status = 'older21days'
+  GROUP BY 1
+),
+
+live_baselines_today AS (
+  SELECT
+    ph.generation,
+    COUNT(*) AS live_baselines_today
+  FROM marketplace.price_history ph, p
+  JOIN gens g ON g.generation = ph.generation
+  WHERE ph.source = 'audit-stale'
+    AND ph.status = 'live'
+    AND ph.observed_at = p.bucket
+  GROUP BY 1
+),
+
+terminal_flips_today_by_audit AS (
+  SELECT
+    l.generation,
+    COUNT(*) FILTER (WHERE l.status='sold')    AS sold_flipped_today_by_audit,
+    COUNT(*) FILTER (WHERE l.status='removed') AS removed_flipped_today_by_audit
+  FROM marketplace.listings l, p
+  JOIN gens g ON g.generation = l.generation
+  WHERE l.status IN ('sold','removed')
+    AND l.last_seen >= p.d0 AND l.last_seen < p.d1
+    AND EXISTS (
+      SELECT 1
+      FROM marketplace.price_history ph
+      WHERE ph.generation = l.generation
+        AND ph.listing_id = l.listing_id
+        AND ph.source     = 'audit-stale'
+        AND ph.status     = l.status
+        AND ph.observed_at >= p.d0 AND ph.observed_at < p.d1
+    )
+  GROUP BY 1
+),
+
+inactive_events_today AS (
+  SELECT
+    ie.generation,
+    COUNT(*) AS inactive_events_today
+  FROM marketplace.listing_inactive_state_events ie, p
+  JOIN gens g ON g.generation = ie.generation
+  WHERE ie.observed_at >= p.d0 AND ie.observed_at < p.d1
+    AND ie.observed_by = 'audit-stale'
+  GROUP BY 1
+),
+
+totals_all_time AS (
+  SELECT
+    l.generation,
+    COUNT(*) FILTER (WHERE l.status='sold')    AS sold_total_all_time,
+    COUNT(*) FILTER (WHERE l.status='removed') AS removed_total_all_time
+  FROM marketplace.listings l
+  JOIN gens g ON g.generation = l.generation
+  GROUP BY 1
+),
+
+touched_today_est AS (
+  SELECT
+    ph.generation,
+    COUNT(DISTINCT ph.listing_id) AS listings_touched_today_est
+  FROM marketplace.price_history ph, p
+  JOIN gens g ON g.generation = ph.generation
+  WHERE ph.source='audit-stale'
+    AND ph.observed_at >= p.d0 AND ph.observed_at < p.d1
+  GROUP BY 1
+)
+
+SELECT generation, 'TAIL_NOW' AS section, 'stale_total_now' AS metric, stale_total_now::bigint AS value FROM tail_now
+UNION ALL SELECT generation, 'TAIL_NOW', 'stale_inactive_now', stale_inactive_now::bigint FROM tail_now
+UNION ALL SELECT generation, 'TAIL_NOW', 'stale_bidding_now', stale_bidding_now::bigint FROM tail_now
+
+UNION ALL SELECT generation, 'LIVE_BASELINES', 'live_baselines_today', live_baselines_today::bigint FROM live_baselines_today
+
+UNION ALL SELECT generation, 'TERMINAL_FLIPS_TODAY', 'sold_flipped_today_by_audit', sold_flipped_today_by_audit::bigint FROM terminal_flips_today_by_audit
+UNION ALL SELECT generation, 'TERMINAL_FLIPS_TODAY', 'removed_flipped_today_by_audit', removed_flipped_today_by_audit::bigint FROM terminal_flips_today_by_audit
+
+UNION ALL SELECT generation, 'INACTIVE_EVENTS', 'inactive_events_today', inactive_events_today::bigint FROM inactive_events_today
+
+UNION ALL SELECT generation, 'TOTALS', 'sold_total_all_time', sold_total_all_time::bigint FROM totals_all_time
+UNION ALL SELECT generation, 'TOTALS', 'removed_total_all_time', removed_total_all_time::bigint FROM totals_all_time
+
+UNION ALL SELECT generation, 'RUN_ACTIVITY', 'listings_touched_today_est', listings_touched_today_est::bigint FROM touched_today_est
+
+ORDER BY 1,2,3;

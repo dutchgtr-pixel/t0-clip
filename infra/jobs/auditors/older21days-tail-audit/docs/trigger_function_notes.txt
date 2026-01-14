@@ -1,0 +1,44 @@
+# DB-Side Stale Marking Design Notes (Public Template)
+
+## Objective (invariant)
+
+Guarantee the invariant:
+
+> No row may remain `status='live'` once it is older than the cutoff duration (default: 21 days),
+> where “older” is defined by `edited_date`.
+
+### Why `edited_date`
+
+In this template, `edited_date` represents a stable lifecycle clock for the listing (e.g., the “first posted at” timestamp as tracked by your ingestion pipeline). If your upstream system does not provide a stable clock, you may need to substitute a different field.
+
+## Why this may live in the database
+
+If you rely solely on external jobs to flip `live → older21days`, you may miss rows when:
+
+- ingestion does not revisit a listing for extended periods, or
+- selection queries are windowed (e.g., by `last_seen`) and stale-live rows fall out of the window.
+
+A DB-side sweeper can enforce the invariant closer to the data.
+
+## Template implementation
+
+See `sql/stale_sweeper.sql` for:
+
+- `marketplace.sweep_mark_stale(...)`
+  - Throttled by a watermark (`marketplace.maintenance_watermark`)
+  - Logged in an append-only run log (`marketplace.stale_sweep_runs`)
+  - Guardrails:
+    - transaction-scoped advisory lock
+    - batch limit
+    - safety assertions
+    - candidate selection anchored by `(tableoid, ctid)` to avoid unsafe CTID-only joins
+
+- `marketplace.trg_heartbeat_mark_stale()`
+  - Optional statement trigger “heartbeat” that invokes the sweeper after writes
+
+## Operational guidance
+
+- If the listings table has high write volume, consider running the sweeper on a schedule (cron/Airflow) rather than a trigger.
+- Tune `p_min_gap` and `p_batch` to match your system’s write rate and acceptable overhead.
+- Review `SECURITY DEFINER` usage and ensure `search_path` is locked down appropriately.
+

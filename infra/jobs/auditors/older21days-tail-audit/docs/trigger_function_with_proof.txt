@@ -1,0 +1,189 @@
+# DB-Side Stale Sweeper & Trigger Proof (Public Template)
+
+This document provides **SQL proofs / checks** for the optional DB-side sweeper + trigger pattern in `sql/stale_sweeper.sql`.
+
+It is designed to:
+- validate trigger wiring
+- validate function guardrails (lock, throttling, assertions)
+- validate global invariants
+- provide a rollback-safe end-to-end test
+
+No real production outputs or identifiers are included.
+
+---
+
+## A) Structural proof: trigger wiring
+
+### A1) Confirm the statement trigger exists and is enabled
+
+```sql
+SELECT
+  t.tgname,
+  t.tgenabled,               -- O=enabled, D=disabled
+  t.tgisinternal,
+  pg_get_triggerdef(t.oid, true) AS trigger_def,
+  pn.nspname AS func_schema,
+  p.proname  AS func_name
+FROM pg_trigger t
+JOIN pg_class c        ON c.oid = t.tgrelid
+JOIN pg_namespace ns   ON ns.oid = c.relnamespace
+JOIN pg_proc p         ON p.oid = t.tgfoid
+JOIN pg_namespace pn   ON pn.oid = p.pronamespace
+WHERE ns.nspname='marketplace'
+  AND c.relname='listings'
+  AND t.tgname='zzz_heartbeat_mark_stale';
+```
+
+### A2) Confirm there are no other triggers on the table that touch `status`
+
+```sql
+SELECT
+  t.tgname,
+  t.tgenabled,
+  pg_get_triggerdef(t.oid, true) AS trigger_def
+FROM pg_trigger t
+JOIN pg_class c        ON c.oid = t.tgrelid
+JOIN pg_namespace ns   ON ns.oid = c.relnamespace
+WHERE ns.nspname='marketplace'
+  AND c.relname='listings'
+  AND pg_get_triggerdef(t.oid, true) ILIKE '%status%'
+ORDER BY 1;
+```
+
+---
+
+## B) Code proof: dump function bodies
+
+```sql
+SELECT pg_get_functiondef(
+  'marketplace.sweep_mark_stale(interval,integer,boolean,interval,text)'::regprocedure
+) AS sweeper_def;
+
+SELECT pg_get_functiondef(
+  'marketplace.trg_heartbeat_mark_stale()'::regprocedure
+) AS trigger_fn_def;
+```
+
+### B2) Machine-check for expected safety properties
+
+```sql
+WITH f AS (
+  SELECT pg_get_functiondef(
+    'marketplace.sweep_mark_stale(interval,integer,boolean,interval,text)'::regprocedure
+  ) AS def
+)
+SELECT
+  def ILIKE '%pg_try_advisory_xact_lock%' AS uses_xact_lock,
+  def ILIKE '%stale_sweep_runs%'          AS writes_run_log,
+  def ILIKE '%RAISE EXCEPTION%'           AS has_assertions,
+  (def ILIKE '%l.tableoid%' AND def ILIKE '%l.ctid%') AS uses_tableoid_ctid,
+  (
+    (def ILIKE '%l.ctid = c.ctid%' OR def ILIKE '%l.ctid=c.ctid%')
+    AND NOT def ILIKE '%l.tableoid%'
+  ) AS has_unsafe_ctid_only_join
+FROM f;
+```
+
+Expected:
+- `uses_xact_lock = true`
+- `writes_run_log = true`
+- `has_assertions = true`
+- `uses_tableoid_ctid = true`
+- `has_unsafe_ctid_only_join = false`
+
+---
+
+## C) Behavioral proof: global invariants
+
+### C1) Invariant: no LIVE row older than cutoff by edited_date
+
+```sql
+SELECT COUNT(*) AS live_eligible_over_cutoff_by_edited
+FROM marketplace.listings
+WHERE status='live'
+  AND edited_date IS NOT NULL
+  AND edited_date <= now() - interval '21 days';
+```
+
+### C2) Invariant: no stale row that is “too new” by edited_date
+
+```sql
+SELECT COUNT(*) AS stale_too_new
+FROM marketplace.listings
+WHERE status='older21days'
+  AND edited_date IS NOT NULL
+  AND edited_date > now() - interval '21 days';
+```
+
+### C3) Invariant: stale rows should have edited_date populated (if your semantics require it)
+
+```sql
+SELECT COUNT(*) AS stale_missing_edited_date
+FROM marketplace.listings
+WHERE status='older21days'
+  AND edited_date IS NULL;
+```
+
+---
+
+## D) Run log sanity
+
+```sql
+SELECT run_id, ran_at, reason, eligible_total, updated_rows, dry_run
+FROM marketplace.stale_sweep_runs
+ORDER BY run_id DESC
+LIMIT 50;
+```
+
+---
+
+## E) Rollback-safe end-to-end test
+
+This test:
+- picks a single LIVE row
+- makes it eligible by setting `edited_date` to >21 days ago
+- forces the statement trigger to fire
+- verifies it becomes `older21days`
+- rolls back (leaves the DB unchanged)
+
+```sql
+BEGIN;
+
+-- 1) Pick a target live row (one row only)
+WITH pick AS (
+  SELECT generation, listing_id
+  FROM marketplace.listings
+  WHERE status='live' AND edited_date IS NOT NULL
+  ORDER BY edited_date DESC
+  LIMIT 1
+)
+SELECT * FROM pick;
+
+-- 2) Reset throttling so the trigger won’t be throttled
+UPDATE marketplace.maintenance_watermark
+SET last_run_at = now() - interval '1 day',
+    last_note   = 'tx_test_reset',
+    updated_at  = now()
+WHERE job_name='mark_stale';
+
+-- 3) Make the picked row eligible (edited_date 22 days ago)
+-- Replace <GEN> and <LISTING_ID> with values from step (1).
+UPDATE marketplace.listings
+SET edited_date = now() - interval '22 days'
+WHERE generation = <GEN>
+  AND listing_id = <LISTING_ID>;
+
+-- 4) Fire statement trigger (0-row update still fires)
+UPDATE marketplace.listings
+SET last_seen = last_seen
+WHERE false;
+
+-- 5) Prove it transitioned (inside the transaction)
+SELECT generation, listing_id, status, edited_date, last_seen, external_url
+FROM marketplace.listings
+WHERE generation = <GEN>
+  AND listing_id = <LISTING_ID>;
+
+ROLLBACK;
+```
+
