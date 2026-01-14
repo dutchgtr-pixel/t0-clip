@@ -1,0 +1,707 @@
+Damage Fusion Feature Store (v2): Image + Text + Battery
+
+Documentation and Modeling Integration Guide
+
+This document describes the damage fusion feature-store layer implemented as two views:
+
+ml.v_damage_fusion_features_v2 (raw fusion + diagnostics)
+
+ml.v_damage_fusion_features_v2_scored (model-safe wrapper: “known/scored” semantics)
+
+It covers: what it is, why it exists, how it was developed, how the logic works end-to-end, what every major column means, how to validate it in SQL, and how to wire it into an XGBoost AFT survival model.
+
+The canonical SQL definition for the views is captured in your shared file. 
+
+1) Create the improved fusion v…
+
+
+Download the SQL definition
+
+1. Purpose and Design Goals
+1.1 What problem this solves
+
+You have three partially overlapping “condition” signals that are all valuable but imperfect:
+
+Image-based damage (per-image scores, but coverage and quality vary)
+
+Text-based damage (LLM/structured decision + meta flags, but sometimes inconsistent)
+
+Battery health (available from text extraction and/or battery screenshot OCR/extraction)
+
+Historically, it is easy to build something that looks like a single “damage score” but fails in practice because:
+
+Missing ≠ clean (a null/absent image score can mean no images, stock photos, pipeline didn’t run, or low-quality photos)
+
+One noisy photo ≠ real damage (false positives/negatives if you don’t gate on evidence)
+
+Text meta flags imply severity floors (battery <80, non-OEM, lens/glass/panel flags) and occasionally conflict with the raw sev returned by the text model
+
+Evidence quality matters (photo quality, background quality, number of usable real photos)
+
+1.2 What v2 guarantees (feature-store-grade contract)
+
+The v2 architecture is designed to give the survival model three categories of information explicitly:
+
+Signal (what damage/battery actually looks like)
+
+Reliability (how trustworthy the signal is)
+
+Missingness semantics (why something is missing, so missingness is learnable)
+
+This is the key shift from “a score column” to “a feature block that models can trust.”
+
+2. Data Sources and Join Key
+2.1 Join key standardization
+
+Everything is keyed on:
+
+(generation, listing_id)
+
+This is the feature-store join contract and enables seamless integration into your existing TOM feature-store query pattern.
+
+2.2 Upstream tables
+
+Listings: "iPhone".iphone_listings
+Provides generation, listing_id, spam, plus damage_ai_json (text decision + meta flags + battery_effective).
+
+Image features: ml.iphone_image_features_v1
+One row per listing image (per image_index conceptually). Includes:
+
+pipeline coverage: feature_version, damage_done
+
+stock detection: is_stock_photo
+
+quality: photo_quality_level, background_clean_level
+
+damage: visible_damage_level, damage_on_protector_only
+
+battery: battery_screenshot, battery_health_pct_img
+
+3. Development History (How We Got Here)
+
+This view wasn’t invented in one step; it was iterated from empirical analysis of behavior in your real data.
+
+3.1 Phase A — Understand the raw text decision and meta flags
+
+You inspected distributions of meta flags by generation and observed that meta flags are sparse but meaningful (e.g., no_wear_global, battery_clamp, non_oem, structural flags). You also saw generation-specific prevalence, which is important for modeling and calibration.
+
+3.2 Phase B — Validate image damage explains price (and time-to-sell patterns)
+
+You bucketed sold listings by image-based damage maxima and saw strong price monotonicity with higher image damage maxima (especially at structural levels). This proved image damage contains economic signal.
+
+3.3 Phase C — Validate battery extraction reliability and reconcile text vs image
+
+You compared:
+
+battery extracted from text (battery_effective)
+
+battery extracted from screenshots (battery_health_pct_img)
+
+You found:
+
+median differences near zero
+
+very low rate of large discrepancies (≥5 pp)
+
+This supports battery fusion as a stable signal and also supports using image battery as the “best available” source.
+
+3.4 Phase D — Identify text policy violations / inconsistency cases
+
+You detected rare but real inconsistencies like:
+
+battery < 80 but text sev too low
+
+structural meta flags present but sev not high enough
+
+This motivated a deterministic severity floor correction: text_sev_corr.
+
+3.5 Phase E — Missingness semantics and evidence quality are mandatory
+
+You learned that “no image score” must be explained (no images vs all stock vs pipeline not run vs low quality).
+You also learned that a “0 damage” result is much more meaningful when supported by:
+
+multiple real images
+
+decent photo quality
+
+non-stock background
+
+This led directly to v2’s img_prof diagnostics, reason codes, and reliability features (photo/background quality, stock ratio).
+
+4. Architecture Overview (v2)
+
+The v2 view is built in layers:
+
+4.1 img_prof — listing-level image profile aggregation
+
+Source: ml.iphone_image_features_v1
+Output: one row per listing (generation, listing_id)
+
+It computes:
+
+A) Coverage and pipeline status
+
+img_rows_v1: number of rows with feature_version=1
+
+img_rows_damage_done: rows where the image pipeline reached damage_done=TRUE
+
+These two fields explain whether image data exists and whether the damage pipeline actually ran.
+
+B) Stock vs real
+
+img_stock_cnt: images flagged as stock
+
+img_real_cnt: non-stock images
+
+img_stock_ratio: img_stock_cnt / img_rows_damage_done (null if pipeline never ran)
+
+This matters because stock images can look “clean” and systematically bias “damage=0”.
+
+C) Image reliability (quality + background)
+
+Photo quality histogram + mean:
+
+img_pq0_cnt … img_pq4_cnt
+
+img_pq_avg_real
+
+Background cleanliness histogram + mean:
+
+img_bg0_cnt … img_bg2_cnt
+
+img_bg_avg_real
+
+These quantify how likely your image damage result is meaningful.
+
+D) Usable image counts for damage scoring
+
+You enforce the concept of “usable” images for damage:
+
+Q2 = real, non-stock, photo_quality_level >= 2
+
+img_real_q2_cnt
+
+img_real_q2_vis_cnt: subset where visible_damage_level is not null
+
+Q1 fallback = real, non-stock, photo_quality_level >= 1
+
+img_real_q1_vis_cnt
+
+E) Damage evidence summary
+
+Core damage signals:
+
+img_max_eff_q2: max visible damage (Q2), treating protector-only as 0
+
+img_max_eff_q1: same, but Q1 fallback
+
+img_max_noprotector_q2: max damage excluding protector-only images (structural gating)
+
+img_n_ge3_real_q2: count of Q2 real images with visible_damage_level >= 3 and not protector-only
+
+img_n_ge8_real_q2: count of Q2 real images with visible_damage_level >= 8 and not protector-only
+
+These provide both severity and evidence strength (how many independent photos corroborate damage).
+
+4.2 batt_prof — listing-level battery screenshot aggregation
+
+Source: ml.iphone_image_features_v1
+
+Computed:
+
+batt_img_min: conservative battery estimate (min across hits)
+
+batt_img_max
+
+batt_img_hits
+
+batt_img_spread = max - min
+
+The min is used intentionally: sellers may show multiple screenshots; the min is the safest representation.
+
+4.3 base — join listing + image profile + battery profile + text decision/meta
+
+Source: "iPhone".iphone_listings (filtered to spam IS NULL)
+Left joins img_prof and batt_prof.
+
+Key features extracted from text JSON:
+
+text_damage_scored: decision present
+
+text_sev_decision, text_bin_decision: parsed as ints (regex guard)
+
+meta flags:
+
+txt_no_wear_global
+
+txt_protector_only
+
+txt_glass, txt_back_glass, txt_lens_glass, txt_panel_severe
+
+txt_light_panel
+
+txt_charging, txt_non_oem
+
+txt_battery_clamp
+
+battery from text:
+
+batt_eff_text parsed from battery_effective
+
+4.4 derived — deterministic fusion + reason codes + corrected severity
+
+This is where “feature-store logic” lives.
+
+A) Battery fusion
+
+batt_fused = COALESCE(batt_img_min, batt_eff_text)
+
+batt_source ∈ {both, img_only, text_only, none}
+
+batt_bucket ∈ {batt:<80, batt:80-84, batt:85-89, batt:90-94, batt:95-100}
+
+convenience flags: batt_lt80, batt_ge90
+
+Rationale:
+
+Battery screenshot is preferred when available (generally more objective).
+
+Text is a fallback.
+
+B) Image damage scoring source selection
+
+You require at least 2 images with usable visibility for stability:
+
+img_damage_source_level:
+
+2 = Q2 primary (best)
+
+1 = Q1 fallback (acceptable)
+
+0 = not scored
+
+img_damage_score:
+
+Q2 max if img_real_q2_vis_cnt >= 2
+
+else Q1 max if img_real_q1_vis_cnt >= 2
+
+else null
+
+This is a critical design decision: it reduces spurious “one-photo” artifacts.
+
+C) Missingness semantics: img_score_reason_code
+
+This explains why image scoring is missing or degraded.
+
+1 = img_rows_v1 = 0                        (no image rows at all)
+2 = img_rows_damage_done = 0               (pipeline never completed)
+3 = img_real_cnt = 0                       (all stock)
+4 = img_real_q2_cnt = 0                    (no Q2-quality real images)
+5 = img_real_q2_vis_cnt = 0                (no visible_damage_level computed at Q2)
+6 = img_real_q2_vis_cnt < 2                (insufficient Q2 evidence)
+7 = Q2 insufficient but Q1 has >=2         (Q1 fallback used)
+0 = scored normally (Q2 has >=2 with vis)
+
+
+This is the feature that prevents silent degradation.
+
+D) Text severity correction: text_sev_corr
+
+You enforce deterministic floors based on meta + battery:
+
+Baseline: COALESCE(text_sev_decision, 0)
+
+Floor to ≥2 if:
+
+battery is known and <80, or
+
+txt_battery_clamp or
+
+txt_non_oem or
+
+txt_charging
+
+Floor to ≥3 if:
+
+txt_glass OR txt_back_glass OR txt_lens_glass OR txt_panel_severe
+
+Then:
+
+text_sev_corr = GREATEST(decision, floor2, floor3)
+
+Important properties:
+
+Only raises severity; never lowers it
+
+Converts the text model into a structured extractor while policy floors remain controlled and auditable
+
+E) Final fused tier: damage_fused_tier ∈ {0,1,2,3}
+
+The tier is deterministic and intentionally coarse:
+
+Tier 3 (structural / critical) if:
+
+img_max_noprotector_q2 >= 8 (strong structural evidence), OR
+
+corrected text severity >= 3
+
+Tier 2 (cosmetic damage) if:
+
+image damage score >= 3
+
+Tier 1 (borderline / moderate) if:
+
+image damage score = 2, OR
+
+corrected text severity >= 2
+
+Tier 0 (clean) otherwise
+
+This tier is designed as a stable modeling feature, while the continuous image score and other details carry additional granularity.
+
+5. Why v2_scored Exists (and Why You Should Use It)
+
+The wrapper view ml.v_damage_fusion_features_v2_scored adds the modeling-safe semantics:
+
+img_damage_scored = (img_damage_source_level >= 1)
+
+batt_scored = (batt_fused IS NOT NULL)
+
+damage_any_scored = (img scored OR text scored OR batt scored)
+
+And “known-only” variants:
+
+text_sev_raw_known only when text_damage_scored
+
+text_sev_corr_known when (text_damage_scored OR batt_scored)
+
+damage_fused_tier_known when any evidence exists
+
+Why this matters
+
+Without the wrapper, a listing with no text decision and no battery would still show:
+
+text_sev_corr = 0 (because meta flags default false)
+That is not “clean”; it’s unknown.
+
+The wrapper ensures “unknown” is represented as NULL + flags + reason codes, not as fake zeros.
+
+6. Column Dictionary (What a Professional Analyst Documents)
+
+Below is a practical “block” dictionary (grouped by purpose). This is how I would document it for a production feature store.
+
+6.1 Keys
+
+generation (int): iPhone generation
+
+listing_id (int/text): listing identifier
+
+6.2 Image pipeline coverage & composition
+
+img_rows_v1 (int): count image rows in v1 feature table
+
+img_rows_damage_done (int): count rows with pipeline completed
+
+img_stock_cnt (int): number of stock photos (post-pipeline)
+
+img_real_cnt (int): number of real photos
+
+img_stock_ratio (numeric, 0–1 or null): fraction stock among processed images
+
+6.3 Image reliability (quality / background)
+
+img_pq0_cnt..img_pq4_cnt (int): histogram of photo quality on real images
+
+img_pq_avg_real (numeric): mean photo quality on real images
+
+img_bg0_cnt..img_bg2_cnt (int): histogram of background cleanliness
+
+img_bg_avg_real (numeric): mean background cleanliness
+
+6.4 Image scoring eligibility & evidence
+
+img_real_q2_cnt (int): # real Q2 images (pq>=2)
+
+img_real_q2_vis_cnt (int): # Q2 images with a damage value present
+
+img_real_q1_vis_cnt (int): # Q1 images with a damage value present
+
+6.5 Image damage signals
+
+img_max_eff_q2 (int, 0–10 or null): max effective damage (Q2)
+
+img_max_eff_q1 (int, 0–10 or null): max effective damage (Q1 fallback)
+
+img_max_noprotector_q2 (int, 0–10 or null): max excluding protector-only
+
+img_n_ge3_real_q2 (int): # images with damage ≥3 (non-protector, Q2)
+
+img_n_ge8_real_q2 (int): # images with damage ≥8 (non-protector, Q2)
+
+6.6 Image scoring derived fields
+
+img_damage_source_level (int): 0 none, 1 Q1 fallback, 2 Q2 primary
+
+img_damage_score (int, 0–10 or null): chosen max based on evidence gating
+
+img_score_reason_code (int): missingness semantics code (see §4.4.C)
+
+6.7 Battery signals
+
+batt_img_min, batt_img_max (int): min/max screenshot-derived battery
+
+batt_img_spread (int): max-min when both exist
+
+batt_img_hits (int): number of recognized battery screenshots
+
+batt_eff_text (int): battery from text extraction (if numeric)
+
+batt_fused (int): fused battery used for modeling
+
+batt_source (text): both/img_only/text_only/none
+
+batt_bucket (text): bucket string
+
+batt_lt80, batt_ge90 (bool): convenience flags
+
+6.8 Text damage decision
+
+text_damage_scored (bool): decision exists
+
+text_sev_decision (int): raw severity decision
+
+text_bin_decision (int): raw bin decision
+
+txt_* flags (bool): meta flags:
+
+txt_no_wear_global, txt_protector_only
+
+txt_glass, txt_back_glass, txt_lens_glass, txt_panel_severe
+
+txt_light_panel
+
+txt_charging, txt_non_oem, txt_battery_clamp
+
+6.9 Text corrected severity
+
+text_sev_corr (int): corrected severity using deterministic floors
+
+6.10 Fused output
+
+damage_fused_tier (int 0–3): fused damage tier
+
+6.11 Wrapper fields (v2_scored)
+
+img_damage_scored (bool)
+
+batt_scored (bool)
+
+damage_any_scored (bool)
+
+text_sev_raw_known (int or null)
+
+text_sev_corr_known (int or null)
+
+damage_fused_tier_known (int or null)
+
+7. How to Validate in SQL (Test Plan)
+
+A “fan-level” analyst (or an ML engineer) should always ship feature-store blocks with:
+
+7.1 Uniqueness and coverage
+
+1 row per listing
+
+no missing join keys
+
+You already ran and got the correct outcomes (0 duplicates and full coverage).
+
+7.2 Internal invariants
+
+Examples:
+
+img_rows_damage_done <= img_rows_v1
+
+img_stock_cnt + img_real_cnt <= img_rows_damage_done
+
+img_real_q2_vis_cnt <= img_real_q2_cnt <= img_real_cnt
+
+You ran these checks too; they’re the right ones to keep in CI or daily monitoring.
+
+7.3 Reason-code sanity checks
+
+Ensure reason codes align to the conditions they claim. You also did this by counting “ok_1/ok_2/…” style checks. That is precisely the correct approach.
+
+7.4 Downstream predictive sanity checks
+
+For sold listings, a quick check:
+
+median sold price should decline as damage_fused_tier_known increases
+
+You already see this pattern overall. That is a strong validation that the fused tier has economic meaning and is not random.
+
+8. How a Top Analyst Would Feed This Into an XGBoost AFT Survival Model
+8.1 The core principle: never collapse “unknown” into “clean”
+
+For AFT (or any model), if you do:
+
+COALESCE(damage_fused_tier, 0)
+
+you destroy signal. You turn missingness into “clean” and the model learns incorrect relationships.
+
+Instead:
+
+Use the _known fields (NULL when unknown)
+
+Include the scored flags and reason codes so missingness is learnable
+
+8.2 Recommended feature block (minimum viable, high-signal)
+
+Include these columns in the training matrix:
+
+Image (signal + reliability + missingness)
+
+df.img_damage_score (numeric, nullable)
+
+df.img_damage_source_level (categorical or small int)
+
+df.img_damage_scored::int
+
+df.img_n_ge3_real_q2
+
+df.img_n_ge8_real_q2
+
+df.img_stock_ratio
+
+df.img_pq_avg_real
+
+df.img_bg_avg_real
+
+df.img_score_reason_code (categorical)
+
+Battery
+
+df.batt_fused (numeric, nullable)
+
+df.batt_scored::int
+
+optionally df.batt_bucket (categorical) OR derived flags:
+
+df.batt_lt80::int, df.batt_ge90::int
+
+Text
+
+df.text_sev_corr_known (numeric/categorical, nullable)
+
+df.text_damage_scored::int
+
+optionally keep some meta flags (especially structural and non_oem):
+
+df.txt_non_oem::int, df.txt_charging::int
+
+df.txt_glass::int, df.txt_back_glass::int, df.txt_lens_glass::int, df.txt_panel_severe::int
+
+Fused summary
+
+df.damage_fused_tier_known (categorical, nullable)
+
+df.damage_any_scored::int
+
+This gives the model:
+
+a fused coarse tier
+
+raw continuous score
+
+evidence strength
+
+evidence reliability
+
+explicit missingness cause
+
+8.3 Encoding strategy (important for XGBoost)
+
+In XGBoost:
+
+Keep img_damage_score, batt_fused as numeric with missing = NaN
+
+Treat img_score_reason_code and damage_fused_tier_known as categorical:
+
+either one-hot encode
+
+or use XGBoost categorical splits (enable_categorical=True) if your pipeline supports it reliably
+
+8.4 Interaction features that often matter in survival models
+
+AFT models are sensitive to whether effects change with “confidence.” You can hand the model the interactions explicitly:
+
+img_damage_score * I(img_damage_source_level=2)
+
+img_damage_score * img_pq_avg_real (proxy for detectability)
+
+I(img_stock_ratio>0.5) as a “low trust images” indicator
+
+I(img_n_ge3_real_q2>=2) as “corroborated damage” vs “single photo”
+
+I(txt_protector_only=1 AND img_damage_score>=3) as a contradiction flag
+
+ABS(bucket(text_sev_corr_known) - bucket(img_damage_score)) as disagreement
+
+These are often where performance gains come from, because they let the model distinguish:
+
+“damage=0 with strong evidence” vs “damage=0 because we saw nothing usable”
+
+8.5 Guard against leakage
+
+Your fusion views only use:
+
+listing text JSON
+
+image-derived signals
+They do not use outcomes like sold_price in feature computation.
+
+That is appropriate for survival modeling, assuming:
+
+the features are computed from the listing state available at the prediction timestamp (e.g., at or before edited_date)
+
+you don’t join in sold-only artifacts when training the model for live scoring
+
+If you later add anchor residuals, ensure the anchor is “available at t0” and not computed using future sales.
+
+9. Operational Recommendations
+9.1 Versioning
+
+Treat the fusion view as a versioned contract:
+
+v2 is a stable contract for modeling
+
+if you change thresholds or reason code logic, increment to v3
+
+9.2 Materialization and performance
+
+If training queries are heavy:
+
+consider materializing v2_scored into a table refreshed daily
+
+add indexes on (generation, listing_id) on the materialized artifact
+
+9.3 Monitoring
+
+Track daily:
+
+% img_damage_scored, % text_damage_scored, % batt_scored
+
+distribution of img_score_reason_code
+
+distribution of img_stock_ratio
+
+distribution of img_pq_avg_real
+
+count of text_sev_corr > text_sev_decision (should stay low/stable)
+
+These are early indicators that upstream pipelines drifted.
+
+10. Summary (What You Built, in One Paragraph)
+
+You built a damage fusion feature-store block that consolidates image damage, text damage, and battery health into a single listing-level representation keyed by (generation, listing_id), while explicitly encoding evidence quality (photo/background quality, stock ratio, evidence counts), missingness semantics (img_score_reason_code), and deterministic guardrails (text_sev_corr) so that “unknown” never masquerades as “clean.” The v2_scored wrapper provides the exact semantics a survival model needs: it can learn from both the signal and the reliability of that signal.
