@@ -1,6 +1,1 @@
-"airflow"  "Lilleper5"
-"postgres" "Lilleper5"
-"etl_reader" "SET_ETL_READER_PASSWORD"
-
-
-
+"pgbouncer" "REDACTED_PASSWORD_HASH"
