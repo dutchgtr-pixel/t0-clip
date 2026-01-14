@@ -1,0 +1,3919 @@
+# Glossary
+
+
+
+This glossary defines the terms used across the geo mapping system.
+
+
+
+## Raw fields (source data)
+
+
+
+### postal_code
+
+A 4-digit Norwegian postnummer associated with a listing.
+
+
+
+- In the mapping system, postal codes are treated as **TEXT** to preserve **leading zeros**.
+
+- Only values that match the regex `^[0-9]{4}$` are considered valid.
+
+
+
+### location_city
+
+A free-text place name from the listing (e.g., “oslo”, “drammen”, “tromsø”).
+
+
+
+- Used only as a **fallback** mapping key when postal code is missing/invalid.
+
+
+
+## Derived geo labels (features)
+
+
+
+### region
+
+Broad geographic macro regions used in the marketplace context:
+
+
+
+- Østlandet
+
+- Vestlandet
+
+- Sørlandet
+
+- Trøndelag
+
+- Nord-Norge
+
+
+
+This is stable and very low cardinality, but can be too broad for modeling by itself.
+
+
+
+### pickup_metro_30_200
+
+A metro layer designed around “pickup friction”:
+
+
+
+A locality belongs to a pickup metro if a typical buyer can complete the pickup with:
+
+
+
+- Drive time (one-way) ≲ 30 minutes in normal conditions
+
+- Roundtrip out-of-pocket cost ≲ 200 NOK (fuel/wear proxy + toll heuristics)
+
+
+
+This is a categorical feature that often improves *tail robustness* by pooling sparse cities into more stable areas.
+
+
+
+### super_metro_v4
+
+A larger, model-friendly metro clustering (v4), built to:
+
+
+
+- outperform region-only in predictive power,
+
+- avoid high sparsity of raw city/postcode, and
+
+- behave consistently under time drift.
+
+
+
+This is the “primary” geo cluster recommended for ML features.
+
+
+
+## Versioning concepts
+
+
+
+### geo mapping release
+
+A single versioned load of the mapping tables.
+
+
+
+Represented by: `ref.geo_mapping_release.release_id`
+
+
+
+A release includes all rows in:
+
+
+
+- `ref.postal_code_to_super_metro` for that release_id
+
+- `ref.city_to_super_metro` for that release_id
+
+
+
+### current release
+
+Exactly one release is marked `is_current = true`.
+
+
+
+All “*_current” views and all ML views always read from the current release.
+
+
+
+### rollback
+
+A rollback is performed by switching `is_current` from the active release to a prior release in a single transaction.
+
+
+
+No mapping data is deleted; you simply repoint the “current” pointer.
+
+# System overview
+
+
+
+## Problem statement
+
+
+
+You need to make location data usable for:
+
+
+
+- ML classifiers (e.g., slow21 gating)
+
+- survival/time-to-sell modeling
+
+- analytics and reporting
+
+
+
+while avoiding these issues:
+
+
+
+- **string noise** (`location_city` varies)
+
+- **sparsity** (hundreds of low-volume towns/postcodes)
+
+- **drift** (geographic liquidity changes over time)
+
+- **operational fragility** (ad-hoc CSV edits, untracked changes)
+
+
+
+## Architecture
+
+
+
+This implementation uses a classic pattern:
+
+
+
+1) **Raw facts remain raw**
+
+- Your listing ingestion writes into `marketplace.listings_raw` (source of truth).
+
+- No geo logic is embedded in ingestion and no rows are rewritten.
+
+
+
+2) **Geo mapping lives in versioned reference tables**
+
+- `ref.geo_mapping_release` controls which mapping is active.
+
+- Mapping content is loaded into `ref.postal_code_to_super_metro` and `ref.city_to_super_metro`, keyed by `release_id`.
+
+
+
+3) **Current-release views provide stability**
+
+- `ref.postal_code_to_super_metro_current` and `ref.city_to_super_metro_current` expose mapping rows only for the current release.
+
+
+
+4) **A geo-enriched listings view applies mapping automatically**
+
+- `ml.listings_geo_current` enriches listings with:
+
+  - `region_geo`
+
+  - `pickup_metro_30_200_geo`
+
+  - `super_metro_v4_geo`
+
+  - plus `geo_release_id` (the mapping release used)
+
+
+
+Because it’s a view, **every new listing is immediately mapped** as soon as it exists in `marketplace.listings_raw`.
+
+
+
+5) **Feature store / ML pipeline consumes the geo-enriched view**
+
+- Your feature-store MVs should source from `ml.listings_geo_current` rather than the raw listing table.
+
+- Refresh cadence stays under your control (cron/Airflow/pg_cron).
+
+
+
+## Precedence rules
+
+
+
+When mapping a listing:
+
+
+
+1. Prefer **postal code mapping** (highest precision)
+
+2. If postal code missing/invalid, use **normalized city fallback**
+
+3. If neither matches, emit conservative “unknown/other” buckets
+
+
+
+This precedence makes the system robust, predictable, and easy to reason about.
+
+
+
+## Why versioning matters
+
+
+
+Mapping logic will evolve.
+
+
+
+Versioning ensures:
+
+
+
+- reproducibility for training (you can tag models with `geo_release_id`)
+
+- rollback in seconds if a mapping release is wrong
+
+- change review and governance (releases are auditable and diffable)
+
+
+
+# Database objects
+
+
+
+This document describes every Postgres object created for geo mapping v4.
+
+
+
+## Schemas
+
+
+
+- `ref` — reference/dimension tables and helper functions
+
+- `ml` — ML-facing views/materialized views
+
+
+
+```sql
+
+CREATE SCHEMA IF NOT EXISTS ref;
+
+CREATE SCHEMA IF NOT EXISTS ml;
+
+```
+
+
+
+## Control plane: `ref.geo_mapping_release`
+
+
+
+Purpose:
+
+- Tracks mapping versions (releases)
+
+- Allows switching the active mapping without rewriting any mapping rows
+
+
+
+```sql
+
+CREATE TABLE IF NOT EXISTS ref.geo_mapping_release (
+
+  release_id   bigserial PRIMARY KEY,
+
+  label        text NOT NULL,
+
+  created_at   timestamptz NOT NULL DEFAULT now(),
+
+  is_current   boolean NOT NULL DEFAULT false,
+
+  notes        text
+
+);
+
+
+
+-- Guarantee at most 1 current release
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_geo_mapping_release_one_current
+
+  ON ref.geo_mapping_release ((1))
+
+  WHERE is_current;
+
+```
+
+
+
+Notes:
+
+- `label` is a human tag (e.g. `"super_metro_v4"`).
+
+- `notes` should describe the data source and intent (“initial v4 mapping”, “v4 hotfix: Oslo ring”, etc.).
+
+- The partial unique index enforces **only one current** release at any time.
+
+
+
+## Mapping tables (reference data)
+
+
+
+### A) Postal code backbone
+
+
+
+```sql
+
+CREATE TABLE IF NOT EXISTS ref.postal_code_to_super_metro (
+
+  release_id         bigint NOT NULL REFERENCES ref.geo_mapping_release(release_id),
+
+  postal_code        text   NOT NULL CHECK (postal_code ~ '^[0-9]{4}$'),
+
+  region             text   NOT NULL,
+
+  pickup_metro_30_200 text,
+
+  super_metro_v4      text   NOT NULL,
+
+  source              text,
+
+  PRIMARY KEY (release_id, postal_code)
+
+);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_pc_map_release_postal
+
+  ON ref.postal_code_to_super_metro(release_id, postal_code);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_pc_map_release_super
+
+  ON ref.postal_code_to_super_metro(release_id, super_metro_v4);
+
+```
+
+
+
+Rationale:
+
+- `postal_code` is the most precise key for geo mapping.
+
+- Storing it as `text` preserves leading zeros.
+
+- `source` can document how that row was derived (dataset, script, “manual fix”, etc).
+
+
+
+### B) City fallback mapping
+
+
+
+```sql
+
+CREATE TABLE IF NOT EXISTS ref.city_to_super_metro (
+
+  release_id          bigint NOT NULL REFERENCES ref.geo_mapping_release(release_id),
+
+  location_city_norm  text   NOT NULL,
+
+  region              text   NOT NULL,
+
+  pickup_metro_30_200  text,
+
+  super_metro_v4       text   NOT NULL,
+
+  source               text,
+
+  PRIMARY KEY (release_id, location_city_norm)
+
+);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_city_map_release_city
+
+  ON ref.city_to_super_metro(release_id, location_city_norm);
+
+```
+
+
+
+Rationale:
+
+- Only used when postal code is missing/invalid.
+
+- `location_city_norm` is *pre-normalized* (lowercase + collapsed whitespace) to guarantee stable joins.
+
+
+
+## “Current release” selector views
+
+
+
+These views isolate the active `release_id` and expose mapping rows only for that release.
+
+
+
+```sql
+
+CREATE OR REPLACE VIEW ref.geo_mapping_current AS
+
+SELECT release_id
+
+FROM ref.geo_mapping_release
+
+WHERE is_current
+
+ORDER BY release_id DESC
+
+LIMIT 1;
+
+
+
+CREATE OR REPLACE VIEW ref.postal_code_to_super_metro_current AS
+
+SELECT m.*
+
+FROM ref.postal_code_to_super_metro m
+
+JOIN ref.geo_mapping_current c ON c.release_id = m.release_id;
+
+
+
+CREATE OR REPLACE VIEW ref.city_to_super_metro_current AS
+
+SELECT m.*
+
+FROM ref.city_to_super_metro m
+
+JOIN ref.geo_mapping_current c ON c.release_id = m.release_id;
+
+```
+
+
+
+Safety:
+
+- If **no release is marked current**, `ref.geo_mapping_current` returns zero rows.
+
+- The downstream mapping views return zero rows as well (fail closed).
+
+- This avoids silently applying an unintended default mapping.
+
+
+
+## Normalization functions
+
+
+
+We canonicalize join keys inside the DB (so every query uses identical normalization):
+
+
+
+```sql
+
+CREATE OR REPLACE FUNCTION ref.norm_city(x text)
+
+RETURNS text
+
+LANGUAGE sql
+
+IMMUTABLE
+
+AS $$
+
+  SELECT NULLIF(lower(regexp_replace(btrim(x), '\s+', ' ', 'g')), '');
+
+$$;
+
+
+
+CREATE OR REPLACE FUNCTION ref.norm_postal_code(x text)
+
+RETURNS text
+
+LANGUAGE sql
+
+IMMUTABLE
+
+AS $$
+
+  WITH cleaned AS (
+
+    SELECT regexp_replace(btrim(coalesce(x,'')), '\D', '', 'g') AS pc
+
+  )
+
+  SELECT CASE WHEN pc ~ '^[0-9]{4}$' THEN pc ELSE NULL END
+
+  FROM cleaned;
+
+$$;
+
+```
+
+
+
+Key decisions:
+
+- We do **not** left-pad, because a 1–3 digit code is ambiguous; we prefer NULL.
+
+- If postal code is invalid, we fall back to city mapping, not “guess”.
+
+
+
+## Geo-enriched listings view
+
+
+
+This is the “automatic mapping” layer.
+
+
+
+```sql
+
+CREATE OR REPLACE VIEW ml.listings_geo_current AS
+
+SELECT
+
+  l.*,
+
+  c.release_id AS geo_release_id,
+
+
+
+  COALESCE(pc.region, cc.region, 'unknown') AS region_geo,
+
+  COALESCE(pc.pickup_metro_30_200, cc.pickup_metro_30_200,
+
+           'other_' || lower(COALESCE(pc.region, cc.region, 'unknown'))) AS pickup_metro_30_200_geo,
+
+  COALESCE(pc.super_metro_v4, cc.super_metro_v4,
+
+           'other_' || lower(COALESCE(pc.region, cc.region, 'unknown'))) AS super_metro_v4_geo
+
+
+
+FROM marketplace.listings_raw l
+
+CROSS JOIN ref.geo_mapping_current c
+
+LEFT JOIN ref.postal_code_to_super_metro pc
+
+  ON pc.release_id = c.release_id
+
+ AND pc.postal_code = ref.norm_postal_code(l.postal_code::text)
+
+LEFT JOIN ref.city_to_super_metro cc
+
+  ON cc.release_id = c.release_id
+
+ AND cc.location_city_norm = ref.norm_city(l.location_city);
+
+```
+
+
+
+Precedence:
+
+- Postal-code match wins over city match.
+
+- Any unmapped listing is assigned `unknown`/`other_*` buckets (never NULL).
+
+
+
+Why `CROSS JOIN ref.geo_mapping_current`:
+
+- It injects exactly one `release_id` (the current one) into every row.
+
+- If there is no current release, the view returns **0 rows**, forcing the issue to be fixed instead of leaking un-mapped data into ML views.
+
+# Loading mapping releases (Python)
+
+
+
+This mapping system is designed so that **CSV loads never overwrite prior releases**.
+
+
+
+Every load creates a **new `release_id`**, inserts mapping rows keyed by that release, and optionally sets the release as current.
+
+
+
+## Input CSVs
+
+
+
+### Postal backbone CSV (required)
+
+Example filename: `postal_code_to_super_metro_v4.csv`
+
+
+
+Required columns:
+
+
+
+- `postal_code` (4 digits, string; leading zeros allowed)
+
+- `region`
+
+- `pickup_metro_30_200` (nullable)
+
+- `super_metro_v4`
+
+
+
+### City fallback CSV (required)
+
+Example filename: `city_postal_codes_with_region_super_metro_v4.csv`
+
+
+
+Required columns:
+
+
+
+- `location_city_norm` (already normalized to lowercase)
+
+- `region`
+
+- `pickup_metro_30_200` (nullable)
+
+- `super_metro_v4`
+
+
+
+## Loader script: `python/load_geo_mapping_release.py`
+
+
+
+This repository includes a copy of the loader used in production.
+
+
+
+Key design properties:
+
+
+
+- Uses a **single transaction**.
+
+- Loads data into temporary staging tables first.
+
+- Validates:
+
+  - postcode format is exactly 4 digits
+
+  - duplicates (within the CSV) do not exist
+
+- Inserts into final tables with the new `release_id`.
+
+- Optionally flips `is_current` to the new release.
+
+
+
+### Recommended CLI usage
+
+
+
+Windows PowerShell:
+
+
+
+```powershell
+
+$env:PG_DSN = "<REDACTED_PG_DSN>"
+
+
+
+python .\load_geo_mapping_release.py `
+
+  --label "super_metro_v4" `
+
+  --notes "initial v4 mapping" `
+
+  --postal_csv ".\postal_code_to_super_metro_v4.csv" `
+
+  --city_csv ".\city_postal_codes_with_region_super_metro_v4.csv" `
+
+  --set_current
+
+```
+
+
+
+### Dry run mode (no commit)
+
+Use this before every release if you want a “safe preview”:
+
+
+
+```powershell
+
+python .\load_geo_mapping_release.py `
+
+  --label "super_metro_v4" `
+
+  --notes "v4 candidate" `
+
+  --postal_csv ".\postal_code_to_super_metro_v4.csv" `
+
+  --city_csv ".\city_postal_codes_with_region_super_metro_v4.csv" `
+
+  --dry_run
+
+```
+
+
+
+Output should say something like:
+
+
+
+- `postal rows inserted: 5798`
+
+- `city rows inserted: 1103`
+
+- and `current? no (dry_run or not requested)`
+
+
+
+## If you forgot to set current
+
+
+
+If you load a release but do not set it current, the system will show:
+
+
+
+- `SELECT COUNT(*) FROM ref.geo_mapping_release WHERE is_current;` returns `0`
+
+- `ref.geo_mapping_current` returns 0 rows
+
+- `ml.listings_geo_current` returns 0 rows
+
+
+
+Fix by flipping the pointer in a transaction:
+
+
+
+```sql
+
+BEGIN;
+
+UPDATE ref.geo_mapping_release SET is_current=false WHERE is_current=true;
+
+UPDATE ref.geo_mapping_release SET is_current=true  WHERE release_id = <your_release_id>;
+
+COMMIT;
+
+```
+
+
+
+## How to safely rollback
+
+
+
+Rollback is the same “pointer flip” transaction, but to a previous release id:
+
+
+
+```sql
+
+BEGIN;
+
+UPDATE ref.geo_mapping_release SET is_current=false WHERE is_current=true;
+
+UPDATE ref.geo_mapping_release SET is_current=true  WHERE release_id = <previous_release_id>;
+
+COMMIT;
+
+```
+
+
+
+Because mapping tables are keyed by release_id, you are not deleting anything; you are just switching which version is active.
+
+
+
+
+
+# Runtime geo enrichment (how new listings get mapped automatically)
+
+
+
+## The key object: `ml.listings_geo_current`
+
+
+
+This view enriches every listing row from `marketplace.listings_raw` with three geo columns:
+
+
+
+- `region_geo`
+
+- `pickup_metro_30_200_geo`
+
+- `super_metro_v4_geo`
+
+
+
+It also stamps:
+
+
+
+- `geo_release_id` (the current mapping release applied)
+
+
+
+This is the “automatic mapping” layer: **no triggers, no backfills, no cron required** for new rows to be geo-enriched.
+
+
+
+## Join precedence and fallback
+
+
+
+The view uses this logic:
+
+
+
+1) **Postal-code mapping (preferred)**
+
+- Join `postal_code_to_super_metro` on:
+
+  - matching `release_id`
+
+  - matching `postal_code == ref.norm_postal_code(l.postal_code)`
+
+
+
+2) **City fallback (only if postal mapping missing)**
+
+- Join `city_to_super_metro` on:
+
+  - matching `release_id`
+
+  - matching `location_city_norm == ref.norm_city(l.location_city)`
+
+
+
+3) **Conservative fallback labels**
+
+If neither mapping row is found:
+
+
+
+- `region_geo = 'unknown'`
+
+- `pickup_metro_30_200_geo = 'other_unknown'`
+
+- `super_metro_v4_geo = 'other_unknown'`
+
+
+
+This gives you 100% non-null coverage and makes missingness explicit.
+
+
+
+## Why a view (instead of writing columns into the raw table)
+
+
+
+A view is preferable because:
+
+
+
+- It keeps `marketplace.listings_raw` as a *source of truth*.
+
+- It avoids rewriting rows (no backfill pain, no risk of corrupting facts).
+
+- It guarantees that if you change mapping versions, all downstream systems see the change immediately.
+
+
+
+If you need “snapshot semantics” (e.g., model training reproducibility), you can materialize features from this view (feature store MVs) and track `geo_release_id` alongside training metadata.
+
+
+
+## What “versioned mapping” means in practice
+
+
+
+Your listing view reads mapping rows *only* from the current release.
+
+
+
+That means:
+
+
+
+- switching the current release instantly changes the geo assignment of every listing (at query time),
+
+- and downstream MVs will pick it up after their next refresh.
+
+
+
+## Performance considerations
+
+
+
+This view is used frequently (training, scoring, analytics). Two practical tactics:
+
+
+
+1) Make sure mapping tables are indexed (already done via `(release_id, postal_code)` and `(release_id, location_city_norm)`).
+
+
+
+2) Consider optional indexes on your raw listing table for faster joins:
+
+- an index on `postal_code` (if it isn’t already)
+
+- an expression index on `ref.norm_city(location_city)` if you do heavy city fallback joins
+
+
+
+Because expression indexes can be large and may lock tables during creation, only add them after measuring.
+
+
+
+See `sql/07_optional_indexes.sql`.
+
+# Validation, proofs, and debugging
+
+
+
+This file contains the canonical SQL checks that prove the geo mapping is “live” and correct.
+
+
+
+Run these in `psql` against the `scrapes` database.
+
+
+
+---
+
+
+
+## 1) Prove exactly one current release exists
+
+
+
+```sql
+
+SELECT COUNT(*) AS current_cnt
+
+FROM ref.geo_mapping_release
+
+WHERE is_current;
+
+```
+
+
+
+Expected:
+
+- `current_cnt = 1`
+
+
+
+If `0`:
+
+- you loaded a release but didn’t set it current.
+
+- fix by running the pointer flip transaction (see below).
+
+
+
+If `>1`:
+
+- the partial unique index should prevent this.
+
+- if it happens, the constraint was not created or was bypassed.
+
+
+
+---
+
+
+
+## 2) Inspect the most recent releases (audit trail)
+
+
+
+```sql
+
+SELECT release_id, label, created_at, is_current, notes
+
+FROM ref.geo_mapping_release
+
+ORDER BY release_id DESC
+
+LIMIT 10;
+
+```
+
+
+
+Expected:
+
+- newest release at top
+
+- exactly one row has `is_current = true`
+
+
+
+---
+
+
+
+## 3) Prove mapping rows exist for the current release
+
+
+
+```sql
+
+SELECT COUNT(*) AS pc_rows
+
+FROM ref.postal_code_to_super_metro_current;
+
+
+
+SELECT COUNT(*) AS city_rows
+
+FROM ref.city_to_super_metro_current;
+
+```
+
+
+
+Expected:
+
+- counts match your CSV sizes (e.g. `5798` and `1103`)
+
+
+
+---
+
+
+
+## 4) Prove the geo-enriched listings view covers the raw listings
+
+
+
+Because `ml.listings_geo_current` selects from `marketplace.listings_raw`, row counts must match:
+
+
+
+```sql
+
+SELECT COUNT(*) AS listings_geo
+
+FROM ml.listings_geo_current;
+
+
+
+SELECT COUNT(*) AS listings_raw
+
+FROM marketplace.listings_raw;
+
+```
+
+
+
+Expected:
+
+- `listings_geo == listings_raw`
+
+
+
+If `listings_geo = 0` while `listings_raw > 0`:
+
+- there is no current release (the `CROSS JOIN ref.geo_mapping_current` fail-closed behavior).
+
+
+
+---
+
+
+
+## 5) Spot-check live mapping on recent listings
+
+
+
+```sql
+
+SELECT
+
+  listing_id,
+
+  postal_code,
+
+  location_city,
+
+  geo_release_id,
+
+  region_geo,
+
+  pickup_metro_30_200_geo,
+
+  super_metro_v4_geo
+
+FROM ml.listings_geo_current
+
+WHERE postal_code IS NOT NULL OR location_city IS NOT NULL
+
+ORDER BY listing_id DESC
+
+LIMIT 50;
+
+```
+
+
+
+You should see plausible assignments:
+
+- Oslo postcodes map to `sm4_ost_oslo`
+
+- Bergen postcodes map to `sm4_vest_bergen`
+
+- Trondheim postcodes map to `sm4_tr_trondheim`
+
+- etc.
+
+
+
+---
+
+
+
+## 6) Distribution sanity check (modeling usefulness)
+
+
+
+```sql
+
+SELECT
+
+  super_metro_v4_geo,
+
+  COUNT(*) AS n
+
+FROM ml.listings_geo_current
+
+GROUP BY 1
+
+ORDER BY n DESC;
+
+```
+
+
+
+Expected:
+
+- a small-ish number of clusters (low cardinality compared to raw cities)
+
+- no “explosion” into hundreds of categories
+
+
+
+---
+
+
+
+## 7) Find unknown/other coverage (debug missing mapping)
+
+
+
+```sql
+
+SELECT
+
+  COUNT(*) FILTER (WHERE region_geo='unknown') AS unknown_region,
+
+  COUNT(*) FILTER (WHERE super_metro_v4_geo LIKE 'other_%' OR super_metro_v4_geo='unknown') AS other_or_unknown_super,
+
+  COUNT(*) AS total
+
+FROM ml.listings_geo_current;
+
+```
+
+
+
+Interpretation:
+
+- `unknown_region > 0` means: neither postal-code mapping nor city fallback matched.
+
+- Identify those listings and decide if:
+
+  - ingestion needs normalization fixes, or
+
+  - mapping CSV needs more coverage.
+
+
+
+To locate the problematic rows:
+
+
+
+```sql
+
+SELECT listing_id, postal_code, location_city
+
+FROM ml.listings_geo_current
+
+WHERE region_geo='unknown'
+
+ORDER BY listing_id DESC
+
+LIMIT 200;
+
+```
+
+
+
+---
+
+
+
+## 8) Switching current releases (rollback or hotfix)
+
+
+
+Pointer flip (atomic switch):
+
+
+
+```sql
+
+BEGIN;
+
+UPDATE ref.geo_mapping_release SET is_current=false WHERE is_current=true;
+
+UPDATE ref.geo_mapping_release SET is_current=true WHERE release_id = <target_release_id>;
+
+COMMIT;
+
+```
+
+
+
+Re-run checks 1–6 after switching.
+
+
+
+---
+
+
+
+## 9) Non-negotiable integrity checks
+
+
+
+### 9.1 Postal codes must be 4 digits
+
+
+
+```sql
+
+SELECT COUNT(*) AS bad_postcodes
+
+FROM ref.postal_code_to_super_metro_current
+
+WHERE postal_code !~ '^[0-9]{4}$';
+
+```
+
+
+
+Expected: `0`
+
+
+
+### 9.2 Primary-key duplicates cannot exist
+
+
+
+They are prevented by PKs, but if you ever load raw files into staging, validate:
+
+
+
+```sql
+
+SELECT postal_code, COUNT(*)
+
+FROM ref.postal_code_to_super_metro_current
+
+GROUP BY 1
+
+HAVING COUNT(*) > 1;
+
+```
+
+
+
+Expected: no rows.
+
+# Feature store & model integration
+
+
+
+This document explains how to wire the geo mapping system into:
+
+
+
+- the slow21 gate classifier feature store
+
+- survival/time-to-sell models
+
+- any downstream analytics views
+
+
+
+## Principle: keep geo logic centralized
+
+
+
+Do not re-implement mapping logic in multiple places.
+
+
+
+**Always source geo from:**
+
+- `ml.listings_geo_current`
+
+
+
+Everything else should join against this view or views built from it.
+
+
+
+## Recommended integration approach
+
+
+
+### Step 1 — Update your feature base to use geo-enriched listings
+
+
+
+Wherever you currently use:
+
+
+
+```sql
+
+FROM marketplace.listings_raw l
+
+```
+
+
+
+Replace with:
+
+
+
+```sql
+
+FROM ml.listings_geo_current l
+
+```
+
+
+
+Now all downstream models automatically get:
+
+
+
+- `region_geo`
+
+- `pickup_metro_30_200_geo`
+
+- `super_metro_v4_geo`
+
+- `geo_release_id`
+
+
+
+### Step 2 — Treat geo as hierarchical features
+
+
+
+At minimum, include **two categorical features**:
+
+
+
+- `region_geo`
+
+- `super_metro_v4_geo`
+
+
+
+Optionally include:
+
+- `pickup_metro_30_200_geo`
+
+
+
+Your earlier ablations showed:
+
+
+
+- Region is a strong tail stabilizer
+
+- Super-metro adds signal beyond region while reducing sparsity vs. city
+
+
+
+### Step 3 — Add “liquidity” aggregates by super_metro (highest ROI)
+
+
+
+Static geo categories have limited lift.
+
+
+
+The biggest practical win is to compute **rolling liquidity features** at the super-metro level, e.g.:
+
+
+
+- sold_count_7d_super_metro
+
+- sold_count_30d_super_metro
+
+- median_time_to_sell_30d_super_metro
+
+- p90_time_to_sell_30d_super_metro
+
+- active_inventory_super_metro
+
+- price_dispersion (IQR/MAD) by super_metro
+
+
+
+These capture the mechanism you actually care about: **local marketplace depth**.
+
+
+
+Implementation pattern:
+
+
+
+1) Build a daily aggregate table keyed by `(date, super_metro_v4_geo)`  
+
+2) Refresh it daily  
+
+3) Join those aggregates into your feature MV
+
+
+
+Example aggregate (sketch):
+
+
+
+```sql
+
+CREATE TABLE IF NOT EXISTS ml.geo_liquidity_daily (
+
+  day date NOT NULL,
+
+  super_metro_v4_geo text NOT NULL,
+
+  sold_count int NOT NULL,
+
+  active_count int NOT NULL,
+
+  median_tom_hours double precision,
+
+  p90_tom_hours double precision,
+
+  PRIMARY KEY (day, super_metro_v4_geo)
+
+);
+
+```
+
+
+
+## Reproducibility (important for ML)
+
+
+
+Because mapping is versioned, always log:
+
+
+
+- `geo_release_id` used for training
+
+- the `release_id` used for scoring
+
+
+
+If a future mapping release changes cluster assignment, you can still explain why models behaved differently.
+
+
+
+## Operational implication: views vs MVs
+
+
+
+- `ml.listings_geo_current` changes immediately when you switch mapping releases.
+
+- Materialized views only reflect that change after refresh.
+
+
+
+Therefore:
+
+- for real-time scoring, query from the view (or a light MV refreshed frequently)
+
+- for training, refresh the MV chain at your training cadence
+
+# Ops automation (Airflow / pg_cron / cron)
+
+
+
+This document provides production-grade automation patterns.
+
+
+
+## What needs scheduling (separation of concerns)
+
+
+
+### A) Geo mapping updates (infrequent)
+
+Run when you have new mapping CSVs.
+
+
+
+Workflow:
+
+1) load a new mapping release
+
+2) run QA checks
+
+3) set it current (if QA passes)
+
+4) refresh feature-store MVs (optional, depending on your cadence)
+
+
+
+### B) Feature store refresh (frequent)
+
+Run hourly/daily as your pipeline requires.
+
+
+
+Workflow:
+
+1) refresh base MVs
+
+2) refresh downstream MVs
+
+3) ANALYZE for planner stats
+
+4) optionally score / train models
+
+
+
+## Option 1 — Airflow (recommended for full pipeline observability)
+
+
+
+A typical DAG structure:
+
+
+
+1. `load_geo_mapping_release` (PythonOperator)  
+
+2. `qa_geo_mapping` (PostgresOperator running QA SQL)  
+
+3. `refresh_feature_store` (PostgresOperator or BashOperator calling your refresh script)  
+
+4. `train_models` (BashOperator / KubernetesPodOperator)  
+
+5. `publish_metrics` (optional)
+
+
+
+Key notes:
+
+- Use task retries and alerting.
+
+- Make the “set_current” step conditional on QA passing.
+
+
+
+## Option 2 — pg_cron (simple, in-database)
+
+
+
+If you enable `pg_cron`, you can schedule SQL directly inside Postgres.
+
+
+
+Example (daily 03:30 UTC):
+
+
+
+```sql
+
+SELECT cron.schedule(
+
+  'refresh_feature_store_nightly',
+
+  '30 3 * * *',
+
+  $$REFRESH MATERIALIZED VIEW ml.tom_features_v1_mv;$$
+
+);
+
+```
+
+
+
+You can schedule:
+
+- MV refreshes
+
+- QA checks
+
+- nightly ANALYZE / VACUUM (with caution)
+
+
+
+## Option 3 — OS cron / Windows Task Scheduler
+
+
+
+If you already run everything from your host machine:
+
+
+
+- run Python loader when mapping changes
+
+- run `psql -f refresh_feature_store.sql` on a schedule
+
+- run Python training scripts on a schedule
+
+
+
+This is the simplest but has weaker observability.
+
+
+
+## Monitoring / alerting checklist
+
+
+
+At minimum, alert on:
+
+
+
+- no current geo mapping release
+
+- spike in `unknown_region` listings
+
+- mapping table row counts unexpectedly changing
+
+- feature-store refresh failures
+
+- model performance drift by super_metro
+
+
+
+You can implement this with:
+
+- Airflow alerts
+
+- a small “pipeline_health” table with daily inserts
+
+- Grafana/Prometheus, if available
+
+
+
+
+
+
+
+# Change management (how to evolve v4 safely)
+
+
+
+This system is designed for frequent iteration without breaking production.
+
+
+
+## What constitutes a “mapping change”
+
+
+
+Any change to:
+
+- postal_code → super_metro_v4 assignment
+
+- city fallback → super_metro_v4 assignment
+
+- region or pickup_metro labels
+
+
+
+…should be shipped as a **new release** (new `release_id`).
+
+
+
+Never edit mapping rows for an existing release in place, because:
+
+- it breaks reproducibility
+
+- it makes rollbacks impossible
+
+- it complicates model debugging
+
+
+
+## Release process (recommended)
+
+
+
+1) Prepare new CSVs
+
+- `postal_code_to_super_metro_v4.csv`
+
+- `city_postal_codes_with_region_super_metro_v4.csv`
+
+
+
+2) Run loader in dry run
+
+- ensure row counts match expectation
+
+- ensure no “bad postcodes” exist
+
+
+
+3) Load as a new release (not current yet)
+
+- run loader without `--set_current`
+
+
+
+4) QA the release explicitly
+
+- distribution checks
+
+- unknown coverage check
+
+- join coverage on recent listings
+
+
+
+5) Flip pointer to make it current (atomic transaction)
+
+- do it during a low-traffic period if needed
+
+
+
+6) Refresh feature store MVs
+
+- ensures model features now reference the new mapping
+
+
+
+## Rollback
+
+
+
+Rollback is always possible as long as you never delete mapping releases:
+
+
+
+```sql
+
+BEGIN;
+
+UPDATE ref.geo_mapping_release SET is_current=false WHERE is_current=true;
+
+UPDATE ref.geo_mapping_release SET is_current=true WHERE release_id = <previous_release_id>;
+
+COMMIT;
+
+```
+
+
+
+Then:
+
+- re-run your validation checks
+
+- refresh the feature store if you need snapshot views to reflect the rollback
+
+
+
+## Release metadata best practices
+
+
+
+Use `label` and `notes` to encode:
+
+
+
+- mapping version tag (super_metro_v4)
+
+- source data (e.g., “derived from postal-code mapping v4 file on YYYY-MM-DD”)
+
+- major change summary (e.g., “split Hallingdal vs Oslo inland; moved Hol to inland cluster”)
+
+
+
+## Model governance
+
+
+
+For every model artifact, store:
+
+
+
+- training window
+
+- feature store version (git hash)
+
+- `geo_release_id` used during training
+
+- dataset snapshot ids / checksums
+
+
+
+This is what makes geo changes explainable rather than “mysterious drift”.
+
+
+
+
+
+# Sources / references (external)
+
+
+
+Accessed: **2025-12-28**
+
+
+
+These are the primary external references used for this implementation and documentation.
+
+
+
+## PostgreSQL documentation (official)
+
+
+
+- COPY (bulk load): `https://www.postgresql.org/docs/current/sql-copy.html`
+
+- Partial indexes (used for “only one current release” enforcement): `https://www.postgresql.org/docs/current/indexes-partial.html`
+
+- CREATE VIEW: `https://www.postgresql.org/docs/current/sql-createview.html`
+
+- REFRESH MATERIALIZED VIEW: `https://www.postgresql.org/docs/current/sql-refreshmaterializedview.html`
+
+- BEGIN / transactions: `https://www.postgresql.org/docs/current/sql-begin.html`
+
+- FROM clause + JOIN / table expressions (CROSS JOIN semantics): `https://www.postgresql.org/docs/current/queries-table-expressions.html`
+
+
+
+## psycopg2 documentation (COPY via Python)
+
+
+
+- Cursor copy methods (e.g., `copy_expert`): `https://www.psycopg.org/docs/cursor.html`
+
+
+
+## Apache Airflow documentation (official)
+
+
+
+- PostgresOperator / Postgres hook docs: `https://airflow.apache.org/docs/apache-airflow-providers-postgres/stable/operators/postgres_operator.html`
+
+- Authoring & scheduling DAGs: `https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/`
+
+
+
+## pg_cron documentation
+
+
+
+- pg_cron GitHub repository (cron.schedule examples, install notes): `https://github.com/citusdata/pg_cron`
+
+
+
+
+
+# Super Metro Geo Mapping v4 — Documentation Pack
+
+
+
+Generated: **2025-12-28**
+
+
+
+This repository documents the **Super Metro Geo Mapping v4** system implemented in Postgres for the marketplace marketplace database.
+
+
+
+It covers:
+
+
+
+- The **business logic** (region → pickup_metro_30_200 → super_metro_v4).
+
+- The **database design** (versioned reference tables, current-release views, geo-enriched listings view).
+
+- The **safe loading process** (Python loader that imports CSVs as a new *release*, without overwriting prior releases).
+
+- The **proof/validation queries** that demonstrate correct operation.
+
+- How to **integrate geo fields into your feature store / ML pipelines**.
+
+- How to **operate and update** mapping releases (Airflow/cron/pg_cron patterns).
+
+
+
+---
+
+
+
+## Why this exists
+
+
+
+Raw `location_city` and `postal_code` are useful but are:
+
+
+
+- inconsistent (string variation),
+
+- sparse (many low-volume categories), and
+
+- hard to use safely in ML without overfitting.
+
+
+
+This system introduces **stable, versioned, hierarchical geo labels**:
+
+
+
+1. **region** (broad): `Østlandet, Vestlandet, Sørlandet, Trøndelag, Nord-Norge`
+
+2. **pickup_metro_30_200** (pickup-friction metros)
+
+3. **super_metro_v4** (larger, model-friendly clusters designed to outperform region-only while avoiding city-level sparsity)
+
+
+
+The mapping is applied automatically to new listings via a **view** (no triggers, no backfills required), and is snapshotted into materialized feature-store views when you run your existing refresh jobs.
+
+
+
+---
+
+
+
+## Directory map
+
+
+
+- `README.md` — this file
+
+- `00_glossary.md` — shared definitions
+
+- `01_system_overview.md` — architecture + dataflow
+
+- `02_database_objects.md` — table/view/function definitions + rationale
+
+- `03_loading_mapping_releases.md` — how to load new CSV releases with Python
+
+- `04_runtime_geo_enrichment.md` — how mapping is applied to listings (join/precedence rules)
+
+- `05_validation_and_proofs.md` — proof queries + invariants + debugging
+
+- `06_feature_store_integration.md` — wiring geo into feature store and models
+
+- `07_ops_automation.md` — Airflow / pg_cron / cron patterns + monitoring
+
+- `08_change_management.md` — how to update v4 safely, governance + rollback
+
+- `09_sources.md` — external references (Postgres, psycopg2, Airflow, pg_cron, etc.)
+
+- `sql/` — SQL scripts (copy/paste ready)
+
+- `python/` — Python loader (copy of `load_geo_mapping_release.py`) + notes
+
+- `examples/` — example CLI commands and operational checklists
+
+
+
+---
+
+
+
+## Quickstart
+
+
+
+### 1) Apply SQL (create schemas, tables, views, functions)
+
+
+
+Run:
+
+
+
+- `sql/01_create_versioned_reference_tables.sql`
+
+- `sql/02_create_current_views.sql`
+
+- `sql/03_create_normalization_functions.sql`
+
+- `sql/04_create_geo_enriched_listings_view.sql`
+
+- `sql/05_post_load_qa_checks.sql` (optional but recommended)
+
+
+
+### 2) Load a mapping release (no overwrite)
+
+
+
+Use the loader:
+
+
+
+```bash
+
+$env:PG_DSN = "<REDACTED_PG_DSN>"
+
+
+
+python .\load_geo_mapping_release.py `
+
+  --label "super_metro_v4" `
+
+  --notes "initial v4 mapping" `
+
+  --postal_csv ".\postal_code_to_super_metro_v4.csv" `
+
+  --city_csv ".\city_postal_codes_with_region_super_metro_v4.csv" `
+
+  --set_current
+
+```
+
+
+
+### 3) Validate (proof)
+
+
+
+Run the queries in `05_validation_and_proofs.md` (also duplicated in `sql/05_post_load_qa_checks.sql`).
+
+
+
+---
+
+
+
+## Operational guarantee
+
+
+
+- **No raw listing data is overwritten.**
+
+- Each mapping load creates a **new release_id**.
+
+- Switching versions is a **single atomic transaction** (rollback is instant).
+
+- New listings are mapped automatically by `ml.listings_geo_current` as soon as a current release exists.
+
+
+
+---
+
+
+
+## Next step
+
+
+
+Once you’re satisfied with the geo layer:
+
+
+
+- integrate `region_geo`, `pickup_metro_30_200_geo`, `super_metro_v4_geo` into your feature-store base view/MV
+
+- then refresh the MV chain as usual.
+
+
+
+See `06_feature_store_integration.md`.
+
+
+
+
+
+
+
+
+
+
+
+sql 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- 01_create_versioned_reference_tables.sql
+
+-- Creates versioned geo mapping reference tables (no impact to raw listings).
+
+
+
+CREATE SCHEMA IF NOT EXISTS ref;
+
+CREATE SCHEMA IF NOT EXISTS ml;
+
+
+
+-- Control plane for mapping releases
+
+CREATE TABLE IF NOT EXISTS ref.geo_mapping_release (
+
+  release_id   bigserial PRIMARY KEY,
+
+  label        text NOT NULL,
+
+  created_at   timestamptz NOT NULL DEFAULT now(),
+
+  is_current   boolean NOT NULL DEFAULT false,
+
+  notes        text
+
+);
+
+
+
+-- Enforce: at most 1 current release
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_geo_mapping_release_one_current
+
+  ON ref.geo_mapping_release ((1))
+
+  WHERE is_current;
+
+
+
+-- Postal code backbone (release_id-scoped)
+
+CREATE TABLE IF NOT EXISTS ref.postal_code_to_super_metro (
+
+  release_id         bigint NOT NULL REFERENCES ref.geo_mapping_release(release_id),
+
+  postal_code        text   NOT NULL CHECK (postal_code ~ '^[0-9]{4}$'),
+
+  region             text   NOT NULL,
+
+  pickup_metro_30_200 text,
+
+  super_metro_v4      text   NOT NULL,
+
+  source              text,
+
+  PRIMARY KEY (release_id, postal_code)
+
+);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_pc_map_release_postal
+
+  ON ref.postal_code_to_super_metro(release_id, postal_code);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_pc_map_release_super
+
+  ON ref.postal_code_to_super_metro(release_id, super_metro_v4);
+
+
+
+-- City fallback (release_id-scoped)
+
+CREATE TABLE IF NOT EXISTS ref.city_to_super_metro (
+
+  release_id          bigint NOT NULL REFERENCES ref.geo_mapping_release(release_id),
+
+  location_city_norm  text   NOT NULL,
+
+  region              text   NOT NULL,
+
+  pickup_metro_30_200  text,
+
+  super_metro_v4       text   NOT NULL,
+
+  source               text,
+
+  PRIMARY KEY (release_id, location_city_norm)
+
+);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_city_map_release_city
+
+  ON ref.city_to_super_metro(release_id, location_city_norm);
+
+
+
+
+
+-- 02_create_current_views.sql
+
+-- Views that expose only the mapping rows for the current release.
+
+
+
+CREATE OR REPLACE VIEW ref.geo_mapping_current AS
+
+SELECT release_id
+
+FROM ref.geo_mapping_release
+
+WHERE is_current
+
+ORDER BY release_id DESC
+
+LIMIT 1;
+
+
+
+CREATE OR REPLACE VIEW ref.postal_code_to_super_metro_current AS
+
+SELECT m.*
+
+FROM ref.postal_code_to_super_metro m
+
+JOIN ref.geo_mapping_current c ON c.release_id = m.release_id;
+
+
+
+CREATE OR REPLACE VIEW ref.city_to_super_metro_current AS
+
+SELECT m.*
+
+FROM ref.city_to_super_metro m
+
+JOIN ref.geo_mapping_current c ON c.release_id = m.release_id;
+
+
+
+
+
+-- 03_create_normalization_functions.sql
+
+-- Canonical normalization helpers for join keys.
+
+
+
+CREATE OR REPLACE FUNCTION ref.norm_city(x text)
+
+RETURNS text
+
+LANGUAGE sql
+
+IMMUTABLE
+
+AS $$
+
+  SELECT NULLIF(lower(regexp_replace(btrim(x), '\s+', ' ', 'g')), '');
+
+$$;
+
+
+
+CREATE OR REPLACE FUNCTION ref.norm_postal_code(x text)
+
+RETURNS text
+
+LANGUAGE sql
+
+IMMUTABLE
+
+AS $$
+
+  WITH cleaned AS (
+
+    SELECT regexp_replace(btrim(coalesce(x,'')), '\D', '', 'g') AS pc
+
+  )
+
+  SELECT CASE WHEN pc ~ '^[0-9]{4}$' THEN pc ELSE NULL END
+
+  FROM cleaned;
+
+$$;
+
+
+
+
+
+-- 04_create_geo_enriched_listings_view.sql
+
+-- View that adds region/metro/super_metro columns to raw listings using the current release.
+
+
+
+CREATE OR REPLACE VIEW ml.listings_geo_current AS
+
+SELECT
+
+  l.*,
+
+  c.release_id AS geo_release_id,
+
+
+
+  COALESCE(pc.region, cc.region, 'unknown') AS region_geo,
+
+  COALESCE(pc.pickup_metro_30_200, cc.pickup_metro_30_200,
+
+           'other_' || lower(COALESCE(pc.region, cc.region, 'unknown'))) AS pickup_metro_30_200_geo,
+
+  COALESCE(pc.super_metro_v4, cc.super_metro_v4,
+
+           'other_' || lower(COALESCE(pc.region, cc.region, 'unknown'))) AS super_metro_v4_geo
+
+
+
+FROM marketplace.listings_raw l
+
+CROSS JOIN ref.geo_mapping_current c
+
+LEFT JOIN ref.postal_code_to_super_metro pc
+
+  ON pc.release_id = c.release_id
+
+ AND pc.postal_code = ref.norm_postal_code(l.postal_code::text)
+
+LEFT JOIN ref.city_to_super_metro cc
+
+  ON cc.release_id = c.release_id
+
+ AND cc.location_city_norm = ref.norm_city(l.location_city);
+
+
+
+
+
+-- 05_post_load_qa_checks.sql
+
+-- Post-load QA / proof queries. Run after every mapping release load.
+
+
+
+-- 1) Ensure exactly one current release
+
+SELECT COUNT(*) AS current_cnt
+
+FROM ref.geo_mapping_release
+
+WHERE is_current;
+
+
+
+-- 2) Show current release
+
+SELECT release_id, label, created_at, is_current, notes
+
+FROM ref.geo_mapping_release
+
+WHERE is_current;
+
+
+
+-- 3) Mapping row counts
+
+SELECT COUNT(*) AS pc_rows
+
+FROM ref.postal_code_to_super_metro_current;
+
+
+
+SELECT COUNT(*) AS city_rows
+
+FROM ref.city_to_super_metro_current;
+
+
+
+-- 4) Postal code integrity (must be 4 digits)
+
+SELECT COUNT(*) AS bad_postcodes
+
+FROM ref.postal_code_to_super_metro_current
+
+WHERE postal_code !~ '^[0-9]{4}$';
+
+
+
+-- 5) Listing coverage (geo view should match raw)
+
+SELECT COUNT(*) AS listings_geo
+
+FROM ml.listings_geo_current;
+
+
+
+SELECT COUNT(*) AS listings_raw
+
+FROM marketplace.listings_raw;
+
+
+
+-- 6) Unknown coverage
+
+SELECT
+
+  COUNT(*) FILTER (WHERE region_geo='unknown') AS unknown_region,
+
+  COUNT(*) FILTER (WHERE super_metro_v4_geo LIKE 'other_%' OR super_metro_v4_geo='unknown') AS other_or_unknown_super,
+
+  COUNT(*) AS total
+
+FROM ml.listings_geo_current;
+
+
+
+
+
+-- 06_switch_current_release.sql
+
+-- Switch the active mapping release (atomic flip).
+
+-- Replace :target_release_id with the release id you want to activate.
+
+
+
+BEGIN;
+
+
+
+UPDATE ref.geo_mapping_release
+
+SET is_current = false
+
+WHERE is_current = true;
+
+
+
+UPDATE ref.geo_mapping_release
+
+SET is_current = true
+
+WHERE release_id = :target_release_id;
+
+
+
+COMMIT;
+
+
+
+
+
+-- 07_optional_indexes.sql
+
+-- Optional performance indexes (non-breaking).
+
+-- Only apply after measuring query plans and considering lock impact.
+
+
+
+-- Example: accelerate joins on raw listing postal_code
+
+-- NOTE: Use CONCURRENTLY in production to reduce blocking.
+
+-- CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_listings_raw_postal_code
+
+--   ON marketplace.listings_raw (postal_code);
+
+
+
+-- Example: city normalization is expensive; consider storing a normalized city column
+
+-- in your ingestion pipeline OR use an expression index.
+
+-- CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_listings_raw_city_norm
+
+--   ON marketplace.listings_raw (ref.norm_city(location_city));
+
+
+
+-- If you create an index referencing ref.norm_city, ensure the function is IMMUTAB
+
+
+
+
+
+
+
+
+
+-- 01_create_versioned_reference_tables.sql
+
+-- Creates versioned geo mapping reference tables (no impact to raw listings).
+
+
+
+CREATE SCHEMA IF NOT EXISTS ref;
+
+CREATE SCHEMA IF NOT EXISTS ml;
+
+
+
+-- Control plane for mapping releases
+
+CREATE TABLE IF NOT EXISTS ref.geo_mapping_release (
+
+  release_id   bigserial PRIMARY KEY,
+
+  label        text NOT NULL,
+
+  created_at   timestamptz NOT NULL DEFAULT now(),
+
+  is_current   boolean NOT NULL DEFAULT false,
+
+  notes        text
+
+);
+
+
+
+-- Enforce: at most 1 current release
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_geo_mapping_release_one_current
+
+  ON ref.geo_mapping_release ((1))
+
+  WHERE is_current;
+
+
+
+-- Postal code backbone (release_id-scoped)
+
+CREATE TABLE IF NOT EXISTS ref.postal_code_to_super_metro (
+
+  release_id         bigint NOT NULL REFERENCES ref.geo_mapping_release(release_id),
+
+  postal_code        text   NOT NULL CHECK (postal_code ~ '^[0-9]{4}$'),
+
+  region             text   NOT NULL,
+
+  pickup_metro_30_200 text,
+
+  super_metro_v4      text   NOT NULL,
+
+  source              text,
+
+  PRIMARY KEY (release_id, postal_code)
+
+);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_pc_map_release_postal
+
+  ON ref.postal_code_to_super_metro(release_id, postal_code);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_pc_map_release_super
+
+  ON ref.postal_code_to_super_metro(release_id, super_metro_v4);
+
+
+
+-- City fallback (release_id-scoped)
+
+CREATE TABLE IF NOT EXISTS ref.city_to_super_metro (
+
+  release_id          bigint NOT NULL REFERENCES ref.geo_mapping_release(release_id),
+
+  location_city_norm  text   NOT NULL,
+
+  region              text   NOT NULL,
+
+  pickup_metro_30_200  text,
+
+  super_metro_v4       text   NOT NULL,
+
+  source               text,
+
+  PRIMARY KEY (release_id, location_city_norm)
+
+);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_city_map_release_city
+
+  ON ref.city_to_super_metro(release_id, location_city_norm);
+
+-- 02_create_current_views.sql
+
+-- Views that expose only the mapping rows for the current release.
+
+
+
+CREATE OR REPLACE VIEW ref.geo_mapping_current AS
+
+SELECT release_id
+
+FROM ref.geo_mapping_release
+
+WHERE is_current
+
+ORDER BY release_id DESC
+
+LIMIT 1;
+
+
+
+CREATE OR REPLACE VIEW ref.postal_code_to_super_metro_current AS
+
+SELECT m.*
+
+FROM ref.postal_code_to_super_metro m
+
+JOIN ref.geo_mapping_current c ON c.release_id = m.release_id;
+
+
+
+CREATE OR REPLACE VIEW ref.city_to_super_metro_current AS
+
+SELECT m.*
+
+FROM ref.city_to_super_metro m
+
+JOIN ref.geo_mapping_current c ON c.release_id = m.release_id;
+
+
+
+
+
+-- 03_create_normalization_functions.sql
+
+-- Canonical normalization helpers for join keys.
+
+
+
+CREATE OR REPLACE FUNCTION ref.norm_city(x text)
+
+RETURNS text
+
+LANGUAGE sql
+
+IMMUTABLE
+
+AS $$
+
+  SELECT NULLIF(lower(regexp_replace(btrim(x), '\s+', ' ', 'g')), '');
+
+$$;
+
+
+
+CREATE OR REPLACE FUNCTION ref.norm_postal_code(x text)
+
+RETURNS text
+
+LANGUAGE sql
+
+IMMUTABLE
+
+AS $$
+
+  WITH cleaned AS (
+
+    SELECT regexp_replace(btrim(coalesce(x,'')), '\D', '', 'g') AS pc
+
+  )
+
+  SELECT CASE WHEN pc ~ '^[0-9]{4}$' THEN pc ELSE NULL END
+
+  FROM cleaned;
+
+$$;
+
+
+
+
+
+-- 04_create_geo_enriched_listings_view.sql
+
+-- View that adds region/metro/super_metro columns to raw listings using the current release.
+
+
+
+CREATE OR REPLACE VIEW ml.listings_geo_current AS
+
+SELECT
+
+  l.*,
+
+  c.release_id AS geo_release_id,
+
+
+
+  COALESCE(pc.region, cc.region, 'unknown') AS region_geo,
+
+  COALESCE(pc.pickup_metro_30_200, cc.pickup_metro_30_200,
+
+           'other_' || lower(COALESCE(pc.region, cc.region, 'unknown'))) AS pickup_metro_30_200_geo,
+
+  COALESCE(pc.super_metro_v4, cc.super_metro_v4,
+
+           'other_' || lower(COALESCE(pc.region, cc.region, 'unknown'))) AS super_metro_v4_geo
+
+
+
+FROM marketplace.listings_raw l
+
+CROSS JOIN ref.geo_mapping_current c
+
+LEFT JOIN ref.postal_code_to_super_metro pc
+
+  ON pc.release_id = c.release_id
+
+ AND pc.postal_code = ref.norm_postal_code(l.postal_code::text)
+
+LEFT JOIN ref.city_to_super_metro cc
+
+  ON cc.release_id = c.release_id
+
+ AND cc.location_city_norm = ref.norm_city(l.location_city);
+
+
+
+
+
+
+
+-- 05_post_load_qa_checks.sql
+
+-- Post-load QA / proof queries. Run after every mapping release load.
+
+
+
+-- 1) Ensure exactly one current release
+
+SELECT COUNT(*) AS current_cnt
+
+FROM ref.geo_mapping_release
+
+WHERE is_current;
+
+
+
+-- 2) Show current release
+
+SELECT release_id, label, created_at, is_current, notes
+
+FROM ref.geo_mapping_release
+
+WHERE is_current;
+
+
+
+-- 3) Mapping row counts
+
+SELECT COUNT(*) AS pc_rows
+
+FROM ref.postal_code_to_super_metro_current;
+
+
+
+SELECT COUNT(*) AS city_rows
+
+FROM ref.city_to_super_metro_current;
+
+
+
+-- 4) Postal code integrity (must be 4 digits)
+
+SELECT COUNT(*) AS bad_postcodes
+
+FROM ref.postal_code_to_super_metro_current
+
+WHERE postal_code !~ '^[0-9]{4}$';
+
+
+
+-- 5) Listing coverage (geo view should match raw)
+
+SELECT COUNT(*) AS listings_geo
+
+FROM ml.listings_geo_current;
+
+
+
+SELECT COUNT(*) AS listings_raw
+
+FROM marketplace.listings_raw;
+
+
+
+-- 6) Unknown coverage
+
+SELECT
+
+  COUNT(*) FILTER (WHERE region_geo='unknown') AS unknown_region,
+
+  COUNT(*) FILTER (WHERE super_metro_v4_geo LIKE 'other_%' OR super_metro_v4_geo='unknown') AS other_or_unknown_super,
+
+  COUNT(*) AS total
+
+FROM ml.listings_geo_current;
+
+
+
+
+
+-- 06_switch_current_release.sql
+
+-- Switch the active mapping release (atomic flip).
+
+-- Replace :target_release_id with the release id you want to activate.
+
+
+
+BEGIN;
+
+
+
+UPDATE ref.geo_mapping_release
+
+SET is_current = false
+
+WHERE is_current = true;
+
+
+
+UPDATE ref.geo_mapping_release
+
+SET is_current = true
+
+WHERE release_id = :target_release_id;
+
+
+
+COMMIT;
+
+
+
+-- 07_optional_indexes.sql
+
+-- Optional performance indexes (non-breaking).
+
+-- Only apply after measuring query plans and considering lock impact.
+
+
+
+
+
+
+
+python     
+
+
+
+
+
+
+
+
+
+
+
+#!/usr/bin/env python3
+
+"""Load a versioned geo mapping release into Postgres.
+
+
+
+This script is designed for your Phase-1 schema:
+
+  - ref.geo_mapping_release
+
+  - ref.postal_code_to_super_metro
+
+  - ref.city_to_super_metro
+
+  - ref.*_current views which select the row where geo_mapping_release.is_current = true
+
+
+
+It creates a new release row, bulk loads the two CSV files into TEMP staging tables
+
+using COPY ... FROM STDIN (fast, works even when Postgres runs in Docker),
+
+then inserts into the versioned tables with the new release_id.
+
+
+
+Safety properties:
+
+  - Does NOT touch your raw listing tables.
+
+  - Does NOT truncate mapping tables; it APPENDS a new release.
+
+  - Rollback is possible by flipping is_current on ref.geo_mapping_release.
+
+
+
+Usage (PowerShell example):
+
+  $env:PG_DSN = "<REDACTED_PG_DSN>"
+
+  python .\load_geo_mapping_release.py \
+
+    --label super_metro_v4_2025_12_28 \
+
+    --postal_csv .\postal_code_to_super_metro_v4.csv \
+
+    --city_csv .\city_postal_codes_with_region_super_metro_v4.csv \
+
+    --notes "super_metro v4 from research" \
+
+    --make_current
+
+
+
+"""
+
+
+
+from __future__ import annotations
+
+
+
+import argparse
+
+import os
+
+import sys
+
+from dataclasses import dataclass
+
+from pathlib import Path
+
+
+
+from sqlalchemy import create_engine, text
+
+
+
+
+
+@dataclass
+
+class LoadStats:
+
+    release_id: int
+
+    postal_rows: int
+
+    city_rows: int
+
+
+
+
+
+def _require_file(path_str: str) -> Path:
+
+    p = Path(path_str)
+
+    if not p.exists() or not p.is_file():
+
+        raise FileNotFoundError(f"File not found: {p}")
+
+    return p
+
+
+
+
+
+def _get_dsn(cli_val: str | None) -> str:
+
+    dsn = cli_val or os.environ.get("PG_DSN")
+
+    if not dsn:
+
+        raise SystemExit(
+
+            "Missing PG DSN. Provide --pg_dsn or set env var PG_DSN."
+
+        )
+
+    return dsn
+
+
+
+
+
+def load_release(
+
+    *,
+
+    pg_dsn: str,
+
+    label: str,
+
+    postal_csv: Path,
+
+    city_csv: Path,
+
+    notes: str | None,
+
+    source: str | None,
+
+    make_current: bool,
+
+    dry_run: bool,
+
+) -> LoadStats:
+
+    engine = create_engine(pg_dsn)
+
+
+
+    # raw_connection() gives us a DBAPI connection (psycopg2 under the hood)
+
+    # so we can use cursor.copy_expert("COPY ... FROM STDIN") efficiently.
+
+    conn = engine.raw_connection()
+
+    try:
+
+        cur = conn.cursor()
+
+        try:
+
+            cur.execute("BEGIN;")
+
+
+
+            # 1) Create release row and capture release_id
+
+            cur.execute(
+
+                """
+
+                INSERT INTO ref.geo_mapping_release(label, notes, is_current)
+
+                VALUES (%s, %s, false)
+
+                RETURNING release_id;
+
+                """,
+
+                (label, notes),
+
+            )
+
+            release_id = int(cur.fetchone()[0])
+
+
+
+            # 2) Create TEMP staging tables that match the CSV headers.
+
+            #    (All columns as TEXT => no accidental numeric coercion; preserves leading zeros.)
+
+            cur.execute(
+
+                """
+
+                CREATE TEMP TABLE tmp_postal_map (
+
+                  postal_code text,
+
+                  region text,
+
+                  fylke text,
+
+                  kommune text,
+
+                  kommune_code text,
+
+                  centrality_class text,
+
+                  pop text,
+
+                  lat text,
+
+                  lon text,
+
+                  super_metro_v4 text
+
+                ) ON COMMIT DROP;
+
+                """
+
+            )
+
+            cur.execute(
+
+                """
+
+                CREATE TEMP TABLE tmp_city_map (
+
+                  location_city text,
+
+                  region text,
+
+                  pickup_metro_30_200 text,
+
+                  oslo_subarea text,
+
+                  postal_codes text,
+
+                  super_metro_v4 text
+
+                ) ON COMMIT DROP;
+
+                """
+
+            )
+
+
+
+            # 3) Bulk COPY the CSV files into temp tables (client -> server via STDIN)
+
+            with postal_csv.open("r", encoding="utf-8") as f:
+
+                cur.copy_expert(
+
+                    "COPY tmp_postal_map FROM STDIN WITH (FORMAT csv, HEADER true);",
+
+                    f,
+
+                )
+
+            with city_csv.open("r", encoding="utf-8") as f:
+
+                cur.copy_expert(
+
+                    "COPY tmp_city_map FROM STDIN WITH (FORMAT csv, HEADER true);",
+
+                    f,
+
+                )
+
+
+
+            # 4) QA checks BEFORE inserting into the real tables
+
+            #    4a) Postal codes must be exactly 4 digits
+
+            cur.execute(
+
+                """
+
+                SELECT COUNT(*)
+
+                FROM tmp_postal_map
+
+                WHERE postal_code IS NULL OR postal_code !~ '^[0-9]{4}$';
+
+                """
+
+            )
+
+            bad_pc = int(cur.fetchone()[0])
+
+            if bad_pc != 0:
+
+                raise ValueError(
+
+                    f"Postal CSV contains {bad_pc} invalid postal_code values (must be exactly 4 digits)."
+
+                )
+
+
+
+            #    4b) Required fields present
+
+            cur.execute(
+
+                """
+
+                SELECT COUNT(*)
+
+                FROM tmp_postal_map
+
+                WHERE region IS NULL OR btrim(region) = '' OR super_metro_v4 IS NULL OR btrim(super_metro_v4) = '';
+
+                """
+
+            )
+
+            bad_req_postal = int(cur.fetchone()[0])
+
+            if bad_req_postal != 0:
+
+                raise ValueError(
+
+                    f"Postal CSV contains {bad_req_postal} rows with missing region/super_metro_v4."
+
+                )
+
+
+
+            cur.execute(
+
+                """
+
+                SELECT COUNT(*)
+
+                FROM tmp_city_map
+
+                WHERE location_city IS NULL OR btrim(location_city) = ''
+
+                   OR region IS NULL OR btrim(region) = ''
+
+                   OR super_metro_v4 IS NULL OR btrim(super_metro_v4) = '';
+
+                """
+
+            )
+
+            bad_req_city = int(cur.fetchone()[0])
+
+            if bad_req_city != 0:
+
+                raise ValueError(
+
+                    f"City CSV contains {bad_req_city} rows with missing location_city/region/super_metro_v4."
+
+                )
+
+
+
+            #    4c) Duplicates inside the CSVs
+
+            cur.execute(
+
+                """
+
+                SELECT COUNT(*)
+
+                FROM (
+
+                  SELECT postal_code FROM tmp_postal_map GROUP BY 1 HAVING COUNT(*) > 1
+
+                ) d;
+
+                """
+
+            )
+
+            dup_pc = int(cur.fetchone()[0])
+
+            if dup_pc != 0:
+
+                raise ValueError(
+
+                    f"Postal CSV contains {dup_pc} duplicated postal_code values. Deduplicate before loading."
+
+                )
+
+
+
+            cur.execute(
+
+                """
+
+                SELECT COUNT(*)
+
+                FROM (
+
+                  SELECT lower(regexp_replace(btrim(location_city), '\\s+', ' ', 'g')) AS k
+
+                  FROM tmp_city_map
+
+                  GROUP BY 1 HAVING COUNT(*) > 1
+
+                ) d;
+
+                """
+
+            )
+
+            dup_city = int(cur.fetchone()[0])
+
+            if dup_city != 0:
+
+                raise ValueError(
+
+                    f"City CSV contains {dup_city} duplicated city keys after normalization. Deduplicate before loading."
+
+                )
+
+
+
+            # 5) Insert into versioned mapping tables
+
+            #    We normalize the city key here (lower + trim + collapse whitespace).
+
+            #    We also store the CSV basename in source unless overridden.
+
+            postal_source = source or postal_csv.name
+
+            city_source = source or city_csv.name
+
+
+
+            cur.execute(
+
+                """
+
+                INSERT INTO ref.postal_code_to_super_metro(
+
+                  release_id, postal_code, region, pickup_metro_30_200, super_metro_v4, source
+
+                )
+
+                SELECT
+
+                  %s AS release_id,
+
+                  postal_code,
+
+                  region,
+
+                  NULL::text AS pickup_metro_30_200,
+
+                  super_metro_v4,
+
+                  %s AS source
+
+                FROM tmp_postal_map;
+
+                """,
+
+                (release_id, postal_source),
+
+            )
+
+
+
+            cur.execute(
+
+                """
+
+                INSERT INTO ref.city_to_super_metro(
+
+                  release_id, location_city_norm, region, pickup_metro_30_200, super_metro_v4, source
+
+                )
+
+                SELECT
+
+                  %s AS release_id,
+
+                  lower(regexp_replace(btrim(location_city), '\\s+', ' ', 'g')) AS location_city_norm,
+
+                  region,
+
+                  pickup_metro_30_200,
+
+                  super_metro_v4,
+
+                  %s AS source
+
+                FROM tmp_city_map;
+
+                """,
+
+                (release_id, city_source),
+
+            )
+
+
+
+            # 6) Make this release current (optional)
+
+            if make_current:
+
+                # set old -> false first (so the unique index isn't violated)
+
+                cur.execute("UPDATE ref.geo_mapping_release SET is_current = false WHERE is_current = true;")
+
+                cur.execute(
+
+                    "UPDATE ref.geo_mapping_release SET is_current = true WHERE release_id = %s;",
+
+                    (release_id,),
+
+                )
+
+
+
+            # 7) Count rows inserted (for logging)
+
+            cur.execute(
+
+                "SELECT COUNT(*) FROM ref.postal_code_to_super_metro WHERE release_id = %s;",
+
+                (release_id,),
+
+            )
+
+            postal_rows = int(cur.fetchone()[0])
+
+
+
+            cur.execute(
+
+                "SELECT COUNT(*) FROM ref.city_to_super_metro WHERE release_id = %s;",
+
+                (release_id,),
+
+            )
+
+            city_rows = int(cur.fetchone()[0])
+
+
+
+            if dry_run:
+
+                cur.execute("ROLLBACK;")
+
+            else:
+
+                cur.execute("COMMIT;")
+
+
+
+            return LoadStats(release_id=release_id, postal_rows=postal_rows, city_rows=city_rows)
+
+
+
+        finally:
+
+            cur.close()
+
+    finally:
+
+        conn.close()
+
+        engine.dispose()
+
+
+
+
+
+def main() -> int:
+
+    ap = argparse.ArgumentParser()
+
+    ap.add_argument("--pg_dsn", default=None, help="SQLAlchemy DSN. Or set env PG_DSN.")
+
+    ap.add_argument("--label", required=True, help="Release label (e.g., super_metro_v4_2025_12_28)")
+
+    ap.add_argument("--notes", default=None, help="Optional release notes")
+
+    ap.add_argument("--source", default=None, help="Optional source string stored in mapping tables")
+
+    ap.add_argument("--postal_csv", required=True, help="Path to postal_code_to_super_metro_v4.csv")
+
+    ap.add_argument("--city_csv", required=True, help="Path to city_postal_codes_with_region_super_metro_v4.csv")
+
+    ap.add_argument("--make_current", action="store_true", help="Mark this release as current")
+
+    ap.add_argument("--dry_run", action="store_true", help="Validate + load in a transaction, then ROLLBACK")
+
+
+
+    args = ap.parse_args()
+
+
+
+    pg_dsn = _get_dsn(args.pg_dsn)
+
+    postal_csv = _require_file(args.postal_csv)
+
+    city_csv = _require_file(args.city_csv)
+
+
+
+    stats = load_release(
+
+        pg_dsn=pg_dsn,
+
+        label=args.label,
+
+        postal_csv=postal_csv,
+
+        city_csv=city_csv,
+
+        notes=args.notes,
+
+        source=args.source,
+
+        make_current=args.make_current,
+
+        dry_run=args.dry_run,
+
+    )
+
+
+
+    print("OK")
+
+    print(f"  release_id: {stats.release_id}")
+
+    print(f"  postal rows inserted: {stats.postal_rows}")
+
+    print(f"  city rows inserted:   {stats.city_rows}")
+
+    print(f"  current? {'yes' if args.make_current and not args.dry_run else 'no (dry_run or not requested)'}")
+
+
+
+    return 0
+
+
+
+
+
+if __name__ == "__main__":
+
+    raise SystemExit(main())
+
+
+
+-- Example: accelerate joins on raw listing postal_code
+
+-- NOTE: Use CONCURRENTLY in production to reduce blocking.
+
+-- CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_listings_raw_postal_code
+
+--   ON marketplace.listings_raw (postal_code);
+
+
+
+-- Example: city normalization is expensive; consider storing a normalized city column
+
+-- in your ingestion pipeline OR use an expression index.
+
+-- CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_listings_raw_city_norm
+
+--   ON marketplace.listings_raw (ref.norm_city(location_city));
+
+
+
+-- If you create an index referencing ref.norm_city, ensure the function is IMMUTABLE (it is).
+
+
+
+# Python loader
+
+
+
+File: `load_geo_mapping_release.py`
+
+
+
+This is the loader script used to import new geo mapping releases from CSV into the versioned reference tables.
+
+
+
+Key properties:
+
+- transaction-safe (single DB transaction)
+
+- validates postal codes are 4 digits
+
+- checks duplicates before inserting
+
+- inserts a new release_id and loads both mapping tables under that release_id
+
+- optional `--set_current` pointer flip
+
+
+
+See `03_loading_mapping_releases.md` for CLI usage examples.
+
+
+
+
+
+
+
+# Example proof session (sanitized)
+
+
+
+
+
+# Example: end-to-end mapping setup (psql)
+
+
+
+This is a copy/paste checklist.
+
+
+
+## 1) Connect to Postgres inside Docker
+
+
+
+```powershell
+
+docker exec -it postgres psql -U postgres -d scrapes
+
+```
+
+
+
+## 2) Apply SQL scripts
+
+
+
+Inside psql:
+
+
+
+```sql
+
+\i sql/01_create_versioned_reference_tables.sql
+
+\i sql/02_create_current_views.sql
+
+\i sql/03_create_normalization_functions.sql
+
+\i sql/04_create_geo_enriched_listings_view.sql
+
+```
+
+
+
+## 3) Load a mapping release from Windows host (Python)
+
+
+
+In PowerShell (outside the container):
+
+
+
+```powershell
+
+$env:PG_DSN = "<REDACTED_PG_DSN>"
+
+
+
+python .\load_geo_mapping_release.py `
+
+  --label "super_metro_v4" `
+
+  --notes "initial v4 mapping" `
+
+  --postal_csv ".\postal_code_to_super_metro_v4.csv" `
+
+  --city_csv ".\city_postal_codes_with_region_super_metro_v4.csv" `
+
+  --set_current
+
+```
+
+
+
+## 4) Validate in psql
+
+
+
+```sql
+
+\i sql/05_post_load_qa_checks.sql
+
+```
+
+
+
+## 5) Spot check
+
+
+
+```sql
+
+SELECT listing_id, postal_code, location_city, super_metro_v4_geo
+
+FROM ml.listings_geo_current
+
+ORDER BY listing_id DESC
+
+LIMIT 25;
+
+```
+
+
+
+This shows what “done and working” looks like.
+
+
+
+## Current release exists
+
+
+
+```sql
+
+SELECT COUNT(*) AS current_cnt
+
+FROM ref.geo_mapping_release
+
+WHERE is_current;
+
+```
+
+
+
+Expected:
+
+
+
+```
+
+ current_cnt
+
+-------------
+
+ 1
+
+```
+
+
+
+## Mapping row counts
+
+
+
+```sql
+
+SELECT COUNT(*) AS pc_rows
+
+FROM ref.postal_code_to_super_metro_current;
+
+
+
+SELECT COUNT(*) AS city_rows
+
+FROM ref.city_to_super_metro_current;
+
+```
+
+
+
+Example output (your numbers may differ based on CSV version):
+
+
+
+```
+
+ pc_rows
+
+--------
+
+ 5798
+
+
+
+ city_rows
+
+---------
+
+ 1103
+
+```
+
+
+
+## Geo-enriched listings view matches raw listings
+
+
+
+```sql
+
+SELECT COUNT(*) AS listings_geo FROM ml.listings_geo_current;
+
+SELECT COUNT(*) AS listings_raw FROM marketplace.listings_raw;
+
+```
+
+
+
+Expected: identical counts.
+
+
+
+## Spot-check recent listings
+
+
+
+```sql
+
+SELECT
+
+  listing_id, postal_code, location_city,
+
+  geo_release_id, region_geo, pickup_metro_30_200_geo, super_metro_v4_geo
+
+FROM ml.listings_geo_current
+
+ORDER BY listing_id DESC
+
+LIMIT 10;
+
+```
+
+
+
+Example output:
+
+
+
+- Oslo postcodes map to `sm4_ost_oslo`
+
+- Bergen postcodes map to `sm4_vest_bergen`
+
+- Trondheim postcodes map to `sm4_tr_trondheim`
+
+- etc.
