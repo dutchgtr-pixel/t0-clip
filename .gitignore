@@ -1,0 +1,5 @@
+﻿.env
+data/
+.cache/
+**/*.log
+airflow-logs/

@@ -1,0 +1,805 @@
+###############################################################################
+# docker-compose.dev.public.yml — SANITIZED TEMPLATE FOR PUBLIC RELEASE
+#
+# Notes
+# - No hard-coded credentials or platform identifiers are included.
+# - Supply runtime configuration via environment variables (see .env.example).
+# - Any marketplace-specific connector logic should be implemented behind an
+#   adapter interface in code (e.g., adapters/marketplace_adapter.py).
+###############################################################################
+
+networks:
+  default:
+    driver: bridge
+  browser_network:
+    driver: bridge
+x-airflow-env:
+  __CORE__LOAD_EXAMPLES: 'false'
+  AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+  AIRFLOW__CORE__STORE_SERIALIZED_DAGS: 'False'
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_DSN}
+  AIRFLOW__CELERY__RESULT_BACKEND: ${AIRFLOW_RESULT_BACKEND}
+  AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+  AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY}
+  AIRFLOW__WEBSERVER__SESSION_BACKEND: securecookie
+  AIRFLOW__WEBSERVER__SESSION_LIFETIME: '604800'
+  AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+  AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+  AIRFLOW__METRICS__STATSD_ON: 'True'
+  AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+  AIRFLOW__METRICS__STATSD_PORT: '9125'
+  AIRFLOW__METRICS__STATSD_PREFIX: airflow
+  PYTHONUNBUFFERED: '1'
+  REDIS_HOST: redis
+x-airflow-build:
+  context: ./docker/airflow
+  dockerfile: Dockerfile.airflow
+x-docker-sock: /var/run/docker.sock:/var/run/docker.sock
+services:
+  postgres:
+    build:
+      context: ./docker/postgres
+    image: scrapes-postgres:15-partman
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+    - 5434:5432
+    command:
+    - postgres
+    - -c
+    - shared_preload_libraries=pg_stat_statements,pg_cron
+    - -c
+    - cron.database_name=scrapes
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-scrapes}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+    - pgdata:/var/lib/postgresql/data
+    - ${HOST_BACKUP_DIR:-./data/backups}:/backups
+    - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U postgres -d $${POSTGRES_DB}
+      interval: 10s
+      retries: 6
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+    - 16379:6379
+    volumes:
+    - redisdata:/data
+  airflow-init:
+    build:
+      context: ./docker/airflow
+      dockerfile: Dockerfile.airflow
+    image: airflow-local:2.8.1-statsd
+    environment:
+      __CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: 'False'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_DSN}
+      AIRFLOW__CELERY__RESULT_BACKEND: ${AIRFLOW_RESULT_BACKEND}
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY}
+      AIRFLOW__WEBSERVER__SESSION_BACKEND: securecookie
+      AIRFLOW__WEBSERVER__SESSION_LIFETIME: '604800'
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      AIRFLOW__METRICS__STATSD_ON: 'True'
+      AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+      AIRFLOW__METRICS__STATSD_PORT: '9125'
+      AIRFLOW__METRICS__STATSD_PREFIX: airflow
+      PYTHONUNBUFFERED: '1'
+      REDIS_HOST: redis
+      _AIRFLOW_DB_UPGRADE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+      _AIRFLOW_WWW_USER_FIRSTNAME: Admin
+      _AIRFLOW_WWW_USER_LASTNAME: User
+      _AIRFLOW_WWW_USER_EMAIL: admin@example.com
+    volumes:
+    - ./etl/dags:/opt/airflow/dags:ro
+    - airflow-logs:/opt/airflow/logs
+  airflow-web:
+    image: airflow-local:2.8.1-statsd
+    depends_on:
+      airflow-init:
+        condition: service_started
+      pgbouncer:
+        condition: service_healthy
+    restart: unless-stopped
+    entrypoint: "bash -c \"\n  rm -f /opt/airflow/airflow-webserver.pid;\n  until\
+      \ pg_isready -h pgbouncer -p 6432 -U airflow -d airflow; do\n    sleep 2\n \
+      \ done;\n  exec airflow webserver --port 8080\n\"\n"
+    environment:
+      __CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: 'False'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_DSN}
+      AIRFLOW__CELERY__RESULT_BACKEND: ${AIRFLOW_RESULT_BACKEND}
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY}
+      AIRFLOW__WEBSERVER__SESSION_BACKEND: securecookie
+      AIRFLOW__WEBSERVER__SESSION_LIFETIME: '28800'
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      AIRFLOW__METRICS__STATSD_ON: 'True'
+      AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+      AIRFLOW__METRICS__STATSD_PORT: '9125'
+      AIRFLOW__METRICS__STATSD_PREFIX: airflow
+      PYTHONUNBUFFERED: '1'
+      REDIS_HOST: redis
+    ports:
+    - 8888:8080
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - curl -fs http://localhost:8080/health || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 20
+    volumes:
+    - ./webserver_config.py:/opt/airflow/webserver_config.py:ro
+    - ./override/flask_appbuilder/templates/appbuilder/general/login.html:/usr/local/lib/python3.9/site-packages/flask_appbuilder/templates/appbuilder/general/login.html:ro
+    - ./etl/dags:/opt/airflow/dags
+    - ./data_download:/opt/airflow/dags/dumps
+    - ./scripts:/opt/airflow/scripts:ro
+    - airflow-logs:/opt/airflow/logs
+    - /var/run/docker.sock:/var/run/docker.sock
+  airflow-scheduler:
+    image: airflow-local:2.8.1-statsd
+    depends_on:
+      airflow-init:
+        condition: service_started
+      pgbouncer:
+        condition: service_healthy
+    restart: unless-stopped
+    command:
+    - airflow
+    - scheduler
+    environment:
+      __CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: 'False'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_DSN}
+      AIRFLOW__CELERY__RESULT_BACKEND: ${AIRFLOW_RESULT_BACKEND}
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY}
+      AIRFLOW__WEBSERVER__SESSION_BACKEND: securecookie
+      AIRFLOW__WEBSERVER__SESSION_LIFETIME: '604800'
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      AIRFLOW__METRICS__STATSD_ON: 'True'
+      AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+      AIRFLOW__METRICS__STATSD_PORT: '9125'
+      AIRFLOW__METRICS__STATSD_PREFIX: airflow
+      PYTHONUNBUFFERED: '1'
+      REDIS_HOST: redis
+    volumes:
+    - ./etl/dags:/opt/airflow/dags
+    - ./data_download:/opt/airflow/dags/dumps
+    - ./scripts:/opt/airflow/scripts:ro
+    - airflow-logs:/opt/airflow/logs
+    - /var/run/docker.sock:/var/run/docker.sock
+  airflow-worker:
+    image: airflow-local:2.8.1-statsd
+    depends_on:
+      airflow-init:
+        condition: service_started
+      pgbouncer:
+        condition: service_healthy
+    restart: unless-stopped
+    command:
+    - airflow
+    - celery
+    - worker
+    environment:
+      __CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: 'False'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_DSN}
+      AIRFLOW__CELERY__RESULT_BACKEND: ${AIRFLOW_RESULT_BACKEND}
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY}
+      AIRFLOW__WEBSERVER__SESSION_BACKEND: securecookie
+      AIRFLOW__WEBSERVER__SESSION_LIFETIME: '604800'
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      AIRFLOW__METRICS__STATSD_ON: 'True'
+      AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+      AIRFLOW__METRICS__STATSD_PORT: '9125'
+      AIRFLOW__METRICS__STATSD_PREFIX: airflow
+      PYTHONUNBUFFERED: '1'
+      REDIS_HOST: redis
+    volumes:
+    - ./etl/dags:/opt/airflow/dags
+    - ./data_download:/opt/airflow/dags/dumps
+    - ./scripts:/opt/airflow/scripts:ro
+    - airflow-logs:/opt/airflow/logs
+    - /var/run/docker.sock:/var/run/docker.sock
+  airflow-triggerer:
+    image: airflow-local:2.8.1-statsd
+    depends_on:
+      airflow-init:
+        condition: service_started
+      pgbouncer:
+        condition: service_healthy
+    restart: unless-stopped
+    command:
+    - airflow
+    - triggerer
+    environment:
+      __CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: 'False'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_DSN}
+      AIRFLOW__CELERY__RESULT_BACKEND: ${AIRFLOW_RESULT_BACKEND}
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY}
+      AIRFLOW__WEBSERVER__SESSION_BACKEND: securecookie
+      AIRFLOW__WEBSERVER__SESSION_LIFETIME: '604800'
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      AIRFLOW__METRICS__STATSD_ON: 'True'
+      AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+      AIRFLOW__METRICS__STATSD_PORT: '9125'
+      AIRFLOW__METRICS__STATSD_PREFIX: airflow
+      PYTHONUNBUFFERED: '1'
+      REDIS_HOST: redis
+    volumes:
+    - ./etl/dags:/opt/airflow/dags
+    - ./data_download:/opt/airflow/dags/dumps
+    - ./scripts:/opt/airflow/scripts:ro
+    - airflow-logs:/opt/airflow/logs
+    - /var/run/docker.sock:/var/run/docker.sock
+  statsd-exporter:
+    image: prom/statsd-exporter:latest
+    restart: unless-stopped
+    ports:
+    - 9125:9125/udp
+    - 9102:9102
+    command:
+    - --statsd.listen-udp=:9125
+    - --web.listen-address=:9102
+    networks:
+    - default
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+    - 9095:9090
+    volumes:
+    - ./monitoring:/etc/prometheus:ro
+    - prom_data:/prometheus
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --web.enable-lifecycle
+    networks:
+    - default
+  pushgateway:
+    image: prom/pushgateway:latest
+    restart: unless-stopped
+    ports:
+    - 9093:9091
+    networks:
+    - default
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+    - 3002:3000
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+    - grafana-data:/var/lib/grafana
+    - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+    - default
+  postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_URI: ${POSTGRES_EXPORTER_DSN}
+    ports:
+    - 9189:9187
+    networks:
+    - default
+  raw-backlog-cron:
+    image: alpine:3.19
+    depends_on:
+    - postgres
+    - pushgateway
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    entrypoint:
+    - /bin/sh
+    - -lc
+    - "apk add --no-cache postgresql-client curl >/dev/null;\nwhile true; do\n  cnt=$$(psql\
+      \ -qtAX -h postgres -U postgres -d scrapes \\\n            -c \"SELECT COUNT(*)\
+      \ FROM raw.listings WHERE processed_at IS NULL;\")\n  echo \"raw_listings_processed_at_null_count\
+      \ $$cnt\" \\\n    | curl -sS --fail --data-binary @- http://pushgateway:9091/metrics/job/raw_backlog;\n\
+      \  sleep 60;\ndone\n"
+    command: []
+  volume-stats-cron:
+    image: alpine:3.19
+    restart: unless-stopped
+    depends_on:
+    - pushgateway
+    volumes:
+    - ${HOST_BACKUP_DIR:-./data/backups}:/data:ro
+    - ./scripts/volume_stats.sh:/scripts/volume_stats.sh:ro
+    entrypoint:
+    - /bin/sh
+    - -lc
+    - "apk add --no-cache curl coreutils >/dev/null;\nwhile true; do\n  sh /scripts/volume_stats.sh\
+      \ \\\n    | sed '1!b;s/^/ /' \\\n    | curl -sS --fail --data-binary @- http://pushgateway:9091/metrics/job/backup_volume;\n\
+      \  sleep 60;\ndone\n"
+    command: []
+  backup:
+    build:
+      context: ./docker/backup
+      dockerfile: Dockerfile.backup
+    image: infrastructure-backup-runner:latest
+    restart: unless-stopped
+    depends_on:
+    - postgres
+    - pushgateway
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-scrapes}
+      BACKUP_DIR: /backups
+      PUSHGATEWAY: pushgateway:9091
+      KEEP_DAYS: '14'
+    volumes:
+    - ${HOST_BACKUP_DIR:-./data/backups}:/backups
+  etl-runner:
+    build:
+      context: ./docker/etl
+      dockerfile: Dockerfile
+    image: marketplace_template-etl-runner:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    working_dir: /app
+    entrypoint:
+    - ''
+    command:
+    - tail
+    - -f
+    - /dev/null
+    volumes:
+    - ${HOST_STORAGE_STATE_PATH:-./docker/browser/storage-state.json}:/app/scripts/storage-state.json:ro
+    - ./artefacts_nb_bert_severity:/app/scripts/artefacts_nb_bert_severity:ro
+    - ./artefacts_nb_bert_damage:/app/scripts/artefacts_nb_bert_damage:ro
+    - ${HOST_HF_CACHE_DIR:-./.cache/huggingface}:/root/.cache/huggingface:ro
+    environment:
+      __CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      AIRFLOW__CORE__STORE_SERIALIZED_DAGS: 'False'
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: ${AIRFLOW_DB_DSN}
+      AIRFLOW__CELERY__RESULT_BACKEND: ${AIRFLOW_RESULT_BACKEND}
+      AIRFLOW__CELERY__BROKER_URL: redis://redis:6379/0
+      AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY}
+      AIRFLOW__WEBSERVER__SESSION_BACKEND: securecookie
+      AIRFLOW__WEBSERVER__SESSION_LIFETIME: '604800'
+      AIRFLOW__LOGGING__BASE_LOG_FOLDER: /opt/airflow/logs
+      AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
+      AIRFLOW__METRICS__STATSD_ON: 'True'
+      AIRFLOW__METRICS__STATSD_HOST: statsd-exporter
+      AIRFLOW__METRICS__STATSD_PORT: '9125'
+      AIRFLOW__METRICS__STATSD_PREFIX: airflow
+      PYTHONUNBUFFERED: '1'
+      REDIS_HOST: redis
+      DATABASE_URL: ${DATABASE_URL}
+      DSN: ${DSN}
+      TRANSFORMERS_OFFLINE: '1'
+      HF_HOME: /root/.cache/huggingface
+  scrapy-runner:
+    build:
+      context: ./docker/scraper
+      dockerfile: Dockerfile.scraper
+    depends_on:
+    - postgres
+    - redis
+    command:
+    - sleep
+    - infinity
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+  raw_fetcher:
+    build:
+      context: ./docker/raw_fetcher
+      dockerfile: Dockerfile.rawfetcher
+    depends_on:
+    - postgres
+    network_mode: service:postgres
+    working_dir: /app
+    command:
+    - sleep
+    - infinity
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      BATCH: '1000'
+      WORKERS: '32'
+      TIMEOUT: '15'
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+    profiles:
+    - job
+  url-seeder:
+    build:
+      context: ./docker/etl
+      dockerfile: Dockerfile.urlseeder
+    image: marketplace-url-seeder:latest
+    depends_on:
+    - postgres
+    - redis
+    command:
+    - python
+    - -u
+    - scripts/seed_urls.py
+    profiles:
+    - job
+    environment:
+      DSN: ${DSN}
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      REDIS_DB: '0'
+      QUEUE_KEY: seed:url_queue
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+    - ./docker/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+    - ./docker/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt:ro
+    ports:
+    - 6432:6432
+    depends_on:
+    - postgres
+    healthcheck:
+      test:
+      - CMD
+      - pg_isready
+      - -U
+      - postgres
+      - -h
+      - localhost
+      - -p
+      - '6432'
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+    - default
+    - browser_network
+  pgbouncer-exporter:
+    image: prometheuscommunity/pgbouncer-exporter:latest
+    restart: unless-stopped
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+    command:
+    - --pgBouncer.connectionString=${PGBOUNCER_EXPORTER_CONNSTRING}
+    ports:
+    - 9128:9128
+    networks:
+    - default
+  damage-severity-runner:
+    build:
+      context: ./docker/damage_severity
+      dockerfile: Dockerfile
+    image: damage-severity:latest
+    container_name: damage-severity-runner
+    profiles:
+    - job
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: 1
+            capabilities:
+            - gpu
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      PG_DSN: ${PG_DSN}
+      TARGET_TABLE: ml.v_training_data_table
+      BATCH: '256'
+      SLEEP: '30'
+      HF_HOME: /opt/cache/hf
+      TRANSFORMERS_OFFLINE: '1'
+    volumes:
+    - ./docker/damage_severity/artefacts:/app/artefacts:ro
+    - ${HOST_HF_CACHE_DIR:-./.cache/huggingface}:/opt/cache/hf:ro
+    networks:
+    - default
+  condition_storage-runner:
+    build:
+      context: ./docker/condition_storage
+      dockerfile: Dockerfile.cleaner
+    image: iphone13-condition-storage:latest
+    entrypoint:
+    - sleep
+    - infinity
+    environment:
+      PGHOST: pgbouncer
+      PGPORT: '6432'
+      PGUSER: postgres
+      PGDATABASE: scrapes
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+    - pgbouncer
+  marketplace-seed-raw-urls:
+    build:
+      context: ./docker/marketplace-table
+    image: marketplace-table:latest
+    volumes:
+    - playwright-cache:/ms-playwright
+    restart: on-failure
+    command:
+    - python
+    - scripts/seed_raw_urls_marketplace.py
+    environment:
+    - DSN=${DSN}
+    - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    - MARKETPLACE_BASE_URL=${MARKETPLACE_BASE_URL}
+    depends_on:
+    - postgres
+  marketplace-fetch-raw:
+    build:
+      context: ./docker/marketplace-table
+    image: marketplace-table:latest
+    volumes:
+    - playwright-cache:/ms-playwright
+    restart: on-failure
+    command:
+    - python
+    - scripts/marketplace_fetch_raw_listings.py
+    environment:
+    - DATABASE_URL=${DATABASE_URL}
+    - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    - MARKETPLACE_BASE_URL=${MARKETPLACE_BASE_URL}
+    depends_on:
+    - postgres
+  marketplace-parse:
+    build:
+      context: ./docker/marketplace-table
+    image: marketplace-table:latest
+    volumes:
+    - playwright-cache:/ms-playwright
+    restart: on-failure
+    command:
+    - python
+    - scripts/marketplace_database_scraper.py
+    environment:
+    - DATABASE_URL=${DATABASE_URL}
+    - MARKETPLACE_BASE_URL=${MARKETPLACE_BASE_URL}
+    depends_on:
+    - postgres
+  marketplace-seed-queue:
+    build:
+      context: ./docker/marketplace-table
+    image: marketplace-table:latest
+    volumes:
+    - playwright-cache:/ms-playwright
+    restart: on-failure
+    command:
+    - python
+    - scripts/seed_marketplace_urls.py
+    environment:
+      DSN: ${DSN}
+      REDIS_URL: redis://redis:6379/0
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+    depends_on:
+    - postgres
+    - redis
+  marketplace-reverse-spider:
+    build:
+      context: ./docker/marketplace-table
+    image: marketplace-table:latest
+    volumes:
+    - playwright-cache:/ms-playwright
+    restart: on-failure
+    command:
+    - python
+    - scripts/reverse_spider_marketplace.py
+    environment:
+    - DATABASE_URL=${DATABASE_URL}
+    - REDIS_URL=redis://redis:6379/0
+    - BATCH=400
+    - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    - MARKETPLACE_BASE_URL=${MARKETPLACE_BASE_URL}
+    depends_on:
+    - postgres
+    - redis
+  marketplace-survival:
+    build:
+      context: ./docker/marketplace-table
+    image: marketplace-table:latest
+    volumes:
+    - playwright-cache:/ms-playwright
+    restart: on-failure
+    command:
+    - python
+    - scripts/marketplace_survival.py
+    environment:
+    - DATABASE_URL=${DATABASE_URL}
+    - MARKETPLACE_BASE_URL=${MARKETPLACE_BASE_URL}
+    depends_on:
+    - postgres
+  marketplace-profile-metrics:
+    build:
+      context: ./docker/marketplace-table
+    image: marketplace-table:latest
+    volumes:
+    - playwright-cache:/ms-playwright
+    restart: on-failure
+    command:
+    - python
+    - scripts/fetch_profile_metrics.py
+    environment:
+    - DSN=${DSN}
+    - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    - MARKETPLACE_BASE_URL=${MARKETPLACE_BASE_URL}
+    depends_on:
+    - postgres
+  seller-allinone:
+    build:
+      context: .
+      dockerfile: docker/Go_scraper/Dockerfile.allinone
+    container_name: seller-allinone
+    volumes:
+    - chrome_profile_all:/profile
+    - ${HOST_STORAGE_STATE_PATH:-./docker/browser/storage-state.json}:/profile/storage-state.json:ro
+    environment:
+      PG_DSN: ${PG_DSN}
+      EMAIL: ${MARKETPLACE_LOGIN_EMAIL}
+      PASSWORD: ${MARKETPLACE_LOGIN_PASSWORD}
+      FORCE_LOGIN: 'false'
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+    ports:
+    - 9222:9222
+    restart: 'no'
+  fetchd-iphone:
+    build:
+      context: .
+      dockerfile: docker/GO_main_scraper_iphone/Dockerfile.fetchd
+    image: fetchd-iphone:latest
+    container_name: fetchd-iphone
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      PG_DSN: ${PG_DSN}
+      PG_SCHEMA: iPhone
+      PAGES: '15'
+      WORKERS: '32'
+      SEARCH_WORKERS: '8'
+      RPS: '15'
+      MIN_PRICE: '1200'
+      MAX_CONNS: '2'
+      BATCH: '200'
+      SLEEP_BETWEEN: '90'
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+    profiles:
+    - job
+    restart: 'no'
+  survival-iphone:
+    build:
+      context: .
+      dockerfile: docker/Go_survival_scraper/Dockerfile.survival
+    image: survival-iphone:latest
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      PG_DSN: ${PG_DSN}
+      PG_SCHEMA: iPhone
+      SCAN_SINCE_DAYS: '30'
+      MAX_PROBE: '5000'
+      WORKERS: '64'
+      RPS: '30'
+      SLEEP_BETWEEN: '60'
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+    restart: 'no'
+  audit-older21days-iphone:
+    build:
+      context: .
+      dockerfile: docker/older_21_days_audit/Dockerfile.audit_older21days
+    image: audit-older21days-iphone:latest
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      PG_DSN: ${PG_DSN}
+      PG_SCHEMA: iPhone
+      AUDIT_DAYS: '0'
+      AUDIT_LIMIT: '0'
+      WORKERS: '96'
+      RPS: '28'
+      MIN_RPS: '2'
+      MAX_RPS: '28'
+      STEP_UP_RPS: '1.0'
+      DOWN_MULT: '0.6'
+      RETRY_MAX: '3'
+      THROTTLE_SLEEP_MS: '3000'
+      BURST_FACTOR: '6'
+      JITTER_MS: '50'
+      REFERER_MODE: root
+      HEAD_FIRST: 'true'
+      VERBOSE: 'true'
+      SLEEP_BETWEEN: '0'
+      MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
+    profiles:
+    - job
+    restart: 'no'
+  damage-binary:
+    build:
+      context: ./docker/Damage_scorer
+      dockerfile: Dockerfile.gpu
+    image: damage-scorer:gpu
+    container_name: damage-binary
+    command: python3 /app/scripts/score_damage_binary_db.py
+    environment:
+      TABLE: '"iPhone".iphone_listings'
+      ARTS_DIR: /app/artefacts_nb_bert_damage
+    gpus: all
+    extra_hosts:
+    - host.docker.internal:host-gateway
+    volumes:
+    - ./docker/Damage_scorer/artefacts_nb_bert_damage:/app/artefacts_nb_bert_damage:ro
+    - ${HOST_HF_CACHE_DIR:-./.cache/huggingface}:/home/app/.cache/huggingface
+    - ./docker/Damage_scorer/scripts:/app/scripts:ro
+    restart: 'no'
+  damage-severity:
+    image: damage-scorer:gpu
+    container_name: damage-severity
+    depends_on:
+      damage-binary:
+        condition: service_completed_successfully
+    command: python3 /app/scripts/score_damage_severity_db.py
+    environment:
+      TABLE: '"iPhone".iphone_listings'
+      ARTS_DIR: /app/artefacts_nb_bert_severity
+    gpus: all
+    extra_hosts:
+    - host.docker.internal:host-gateway
+    volumes:
+    - ./docker/Damage_scorer/artefacts_nb_bert_severity:/app/artefacts_nb_bert_severity:ro
+    - ${HOST_HF_CACHE_DIR:-./.cache/huggingface}:/home/app/.cache/huggingface
+    - ./docker/Damage_scorer/scripts:/app/scripts:ro
+    restart: 'no'
+volumes:
+  pgdata:
+    external: true
+    name: infrastructure_pgdata
+  redisdata: null
+  prom_data: null
+  grafana-data: null
+  airflow-logs: null
+  playwright-cache: null
+  chrome_profile_all: null
+x-marketplace-build:
+  build:
+    context: ./docker/marketplace-table
+  image: marketplace-table:latest
+  volumes:
+  - playwright-cache:/ms-playwright
+  restart: on-failure
