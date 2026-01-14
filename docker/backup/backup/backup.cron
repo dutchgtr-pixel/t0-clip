@@ -1,0 +1,2 @@
+# run the backup every day at 02:00 UTC
+0 2 * * * /opt/backup/backup.sh

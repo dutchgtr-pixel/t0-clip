@@ -1,0 +1,27 @@
+﻿# docker/backup/Dockerfile.backup
+FROM postgres:15-alpine
+
+RUN apk add --no-cache curl wget \
+ && wget -qO /usr/local/bin/supercronic \
+      https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64 \
+ && chmod +x /usr/local/bin/supercronic
+
+WORKDIR /opt/backup
+COPY backup.sh .
+RUN chmod +x backup.sh
+
+COPY backup.cron /etc/cron.d/backup
+
+# ----- changed line ↓ (drop -log-level) -----
+ENTRYPOINT ["supercronic", "-debug", "/etc/cron.d/backup"]
+
+
+
+
+
+
+
+
+
+
+

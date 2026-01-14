@@ -1,0 +1,20 @@
+﻿# docker/grafana/provisioning/datasources/scrapes.yaml
+apiVersion: 1
+
+datasources:
+  - name: scrapes
+    uid:  scrapes
+    type: postgres
+
+    url:  pgbouncer:6432
+    user: postgres
+
+    secureJsonData:
+      # <<<   MUST be literal text, no ${…}  >>>
+      password: Lilleper5               # <─ put it here
+
+    jsonData:
+      database: scrapes
+      sslmode: 'disable'
+
+

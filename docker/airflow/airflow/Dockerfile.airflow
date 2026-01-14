@@ -1,0 +1,27 @@
+FROM apache/airflow:2.8.1-python3.9
+ENV AIRFLOW_ALLOW_RUN_AS_ROOT=1
+
+# Install airflow + statsd + force redis client version compatible with Celery/Kombu
+RUN pip install --no-cache-dir 'apache-airflow[statsd]==2.8.1' \
+    && pip install --no-cache-dir 'redis>=4.5,<5.0'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
