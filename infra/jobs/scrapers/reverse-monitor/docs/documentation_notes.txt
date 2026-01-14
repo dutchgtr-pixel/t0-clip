@@ -1,0 +1,236 @@
+# Marketplace Listing Survival Tool (`survival_marketplace.go`)
+
+End-to-end technical runbook (public template)
+
+## Public release notes
+
+### What is included
+This repository contains a reusable reference implementation for:
+
+- A **job-oriented reverse monitoring loop** that revisits “live” listings in a database and detects terminal transitions (`sold`, `removed`, `older21days`).
+- A **sparse history strategy** (`price_history`) that avoids writing one row per probe:
+  - one fixed **daily baseline** per listing (00:05 UTC bucket)
+  - **change events** (price changes, important state flips)
+  - **terminal events** (sold/removed/older21days) always recorded
+- A clean separation between:
+  - **lifecycle status** (`live/sold/removed/older21days`)
+  - **UI/state flags** (e.g., `is_inactive`, `is_bidding`) with an append-only event log for inactivity
+- **Bounded pressure controls** (RPS target + adaptive limiter + retry/throttle knobs)
+- Docker image build patterns and an entrypoint suitable for scheduled execution
+
+### What is intentionally omitted
+To keep the public repository platform-agnostic and non-identifying, it does **not** include:
+
+- Any site/platform-specific scraper, HTML selectors, request headers, cookies, or session artifacts
+- Any platform-specific endpoints, query parameters, or parsing logic
+- Any real listing data, seller/user identifiers, or production logs
+
+To connect this template to a real marketplace, you must implement an adapter for your own platform behind the `MarketplaceAdapter` interface.
+
+### How to run with synthetic data / mock adapter
+You can run the program end-to-end using:
+
+- A local Postgres instance with the provided table structure
+- The built-in `mock` adapter (no network calls)
+
+The `mock` adapter deterministically produces synthetic listing states based on `listing_id`.
+
+---
+
+## 1) Executive summary
+
+`survival_marketplace` is a reverse-monitoring job for marketplace listings. It revisits listings that are currently recorded as `status='live'` in your database, determines their current state via a pluggable adapter, and writes:
+
+1) **authoritative terminal transitions** (sold/removed/older21days) into `public.listings`  
+2) a **sparse observation log** into `public.price_history` (daily baseline + change/terminal events)  
+3) **UI/state flags** (inactive + bidding) into `public.listings`, and an append-only inactivity event log
+
+This job is designed to run frequently (e.g., every 30 minutes) without growing history linearly with probe frequency.
+
+---
+
+## 2) Core concepts
+
+### 2.1 Generation (partition key)
+`generation` is an integer partition key used for table partitioning, sharding, or model segmentation. All reads/writes are scoped to a single `generation` per run.
+
+### 2.2 Listing ID
+`listing_id` uniquely identifies a listing within a generation.
+
+### 2.3 Lifecycle statuses
+The core lifecycle status (`public.listings.status`) is one of:
+
+- `live`
+- `sold`
+- `removed`
+- `older21days` (maintenance/stale classification; typically set by a DB-side sweeper)
+
+UI/state flags are recorded separately and should not be conflated with lifecycle status.
+
+---
+
+## 3) Adapter layer (required for real use)
+
+All platform-specific fetching/parsing must be implemented behind:
+
+- `MarketplaceAdapter.FetchListing(ctx, listing_id, listing_url) (ListingSnapshot, error)`
+- `MarketplaceAdapter.ParsePayload(raw, http_status) (ListingSnapshot, error)`
+- `MarketplaceAdapter.SearchListings(ctx, params) ([]ListingSummary, error)` (optional in template)
+
+### Built-in adapters
+
+#### 3.1 `mock` (default)
+- No network calls
+- Returns deterministic synthetic snapshots derived from `listing_id`
+- Suitable for tests and demonstrations
+
+#### 3.2 `http-json` (optional)
+- Fetches `GET {MARKETPLACE_BASE_URL}/api/listings/{listing_id}`
+- Expects JSON shaped like:
+
+```json
+{
+  "listing_id": 123456,
+  "url": "https://marketplace.example/listing/123456",
+  "status": "live",
+  "price": 2500,
+  "sold_price": 0,
+  "sold_at": "2026-01-01T12:00:00Z",
+  "is_inactive": false,
+  "is_bidding": false,
+  "evidence": "api:v1",
+  "raw_metadata": {}
+}
+```
+
+No authentication, cookies, or private headers are included in the public template. If your platform requires auth, implement it privately and load secrets from your secret manager.
+
+---
+
+## 4) High-level workflow (reverse mode)
+
+### 4.1 Reverse mode (`--mode reverse`)
+1. Load candidate rows from `public.listings` where:
+   - `generation = $GEN`
+   - `status = 'live'`
+   - optional: `last_seen >= now() - scan_since_days`
+   - optional: `LIMIT max_probe`
+
+2. Prefetch state needed for sparse history writes:
+   - latest history row per listing
+   - last non-zero price per listing
+   - whether today’s baseline row exists at the fixed bucket
+
+3. For each candidate listing:
+   - Fetch current snapshot via adapter
+   - Decide lifecycle status: `live` / `sold` / `removed` / `unknown`
+   - Apply DB updates:
+     - terminal transitions in `public.listings` when detected
+     - UI/state flags updates when the adapter provides those fields
+     - sparse `public.price_history` baseline/event rows
+
+4. Emit a summary line with counts and runtime.
+
+### 4.2 Other modes (maintenance)
+- `repair`: re-fetches sold listings to repair sold_date/sold_price based on adapter payload.
+- `audit-status`: audits terminal statuses and/or inactive flags for a sample window.
+- `stale`: marks old live rows as `older21days` (if you choose to run it from the job; many deployments do this in-database).
+- `diagnose`: prints DB counts and configuration sanity (can run without DB).
+- `test`: small sample run intended for validation; typically requires DB.
+
+---
+
+## 5) PostgreSQL data model (template)
+
+The program assumes tables exist; it does not create schema.
+
+### 5.1 `public.listings` (main table)
+
+Minimal fields expected by the job:
+
+- `(generation int, listing_id bigint)` as the composite key
+- `url text`
+- `status text` (`live/sold/removed/older21days`)
+- `price int` (latest known price)
+- `sold_price int` (optional)
+- `sold_date timestamptz` (optional)
+- `first_seen timestamptz`, `last_seen timestamptz`, `edited_date timestamptz` (optional)
+
+UI/state snapshot columns (optional but supported):
+
+- `is_inactive boolean`
+- `inactive_observed_at timestamptz`
+- `inactive_meta_edited_at timestamptz`
+- `inactive_evidence text`
+- `is_bidding boolean`
+- `bidding_evidence jsonb`
+
+### 5.2 `public.price_history` (sparse history)
+
+The job writes sparse rows:
+
+- Daily baseline at `00:05 UTC` bucket for `status='live'`
+- Intra-day rows only when:
+  - price changes
+  - a relevant state flip is observed (e.g., inactive/bidding change, depending on your policy)
+- Terminal status rows always written (`sold/removed/older21days`)
+
+Minimal columns used by the job:
+
+- `generation int`
+- `listing_id bigint`
+- `observed_at timestamptz` (primary time index; baseline uses fixed bucket)
+- `price int`
+- `status text`
+- `source text` (e.g., `reverse`)
+
+### 5.3 `public.inactive_state_events` (append-only inactivity log)
+
+See `Documentation_inactive_state_events.public.md` for full semantics and DDL.
+
+---
+
+## 6) Configuration
+
+### 6.1 Environment variables (recommended)
+Use `.env.example` as a checklist. Do not commit real credentials.
+
+Key variables:
+
+- `PG_DSN` (secret): Postgres connection string (provide via secret manager)
+- `PG_SCHEMA` (default `public`)
+- `GENERATION` or `GEN_LIST`
+- `MARKETPLACE_ADAPTER` (`mock` | `http-json`)
+- `MARKETPLACE_BASE_URL` (for `http-json`)
+- `REQUEST_RPS`, `WORKERS`, retry/throttle knobs
+
+### 6.2 Example run (reverse + mock adapter)
+1) Ensure tables exist and seed synthetic live listings (example IDs):
+
+```sql
+INSERT INTO public.listings (generation, listing_id, url, status, price, first_seen, last_seen)
+VALUES
+  (1, 100011, 'https://marketplace.example/listing/100011', 'live', 2500, now(), now()),
+  (1, 100022, 'https://marketplace.example/listing/100022', 'live', 1800, now(), now()),
+  (1, 100033, 'https://marketplace.example/listing/100033', 'live', 3200, now(), now());
+```
+
+2) Run reverse (writes to DB) with the mock adapter:
+
+```bash
+export PG_DSN="${PG_DSN}"
+export MARKETPLACE_ADAPTER=mock
+export WRITE_DB=true
+
+go run ./survival_marketplace.go --mode reverse --pg-schema public --generation 1 --pg-dsn "${PG_DSN}" --write-db
+```
+
+---
+
+## 7) Safety and release posture
+
+- No embedded secrets: all credentials must be injected via environment/secret manager.
+- No target-platform identifiers: public docs and code avoid naming any real marketplace.
+- All connector logic must live behind the adapter interface.
+- Use only synthetic listing IDs and synthetic URLs in public examples.
+

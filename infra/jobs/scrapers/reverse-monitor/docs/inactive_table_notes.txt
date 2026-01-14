@@ -1,0 +1,125 @@
+# Documentation: `public.inactive_state_events` (Inactive State History)
+
+## 1) Purpose
+
+`public.inactive_state_events` is an append-only event log that records **platform-provided inactivity state transitions** for a listing over time.
+
+This table exists because:
+
+- A platform “inactive/paused” flag is a **UI/state signal**, not a lifecycle status (it is not equivalent to `sold`, `removed`, or “older than N days”).
+- You often need a full timeline of: `active → inactive → active → …` until the listing reaches a terminal lifecycle state.
+- You want to preserve a complete audit trail without polluting your core lifecycle status model.
+
+This design keeps the lifecycle status (`live/sold/removed/older21days`) separate from UI/state flags.
+
+## 2) Relationship to other tables
+
+### `public.listings` (main snapshot table)
+
+Holds the current snapshot of a listing. The pipeline updates the “latest known inactive state” columns:
+
+- `is_inactive` (latest known inactive state)
+- `inactive_observed_at` (when the pipeline last observed `is_inactive=true`)
+- `inactive_meta_edited_at` (optional: platform-provided timestamp associated with that observation, if available)
+- `inactive_evidence` (short label explaining the source of the decision)
+
+These are **latest-value fields** (overwritable).
+
+### `public.inactive_state_events` (append-only history)
+
+Holds the change history and is append-only:
+
+- Inserts only when the inactive state changes (or when tracking begins with `is_inactive=true`)
+- Never overwrites
+- Enables reconstruction of the full inactive timeline per listing
+- Stores provenance (`observed_by`, `http_status`, `evidence`) for audit/debugging
+
+## 3) DDL (public template)
+
+```sql
+CREATE TABLE IF NOT EXISTS public.inactive_state_events (
+  event_id        bigserial PRIMARY KEY,
+  generation      int      NOT NULL,
+  listing_id      bigint   NOT NULL,
+  observed_at     timestamptz NOT NULL DEFAULT now(),  -- when OUR job observed the state
+  is_inactive     boolean  NOT NULL,                   -- platform-provided inactive flag
+  meta_edited_at  timestamptz,                         -- optional platform timestamp (if available)
+  observed_by     text     NOT NULL,                   -- e.g. 'reverse' or 'audit-status'
+  main_status     text,                                -- listings.status at observation time (live/older21days)
+  evidence        text,                                -- short label (e.g. 'adapter:is_inactive')
+  http_status     int
+);
+
+CREATE INDEX IF NOT EXISTS inactive_state_events_lookup
+  ON public.inactive_state_events (generation, listing_id, observed_at DESC, event_id DESC);
+```
+
+## 4) Column dictionary
+
+- **event_id**: monotonic insert identifier, used as a deterministic tiebreaker.
+- **generation, listing_id**: composite business key identifying the listing within a partition.
+- **observed_at**: time the pipeline observed the state (not a platform-side transition time).
+- **is_inactive**: the platform-provided inactive flag observed at `observed_at`.
+- **meta_edited_at**: optional platform timestamp associated with the payload (best-effort; interpret carefully).
+- **observed_by**: which job wrote the observation (helps provenance and debugging).
+- **main_status**: lifecycle status at observation time (`live` vs `older21days`).
+- **evidence**: short label explaining the source path used to determine the flag.
+- **http_status**: HTTP status code (if the observation is derived from an HTTP adapter).
+
+## 5) Write semantics
+
+### 5.1 Change-only inserts
+The event log inserts **only when the state changes** relative to the most recent recorded event for that listing.
+
+This prevents baseline noise (e.g., recording `is_inactive=false` on every probe).
+
+### 5.2 Start tracking only when meaningful
+If there is no prior event for the listing:
+
+- If `is_inactive=false`, **do not insert** (baseline-active is not recorded)
+- If `is_inactive=true`, insert the first event (tracking begins)
+
+### 5.3 “Key present” vs “key missing”
+Adapters should distinguish:
+
+- The inactive flag is explicitly present (`true` or `false`)
+- The inactive flag is missing/unknown (do not update snapshot columns, do not write an event)
+
+This avoids treating “unknown” as “active”.
+
+## 6) Operational queries (examples)
+
+### Latest inactive state per listing
+```sql
+SELECT DISTINCT ON (generation, listing_id)
+  generation, listing_id, observed_at, is_inactive, meta_edited_at, observed_by, evidence, http_status
+FROM public.inactive_state_events
+ORDER BY generation, listing_id, observed_at DESC, event_id DESC;
+```
+
+### Find listings currently marked inactive in the main table
+```sql
+SELECT generation, listing_id, url, status, is_inactive, inactive_observed_at, inactive_evidence
+FROM public.listings
+WHERE status IN ('live','older21days')
+  AND is_inactive = true
+ORDER BY inactive_observed_at DESC
+LIMIT 200;
+```
+
+### Detect rapid flapping (many transitions)
+```sql
+SELECT generation, listing_id, COUNT(*) AS transitions_last_7d
+FROM public.inactive_state_events
+WHERE observed_at >= now() - interval '7 days'
+GROUP BY 1,2
+HAVING COUNT(*) >= 6
+ORDER BY transitions_last_7d DESC;
+```
+
+## 7) Notes on interpretation
+
+- `observed_at` is a pipeline timestamp, not a platform-side timestamp.
+- `meta_edited_at` (if used) should be treated as **best-effort metadata**, not a guaranteed transition time.
+- Always keep lifecycle status decisions (`sold/removed/older21days`) separate from the inactive flag.
+

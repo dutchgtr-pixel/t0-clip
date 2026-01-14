@@ -1,0 +1,192 @@
+# Proof pack: `older21days` sweeper trigger (Postgres)
+
+This document is a **public template** for verifying that a DB-side “older-than-21-days” sweeper is:
+
+- correctly wired (trigger + function)
+- safe (guardrails, advisory lock, no unsafe `ctid`-only join)
+- correct (global invariants hold)
+
+It intentionally contains **no production outputs** or real operational logs.
+
+## Context
+
+Many deployments prefer classifying “very old live listings” as `status='older21days'` in-database, via:
+
+- a trigger that fires on heartbeat updates to `public.listings`
+- a sweeper function that marks eligible rows and writes a forensic run log
+
+This keeps the application job focused on reverse monitoring (`live/sold/removed`) while the database enforces the stale classification invariant.
+
+---
+
+## A) Structural proof: trigger wiring is correct
+
+### A1) Confirm the trigger exists and is enabled
+
+```sql
+SELECT
+  t.tgname,
+  t.tgenabled,               -- O=enabled, D=disabled
+  t.tgisinternal,
+  pg_get_triggerdef(t.oid, true) AS trigger_def,
+  pn.nspname AS func_schema,
+  p.proname  AS func_name
+FROM pg_trigger t
+JOIN pg_class c        ON c.oid = t.tgrelid
+JOIN pg_namespace ns   ON ns.oid = c.relnamespace
+JOIN pg_proc p         ON p.oid = t.tgfoid
+JOIN pg_namespace pn   ON pn.oid = p.pronamespace
+WHERE ns.nspname = 'public'
+  AND c.relname = 'listings'
+  AND t.tgname  = 'zzz_heartbeat_mark_older21days';
+```
+
+Expected:
+- `tgenabled = 'O'`
+- `trigger_def` references your trigger function (e.g., `public.trg_heartbeat_mark_older21days()`)
+
+### A2) Confirm no other triggers mutate `status`
+
+```sql
+SELECT
+  t.tgname,
+  t.tgenabled,
+  pg_get_triggerdef(t.oid, true) AS trigger_def
+FROM pg_trigger t
+JOIN pg_class c        ON c.oid = t.tgrelid
+JOIN pg_namespace ns   ON ns.oid = c.relnamespace
+WHERE ns.nspname = 'public'
+  AND c.relname = 'listings'
+  AND pg_get_triggerdef(t.oid, true) ILIKE '%status%'
+ORDER BY 1;
+```
+
+Expected:
+- only the intended trigger(s) appear.
+
+---
+
+## B) Code proof: sweeper safety properties
+
+### B1) Dump installed function bodies (ground truth)
+
+```sql
+SELECT pg_get_functiondef(
+  'public.sweep_mark_older21days(interval,integer,boolean)'::regprocedure
+) AS sweeper_def;
+
+SELECT pg_get_functiondef(
+  'public.trg_heartbeat_mark_older21days()'::regprocedure
+) AS trigger_fn_def;
+```
+
+### B2) Machine-check safety properties
+
+This verifies the sweeper contains the expected guardrails.
+
+```sql
+WITH f AS (
+  SELECT pg_get_functiondef(
+    'public.sweep_mark_older21days(interval,integer,boolean)'::regprocedure
+  ) AS def
+)
+SELECT
+  def ILIKE '%pg_try_advisory_xact_lock%'                           AS uses_xact_lock,
+  def ILIKE '%older21days_sweep_runs%'                              AS writes_run_log,
+  def ILIKE '%RAISE EXCEPTION%'                                     AS has_assertions,
+  (def ILIKE '%l.tableoid%' AND def ILIKE '%l.ctid%')               AS uses_tableoid_ctid,
+  ((def ILIKE '%l.ctid = c.ctid%' OR def ILIKE '%l.ctid=c.ctid%')
+    AND NOT def ILIKE '%l.tableoid%')                               AS has_unsafe_ctid_only_join
+FROM f;
+```
+
+Expected:
+- `uses_xact_lock = true`
+- `writes_run_log = true`
+- `has_assertions = true`
+- `uses_tableoid_ctid = true`
+- `has_unsafe_ctid_only_join = false`
+
+---
+
+## C) Behavioral proof: global invariants
+
+### C1) No LIVE row older than 21 days by `edited_date`
+
+```sql
+SELECT COUNT(*) AS live_eligible_over21_by_edited
+FROM public.listings
+WHERE status = 'live'
+  AND edited_date IS NOT NULL
+  AND edited_date <= now() - interval '21 days';
+```
+
+Expected: `0`
+
+### C2) `older21days` rows must be truly older (no “too new” rows)
+
+```sql
+SELECT COUNT(*) AS older21days_too_new
+FROM public.listings
+WHERE status = 'older21days'
+  AND edited_date IS NOT NULL
+  AND edited_date > now() - interval '21 days';
+```
+
+Expected: `0`
+
+### C3) `older21days` rows must have `edited_date`
+
+```sql
+SELECT COUNT(*) AS older21days_missing_edited_date
+FROM public.listings
+WHERE status = 'older21days'
+  AND edited_date IS NULL;
+```
+
+Expected: `0`
+
+### C4) Status distribution snapshot
+
+```sql
+SELECT status, COUNT(*) AS n
+FROM public.listings
+GROUP BY 1
+ORDER BY n DESC;
+```
+
+---
+
+## D) Evidence chain: sweeper run log (optional)
+
+If you keep a forensic run log table, you can inspect the most recent runs:
+
+```sql
+SELECT *
+FROM public.older21days_sweep_runs
+ORDER BY run_id DESC
+LIMIT 50;
+```
+
+You can also summarize outcomes over time:
+
+```sql
+SELECT
+  date_trunc('hour', ran_at) AS hour,
+  reason,
+  COUNT(*) AS n_calls,
+  SUM(updated_rows) AS rows_updated
+FROM public.older21days_sweep_runs
+WHERE ran_at >= now() - interval '48 hours'
+GROUP BY 1,2
+ORDER BY 1 DESC, 2;
+```
+
+---
+
+## E) Operational guidance
+
+- Treat `older21days` as an internal classification owned by the database rule-set.
+- Keep lifecycle terminal events (`sold/removed`) authoritative and separate from `older21days`.
+- Avoid writing `older21days` from application code unless you have a deliberate operational reason.
+

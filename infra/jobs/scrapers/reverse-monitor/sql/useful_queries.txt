@@ -1,0 +1,306 @@
+/* ============================================================
+   Operational SQL snippets (public template)
+   Schema assumption: tables exist in the `public` schema.
+   If you use a different schema, update the schema qualifier.
+
+   Tables:
+     - public.listings
+     - public.price_history
+     - public.inactive_state_events
+
+   Notes:
+     - price_history is sparse by design (daily baselines + change/terminal events).
+     - inactive_state_events records UI/state transitions and is separate from lifecycle status.
+   ============================================================ */
+
+
+/* 0) WINDOW (UTC today + daily baseline bucket at 00:05 UTC) */
+SELECT 'SECTION 0 — WINDOW: UTC today range + daily baseline bucket (00:05 UTC)' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC')                    AS d0,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '5 min' AS bucket,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '1 day' AS d1
+)
+SELECT * FROM p;
+
+
+
+/* 1) TODAY’S PRICE CHANGES (REVERSE): all deltas */
+SELECT 'SECTION 1 — REVERSE: price changes today (prev_price -> new_price)' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC') AS d0,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '1 day' AS d1
+),
+x AS (
+  SELECT
+    ph.generation,
+    ph.listing_id,
+    ph.observed_at,
+    ph.status,
+    ph.price AS new_price,
+    LAG(ph.price) OVER (
+      PARTITION BY ph.generation, ph.listing_id
+      ORDER BY ph.observed_at
+    ) AS prev_price
+  FROM public.price_history ph, p
+  WHERE ph.source = 'reverse'
+    AND ph.status = 'live'
+    AND ph.observed_at >= p.d0
+    AND ph.observed_at <  p.d1
+)
+SELECT
+  x.generation,
+  x.listing_id,
+  x.observed_at,
+  x.status,
+  l.price AS first_seen_price,
+  x.prev_price,
+  x.new_price,
+  (x.new_price - x.prev_price) AS delta,
+  l.is_bidding,
+  l.is_inactive,
+  l.url
+FROM x
+JOIN public.listings l
+  ON l.generation = x.generation AND l.listing_id = x.listing_id
+WHERE x.prev_price IS NOT NULL
+  AND x.new_price IS DISTINCT FROM x.prev_price
+ORDER BY x.observed_at DESC
+LIMIT 500;
+
+
+
+/* 2) TODAY’S PRICE CUTS (REVERSE): biggest single cuts */
+SELECT 'SECTION 2 — REVERSE: today price cuts only (delta<0), sorted by biggest cut' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC') AS d0,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '1 day' AS d1
+),
+x AS (
+  SELECT
+    ph.generation,
+    ph.listing_id,
+    ph.observed_at,
+    ph.price AS new_price,
+    LAG(ph.price) OVER (
+      PARTITION BY ph.generation, ph.listing_id
+      ORDER BY ph.observed_at
+    ) AS prev_price
+  FROM public.price_history ph, p
+  WHERE ph.source = 'reverse'
+    AND ph.status = 'live'
+    AND ph.observed_at >= p.d0
+    AND ph.observed_at <  p.d1
+)
+SELECT
+  x.generation,
+  x.listing_id,
+  x.observed_at,
+  l.price AS first_seen_price,
+  x.prev_price AS from_price,
+  x.new_price  AS to_price,
+  (x.new_price - x.prev_price) AS delta,
+  l.is_bidding,
+  l.url
+FROM x
+JOIN public.listings l
+  ON l.generation = x.generation AND l.listing_id = x.listing_id
+WHERE x.prev_price IS NOT NULL
+  AND x.new_price IS DISTINCT FROM x.prev_price
+  AND (x.new_price - x.prev_price) < 0
+ORDER BY ABS(x.new_price - x.prev_price) DESC, x.observed_at DESC
+LIMIT 500;
+
+
+
+/* 3) TODAY’S PRICE CUTS (REVERSE): aggregated per listing */
+SELECT 'SECTION 3 — REVERSE: price cuts per listing today (cut count + total cut + cut timeline)' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC') AS d0,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '1 day' AS d1
+),
+x AS (
+  SELECT
+    ph.generation,
+    ph.listing_id,
+    ph.observed_at,
+    ph.price AS new_price,
+    LAG(ph.price) OVER (
+      PARTITION BY ph.generation, ph.listing_id
+      ORDER BY ph.observed_at
+    ) AS prev_price
+  FROM public.price_history ph, p
+  WHERE ph.source = 'reverse'
+    AND ph.status = 'live'
+    AND ph.observed_at >= p.d0
+    AND ph.observed_at <  p.d1
+),
+cuts AS (
+  SELECT *
+  FROM x
+  WHERE prev_price IS NOT NULL
+    AND new_price IS DISTINCT FROM prev_price
+    AND (new_price - prev_price) < 0
+)
+SELECT
+  c.generation,
+  c.listing_id,
+  COUNT(*) AS cut_count,
+  SUM(c.new_price - c.prev_price) AS total_delta,
+  STRING_AGG(
+    to_char(c.observed_at, 'HH24:MI') || ' ' ||
+    c.prev_price::text || '→' || c.new_price::text ||
+    ' (' || (c.new_price - c.prev_price)::text || ')',
+    ' | ' ORDER BY c.observed_at
+  ) AS timeline,
+  l.url
+FROM cuts c
+JOIN public.listings l
+  ON l.generation = c.generation AND l.listing_id = c.listing_id
+GROUP BY 1,2, l.url
+ORDER BY ABS(SUM(c.new_price - c.prev_price)) DESC
+LIMIT 500;
+
+
+
+/* 4) TODAY’S TERMINAL EVENTS (main table): sold/removed/older21days */
+SELECT 'SECTION 4 — MAIN: terminal transitions observed today (sold/removed/older21days)' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC') AS d0,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '1 day' AS d1
+)
+SELECT
+  l.generation,
+  l.listing_id,
+  l.status,
+  l.sold_date,
+  l.sold_price,
+  l.last_seen,
+  l.url
+FROM public.listings l, p
+WHERE l.status IN ('sold','removed','older21days')
+  AND l.last_seen >= p.d0
+  AND l.last_seen <  p.d1
+ORDER BY l.last_seen DESC
+LIMIT 500;
+
+
+
+/* 5) TODAY’S INACTIVE STATE EVENTS (event log) */
+SELECT 'SECTION 5 — EVENTS: inactive state changes recorded today' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC') AS d0,
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '1 day' AS d1
+)
+SELECT
+  e.generation,
+  e.listing_id,
+  e.observed_at,
+  e.is_inactive,
+  e.meta_edited_at,
+  e.observed_by,
+  e.main_status,
+  e.http_status,
+  e.evidence
+FROM public.inactive_state_events e, p
+WHERE e.observed_at >= p.d0
+  AND e.observed_at <  p.d1
+ORDER BY e.observed_at DESC, e.event_id DESC
+LIMIT 500;
+
+
+
+/* 6) TODAY’S DAILY BASELINE ROWS (00:05 UTC bucket) */
+SELECT 'SECTION 6 — HISTORY: today daily baselines at 00:05 UTC (reverse source)' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '5 min' AS bucket
+)
+SELECT
+  ph.generation,
+  ph.listing_id,
+  ph.observed_at,
+  ph.price,
+  ph.status,
+  ph.source
+FROM public.price_history ph, p
+WHERE ph.source = 'reverse'
+  AND ph.observed_at = p.bucket
+ORDER BY ph.generation, ph.listing_id
+LIMIT 500;
+
+
+
+/* 7) LIVE LISTINGS MISSING TODAY'S BASELINE ROW (diagnostic) */
+SELECT 'SECTION 7 — HISTORY: live listings missing today baseline (00:05 UTC)' AS info;
+
+WITH p AS (
+  SELECT
+    date_trunc('day', now() AT TIME ZONE 'UTC') + interval '5 min' AS bucket
+)
+SELECT
+  l.generation,
+  l.listing_id,
+  l.url,
+  l.last_seen
+FROM public.listings l, p
+LEFT JOIN public.price_history ph
+  ON ph.generation = l.generation
+ AND ph.listing_id = l.listing_id
+ AND ph.observed_at = p.bucket
+ AND ph.source = 'reverse'
+WHERE l.status = 'live'
+  AND ph.listing_id IS NULL
+ORDER BY l.last_seen DESC
+LIMIT 500;
+
+
+
+/* 8) LISTINGS CURRENTLY FLAGGED AS BIDDING (snapshot) */
+SELECT 'SECTION 8 — MAIN: listings currently flagged as bidding' AS info;
+
+SELECT
+  generation,
+  listing_id,
+  url,
+  is_bidding,
+  bidding_evidence
+FROM public.listings
+WHERE status IN ('live','older21days')
+  AND is_bidding = true
+ORDER BY last_seen DESC
+LIMIT 200;
+
+
+
+/* 9) DATA QUALITY: listings flagged inactive but with no event history (should be rare) */
+SELECT 'SECTION 9 — DATA QUALITY: inactive snapshot with no inactive_state_events history' AS info;
+
+SELECT
+  l.generation,
+  l.listing_id,
+  l.url,
+  l.inactive_observed_at,
+  l.inactive_evidence
+FROM public.listings l
+WHERE l.is_inactive = true
+  AND NOT EXISTS (
+    SELECT 1
+    FROM public.inactive_state_events e
+    WHERE e.generation = l.generation AND e.listing_id = l.listing_id
+  )
+ORDER BY l.inactive_observed_at DESC
+LIMIT 200;
