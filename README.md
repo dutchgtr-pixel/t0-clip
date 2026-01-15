@@ -1,7 +1,7 @@
-﻿# t0-clip
+# t0-clip
 
 ## Key docs
-- **System Spine (closed-loop orchestration):** docs/SYSTEM_SPINE.md`r
+- **System Spine (closed-loop orchestration):** docs/SYSTEM_SPINE.md
 **Tâ‚€-Certified Closed-Loop Self-Healing Data â†’ Feature Stores â†’ ML (Reference Architecture)**
 
 `t0-clip` is a production-shaped system for converting continuously changing real-world data into **leak-safe (Tâ‚€-correct)**
