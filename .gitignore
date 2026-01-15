@@ -8,3 +8,8 @@ REPO_CAPABILITY_REPORT.md
 _dag_inventory.csv
 _audit_*.txt
 _audit_*.log
+# Generated local audit outputs
+REPO_CAPABILITY_REPORT.md
+_dag_inventory.csv
+_audit_*.txt
+_audit_*.log
