@@ -3,3 +3,8 @@ data/
 .cache/
 **/*.log
 airflow-logs/
+# Local audit outputs (generated)
+REPO_CAPABILITY_REPORT.md
+_dag_inventory.csv
+_audit_*.txt
+_audit_*.log
