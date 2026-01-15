@@ -1,31 +1,34 @@
-# t0-clip
-**T₀-Certified Closed-Loop Self-Healing Data → Feature Stores → ML (Reference Architecture)**
+﻿# t0-clip
 
-`t0-clip` is a production-shaped system for converting continuously changing real-world data into **leak-safe (T₀-correct)**
+## Key docs
+- **System Spine (closed-loop orchestration):** docs/SYSTEM_SPINE.md`r
+**Tâ‚€-Certified Closed-Loop Self-Healing Data â†’ Feature Stores â†’ ML (Reference Architecture)**
+
+`t0-clip` is a production-shaped system for converting continuously changing real-world data into **leak-safe (Tâ‚€-correct)**
 **certified feature-store surfaces** that power **high-accuracy predictive models**. It is designed as a **closed loop**:
 the operational database is continuously validated, repaired/reconciled, and re-certified so training and inference cannot
 silently drift.
 
 ## What this is
-- A **closed-loop “self-healing database” setup** that feeds ML models through governed, auditable pipelines.
-- A **T₀ certification and feature-store governance layer** (fail-closed eligibility, contracts, baselines, drift checks).
+- A **closed-loop â€œself-healing databaseâ€ setup** that feeds ML models through governed, auditable pipelines.
+- A **Tâ‚€ certification and feature-store governance layer** (fail-closed eligibility, contracts, baselines, drift checks).
 - A **multi-model, tail-aware modeling stack** built for real decision boundaries on messy, longitudinal data.
 
 ## What this is NOT
 - Not a one-click installer.
-- Not a “point at any website and run” tool.
+- Not a â€œpoint at any website and runâ€ tool.
 - This public version is **platform-agnostic**: each user must implement/adapt acquisition and operational configs for their
   own data source(s), constraints, and environment.
 
 ## Key capabilities (signals)
-### Closed-loop data → models
-- **Operational DB → self-healing layer → certified feature stores → models → monitoring/audits → governance feedback**
+### Closed-loop data â†’ models
+- **Operational DB â†’ self-healing layer â†’ certified feature stores â†’ models â†’ monitoring/audits â†’ governance feedback**
 - Thousands of lines of modular code across ingestion/jobs, orchestration, SQL feature-store layers, and modeling.
 
 ### Feature engineering (multimodal)
 - **Text embeddings** (SBERT-style sentence embedding pipeline for robust semantic features).
-- **Image embeddings** (vision-transformer / “image-BERT”-style encoders for visual condition/state signals).
-- Modular “feature blocks” that remain **independently refreshable and certifiable**.
+- **Image embeddings** (vision-transformer / â€œimage-BERTâ€-style encoders for visual condition/state signals).
+- Modular â€œfeature blocksâ€ that remain **independently refreshable and certifiable**.
 
 ### Modeling
 - **Multiple survival models** (including AFT-style time-to-event modeling) plus additional survival formulations.
@@ -45,4 +48,5 @@ flowchart TD
   D --- D2["Text + vision labeling (optional)"]
   D --- D3["Diff-only patches + audit ledger"]
   D --- D4["Snapshot anchors + reconciliation"]
+
 
