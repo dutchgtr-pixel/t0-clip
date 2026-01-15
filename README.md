@@ -1,34 +1,47 @@
-# t0-clip
-**T₀-Certified Closed-Loop Intelligence Pipeline**  
-A portfolio-grade, production-shaped reference system for building **leakage-proof ML models** on **real-world, high-frequency “listing/event” data** using a **self-healing operational database**, **T₀-certified feature stores**, and **survival / tail-risk modeling**.
+$Repo = "C:\Users\ghaff\OneDrive\Documents\Github\t0-clip"
 
----
+@'
+# t0-clip
+**T₀-Certified Closed-Loop Self-Healing Data → Feature Stores → ML (Reference Architecture)**
+
+`t0-clip` is a production-shaped system for converting continuously changing real-world data into **leak-safe (T₀-correct)**
+**certified feature-store surfaces** that power **high-accuracy predictive models**. It is designed as a **closed loop**:
+the operational database is continuously validated, repaired/reconciled, and re-certified so training and inference cannot
+silently drift.
 
 ## What this is
-`t0-clip` is an end-to-end architecture for **turning messy, continuously changing real-world data into ML-ready, leak-safe training/inference surfaces**.
-
-It is designed around three ideas:
-
-1. **T₀ correctness is non-negotiable**  
-   Features must be computed “as-of” a decision time `t0` (no future information, no query-time shortcuts).
-
-2. **Closed-loop data quality (self-healing)**  
-   The database continuously improves itself via deterministic repair loops, multimodal labeling, snapshot anchoring, and auditable mutations—so downstream models train on a cleaner, more stable substrate.
-
-3. **Models that perform where real systems break: the tail**  
-   Long-tail outcomes require explicit design (anchors, censoring-aware survival objectives, boundary-focused optimization, and cost-sensitive guardrails).
-
----
+- A **closed-loop “self-healing database” setup** that feeds ML models through governed, auditable pipelines.
+- A **T₀ certification and feature-store governance layer** (fail-closed eligibility, contracts, baselines, drift checks).
+- A **multi-model, tail-aware modeling stack** built for real decision boundaries on messy, longitudinal data.
 
 ## What this is NOT
-- **Not a turnkey crawler** and not a “point at any website and run” product.
-- **No platform-specific acquisition fingerprints** are included in this public version.
-- You must provide your own **data connector(s)** and run the system in a way that matches your target domain and constraints.
+- Not a one-click installer.
+- Not a “point at any website and run” tool.
+- This public version is **platform-agnostic**: each user must implement/adapt acquisition and operational configs for their
+  own data source(s), constraints, and environment.
 
-This repository is meant to demonstrate **system design, governance, modeling rigor, and production-grade patterns**—not to optimize for beginner usability.
+## Key capabilities (signals)
+### Closed-loop data → models
+- **Operational DB → self-healing layer → certified feature stores → models → monitoring/audits → governance feedback**
+- Thousands of lines of modular code across ingestion/jobs, orchestration, SQL feature-store layers, and modeling.
 
----
+### Feature engineering (multimodal)
+- **Text embeddings** (SBERT-style sentence embedding pipeline for robust semantic features).
+- **Image embeddings** (vision-transformer / “image-BERT”-style encoders for visual condition/state signals).
+- Modular “feature blocks” that remain **independently refreshable and certifiable**.
 
-## High-level architecture (closed-loop)
-The system is intentionally built as a feedback loop:
+### Modeling
+- **Multiple survival models** (including AFT-style time-to-event modeling) plus additional survival formulations.
+- **Tail gates / boundary classifiers** to capture long-tail outcomes and operational thresholds.
+- **Meta-learners (stacking / blending)** to combine base learners into a higher-performance ensemble.
 
+## Architecture (closed loop)
+```mermaid
+flowchart TD
+  A[Your Data Source(s)] --> B[Connector / Acquisition Jobs<br/>(you implement/adapt)]
+  B --> C[Operational DB<br/>(raw + canonical)]
+  C --> D[Self-Healing + Governance Layer<br/>validators • reconciliation • audit • versioning]
+  D --> E[T₀-Certified Feature Stores<br/>(entrypoints + guards + contracts)]
+  E --> F[Modeling Stack<br/>Survival • Tail Gates • Meta-Learners • Multimodal Features]
+  F --> G[Scoring / Monitoring]
+  G --> D
