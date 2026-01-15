@@ -1,6 +1,3 @@
-$Repo = "C:\Users\ghaff\OneDrive\Documents\Github\t0-clip"
-
-@'
 # t0-clip
 **T₀-Certified Closed-Loop Self-Healing Data → Feature Stores → ML (Reference Architecture)**
 
