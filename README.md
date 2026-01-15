@@ -35,13 +35,17 @@ silently drift.
 - **Tail gates / boundary classifiers** to capture long-tail outcomes and operational thresholds.
 - **Meta-learners (stacking / blending)** to combine base learners into a higher-performance ensemble.
 
-## Architecture (closed loop)
-```mermaid
 flowchart TD
-  A[Your Data Source(s)] --> B[Connector / Acquisition Jobs<br/>(you implement/adapt)]
-  B --> C[Operational DB<br/>(raw + canonical)]
-  C --> D[Self-Healing + Governance Layer<br/>validators • reconciliation • audit • versioning]
-  D --> E[T₀-Certified Feature Stores<br/>(entrypoints + guards + contracts)]
-  E --> F[Modeling Stack<br/>Survival • Tail Gates • Meta-Learners • Multimodal Features]
-  F --> G[Scoring / Monitoring]
+  A["Your Data Sources"] --> B["Connector / Acquisition Jobs"]
+  B --> C["Operational DB (raw + canonical)"]
+  C --> D["Self-Healing + Governance Layer"]
+  D --> E["T0-Certified Feature Stores"]
+  E --> F["Modeling Stack"]
+  F --> G["Scoring / Monitoring"]
   G --> D
+
+  D --- D1["Deterministic validators & policies"]
+  D --- D2["Text + vision labeling (optional)"]
+  D --- D3["Diff-only patches + audit ledger"]
+  D --- D4["Snapshot anchors + reconciliation"]
+
