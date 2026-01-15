@@ -1,0 +1,113 @@
+3) Definitive check: are all 10 “feature_block stores” covered right now?
+
+
+
+
+
+
+
+Run this SQL. It maps each SHAP block to the entrypoint that certifies it and shows status/age.
+
+WITH block_map AS (
+  SELECT * FROM (VALUES
+    -- blocks covered by SOCIO/MARKET entrypoint
+    ('main_feature_store',        'ml.socio_market_feature_store_t0_v1_v'),
+    ('ai_enrichment_store',       'ml.socio_market_feature_store_t0_v1_v'),
+    ('socio_economic_store',      'ml.socio_market_feature_store_t0_v1_v'),
+    ('orderbook_store',           'ml.socio_market_feature_store_t0_v1_v'),
+    ('anchor_priors_store',       'ml.socio_market_feature_store_t0_v1_v'),
+
+    -- blocks covered by their own entrypoints
+    ('device_meta_store',         'ml.device_meta_store_t0_v1_v'),
+    ('vision_store',              'ml.vision_feature_store_t0_v1_v'),
+    ('fusion_store',              'ml.fusion_feature_store_t0_v1_v'),
+    ('geo_store',                 'ml.geo_feature_store_t0_v1_v'),
+    ('trainer_derived',           'ml.trainer_derived_feature_store_t0_v1_v'),
+    ('anchor_woe_store',          'ml.woe_anchor_feature_store_t0_v1_v')
+  ) AS t(feature_block, entrypoint)
+),
+reg AS (
+  SELECT entrypoint, status, certified_at, dataset_days, notes
+  FROM audit.t0_cert_registry
+)
+SELECT
+  m.feature_block,
+  m.entrypoint,
+  r.status,
+  r.certified_at,
+  now() - r.certified_at AS age,
+  r.dataset_days,
+  r.notes
+FROM block_map m
+LEFT JOIN reg r USING (entrypoint)
+ORDER BY 1;
+
+
+
+
+
+
+
+If every row shows status='CERTIFIED' and age < 24h, you’re covered.
+
+4) “Certify everything” block (complete, including WOE correctly)
+
+Your cert block is basically correct. The only change is:
+
+WOE should be post-train (mandatory), because training flips is_active.
+
+
+
+
+Pre-train dev cert block (all entrypoints that must be valid before training starts)
+-- SOCIO/MARKET
+CALL audit.rebaseline_last_n_days('ml.socio_market_feature_store_t0_v1_v'::regclass, 10, 2000);
+CALL audit.run_t0_cert_socio_market_v1(10);
+SELECT audit.require_certified_strict('ml.socio_market_feature_store_t0_v1_v', interval '24 hours');
+
+-- GEO
+CALL audit.rebaseline_last_n_days('ml.geo_feature_store_t0_v1_v'::regclass, 10, 2000);
+CALL audit.run_t0_cert_geo_store_v1(10);
+SELECT audit.require_certified_strict('ml.geo_feature_store_t0_v1_v', interval '24 hours');
+
+-- VISION
+CALL audit.rebaseline_last_n_days('ml.vision_feature_store_t0_v1_v'::regclass, 10, 2000);
+CALL audit.run_t0_cert_vision_store_v1(10, true);
+SELECT audit.require_certified_strict('ml.vision_feature_store_t0_v1_v', interval '24 hours');
+
+-- FUSION
+CALL audit.rebaseline_last_n_days('ml.fusion_feature_store_t0_v1_v'::regclass, 10, 2000);
+CALL audit.run_t0_cert_fusion_store_v1(10, true);
+SELECT audit.require_certified_strict('ml.fusion_feature_store_t0_v1_v', interval '24 hours');
+
+-- TRAINER_DERIVED
+CALL audit.rebaseline_last_n_days('ml.trainer_derived_feature_store_t0_v1_v'::regclass, 10, 2000);
+CALL audit.run_t0_cert_trainer_derived_store_v1(10);
+SELECT audit.require_certified_strict('ml.trainer_derived_feature_store_t0_v1_v', interval '24 hours');
+
+-- DEVICE_META (drift allowed + rebaseline)
+REFRESH MATERIALIZED VIEW ml.device_meta_gmc_stats_t0_v1_mv;
+ANALYZE ml.device_meta_gmc_stats_t0_v1_mv;
+CALL audit.run_t0_cert_device_meta_v3(10, true, 2000);
+SELECT audit.require_certified_strict('ml.device_meta_store_t0_v1_v', interval '24 hours');
+
+Post-train WOE cert (mandatory)
+CALL audit.rebaseline_last_n_days('ml.woe_anchor_feature_store_t0_v1_v'::regclass, 10, 2000);
+CALL audit.run_t0_cert_woe_anchor_store_v1(10);
+SELECT audit.require_certified_strict('ml.woe_anchor_feature_store_t0_v1_v', interval '24 hours');
+
+
+
+
+
+
+
+That’s “certify everything” in the only way that’s correct with WOE.
+
+5) Where “trainer_missing_flags” fits
+
+You didn’t include missingness in your current “certified 10/12” list. If you still want that last one:
+
+You need a missingness store entrypoint in DB (like we discussed earlier), then add it to the cert block like any other store.
+
+If you want that, I’ll give you the exact DB view + cert runner in the same dev-mode style (drift allowed last 10 days).
