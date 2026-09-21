@@ -14,7 +14,7 @@ Sanitize the trainer-derived feature store SQL package for public release by rem
 - Replaced internal vision/image surface naming with: `ml.image_features_unified_v1_train_v`
 
 ### Example data sanitization
-- Replaced any real-looking example identifiers with synthetic values (e.g., `listing_id=123456789`)
+- Replaced any real-looking example identifiers with synthetic values (e.g., `listing_id=1001`)
 - Replaced concrete example timestamps with generic placeholders (e.g., `2026-01-01 00:00:00+00`)
 
 ## Forbidden-string scan
@@ -24,3 +24,5 @@ Confirmed the public package contains **zero occurrences** of platform brand/dom
 - No credentials or secrets were present in the source SQL files; none were added.
 - The certification framework shipped here (`sql/00_audit_primitives_public.sql`) is a minimal public template meant to demonstrate the pattern. Production systems may use richer registry, alerting, and CI enforcement.
 
+
+The five public fixture identifiers are the deliberately small synthetic values 1001–1005. They are not retained source identifiers; references in the example surfaces and validation query use the same synthetic mapping.

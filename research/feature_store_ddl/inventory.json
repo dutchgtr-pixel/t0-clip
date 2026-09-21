@@ -1,0 +1,1215 @@
+{
+  "schema_version": 1,
+  "validation": "offline PostgreSQL AST parsing; not database execution",
+  "limitations": [
+    "Qualified relation edges only; dynamic SQL and function-body dependencies require manual review.",
+    "Definitions spread over historical revisions are not one executable migration sequence.",
+    "Parsing does not check missing relations, column types, extensions, permissions or temporal correctness."
+  ],
+  "files": [
+    {
+      "path": "feature-stores/anchor-priors/sql/01_speed_anchor_asof.sql",
+      "sha256_lf": "c2ba937494510de4ad2eff150d36ffb8b33d8a25c994733e7522a2b351baa04c",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 1
+    },
+    {
+      "path": "feature-stores/anchor-priors/sql/03_strict_anchor_lateral.sql",
+      "sha256_lf": "edc272c456c9b0d7e2d8d0684c4ce5b3a2e09eed75d802ad657cbf0442163566",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "fragment_wrapper": "SELECT b.* FROM public.listings b; parser context only, not a source adapter",
+      "status": "fragment_parsed",
+      "statement_count": 1,
+      "defines": [],
+      "directly_references": [
+        "public.listings"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/anchor-priors/sql/04_advanced_anchor_v1_lateral.sql",
+      "sha256_lf": "f7e15eea9e69289847827898736c9990850ce2609c05b85eef665548bc0247a4",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "fragment_wrapper": "SELECT; parser context only, not a source adapter",
+      "status": "fragment_parsed",
+      "statement_count": 1,
+      "defines": [],
+      "directly_references": [
+        "ml.listing_features_v1_mv",
+        "ml.listing_image_features_v1",
+        "public.listing_image_assets",
+        "public.listings"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/anchor-priors/sql/05_verification_queries.sql",
+      "sha256_lf": "3708b81ba26d634e457c80f0d99f6431e6b2fa59d1fdf90d4db09fd8141361d1",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/damage-fusion/sql/01_create_fusion_views_v2.sql",
+      "sha256_lf": "37589e723fe6abd8162ef17c2a18574cd0a803b982723df3f641430ea1504d96",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.v_damage_fusion_features_v2",
+        "ml.v_damage_fusion_features_v2_scored"
+      ],
+      "directly_references": [
+        "device.device_listings",
+        "ml.device_image_features_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/damage-fusion/sql/02_create_cert_entrypoint_and_guard.sql",
+      "sha256_lf": "119a85c647c1ee3709c458fc9c421b01d974745e303442badb8c2adbb4bfe1f5",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.fusion_feature_store_t0_v1_v",
+        "ml.v_damage_fusion_features_v2_scored_train_v"
+      ],
+      "directly_references": [
+        "device.device_listings",
+        "ml.v_damage_fusion_features_v2_scored"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/damage-fusion/sql/03_baseline_viewdefs.sql",
+      "sha256_lf": "4f066df393575312dee9b9ee8dc1e2d38e627f6f4330723d466da65febbd6e87",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/damage-fusion/sql/04_baseline_dataset_hashes_365.sql",
+      "sha256_lf": "4fd18db4771cddc250fcc3d83bb855fb57daead099020c2c371e82f3b11f9e2d",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 3,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_dataset_hash_baseline",
+        "ml.fusion_feature_store_t0_v1_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/damage-fusion/sql/05_cert_functions.sql",
+      "sha256_lf": "1f0e53e163ab6fc9416377c6b0615941a861045fa6a83f49d884284ba8ec206e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [
+        "audit.t0_cert_registry"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 2
+    },
+    {
+      "path": "feature-stores/damage-fusion/sql/06_run_certification.sql",
+      "sha256_lf": "f84ea8119a966c887542b61b98d3333889b146736da926847f402e4c1fdd598f",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_cert_registry",
+        "ml.v_damage_fusion_features_v2_scored_train_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/damage-fusion/sql/optional/01_create_fusion_scored_t0_sla_matview.sql",
+      "sha256_lf": "382344f886596e6378259f27da434b448ca3669e733f37b501ec352839c7f674",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 1
+    },
+    {
+      "path": "feature-stores/device-meta/device_meta_feature_store_public.sql",
+      "sha256_lf": "edac5a678e305e85e73b606bd0353b1a3681e28dc28ec5fe646fcaaf97269071",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 5,
+      "defines": [
+        "feature_store.device_meta_encoded_t0_v1",
+        "feature_store.device_meta_gmc_stats_t0_v1_mv",
+        "feature_store.v_device_meta_base_t0_v1"
+      ],
+      "directly_references": [
+        "feature_store.device_image_features_unified_v1",
+        "feature_store.listing_device_features_clean_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/assets/00_all_geo_mapping_objects.sql",
+      "sha256_lf": "629c8dc7fa188240aef5f15fd3e34937acc6921ecc1fc9f5489497d239b34eab",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 2,
+      "status": "syntax_parsed",
+      "statement_count": 27,
+      "defines": [
+        "ml.listings_geo_current",
+        "ref.city_to_super_metro",
+        "ref.city_to_super_metro_current",
+        "ref.geo_mapping_current",
+        "ref.geo_mapping_release",
+        "ref.postal_code_to_super_metro",
+        "ref.postal_code_to_super_metro_current"
+      ],
+      "directly_references": [
+        "marketplace.listings_raw"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 2
+    },
+    {
+      "path": "feature-stores/geo/assets/01_create_versioned_reference_tables.sql",
+      "sha256_lf": "718aab6fe26d414eade4299ee0c1c3b88ec6e51785fef6b67e6e18f46e8c98dd",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 9,
+      "defines": [
+        "ref.city_to_super_metro",
+        "ref.geo_mapping_release",
+        "ref.postal_code_to_super_metro"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/assets/02_create_current_views.sql",
+      "sha256_lf": "77717a31102d0d128be942ddb0f27d0c60a96ff12ecaf53a43a045970e8f321b",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 3,
+      "defines": [
+        "ref.city_to_super_metro_current",
+        "ref.geo_mapping_current",
+        "ref.postal_code_to_super_metro_current"
+      ],
+      "directly_references": [
+        "ref.city_to_super_metro",
+        "ref.geo_mapping_release",
+        "ref.postal_code_to_super_metro"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/assets/03_create_normalization_functions.sql",
+      "sha256_lf": "a65ba2d329f2ba4d3115fe11fb5938d835bb9777ee77a5f029744157467d35e3",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 2
+    },
+    {
+      "path": "feature-stores/geo/assets/04_create_geo_enriched_listings_view.sql",
+      "sha256_lf": "df5d29769ba40b74c37498faf3dd735095e1f16a182980f00e513a314042abef",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [
+        "ml.listings_geo_current"
+      ],
+      "directly_references": [
+        "marketplace.listings_raw",
+        "ref.city_to_super_metro",
+        "ref.geo_mapping_current",
+        "ref.postal_code_to_super_metro"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/assets/05_post_load_qa_checks.sql",
+      "sha256_lf": "9a6c7ac19902477671fb8002c23b2febbb6e629ec0d4bd7076e5e58b80715620",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 8,
+      "defines": [],
+      "directly_references": [
+        "marketplace.listings_raw",
+        "ml.listings_geo_current",
+        "ref.city_to_super_metro_current",
+        "ref.geo_mapping_release",
+        "ref.postal_code_to_super_metro_current"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/assets/06_switch_current_release.sql",
+      "sha256_lf": "303caa42d8af90bde0d199f393cc4ceda5df6a7e8b638483b1eafede07ff33de",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 2,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/assets/07_optional_indexes.sql",
+      "sha256_lf": "3c300bce4e588625198abf95ce56eeaae70fe695fb9578298287ff0cddf0cde5",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 0,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/sql/10_pin_release.sql",
+      "sha256_lf": "d2d1fd5a9105d115661a4f8dca8cb22f53bbce4b3506db72674b28292319f887",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 1
+    },
+    {
+      "path": "feature-stores/geo/sql/11_create_pinned_geo_dim.sql",
+      "sha256_lf": "22696ce36a0fc523d6c34359e84f97319f23662b7b4d7e5c0dfc1cecc0fee6e0",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.geo_dim_super_metro_v4_pinned_v1",
+        "ml.geo_dim_super_metro_v4_t0_v1"
+      ],
+      "directly_references": [
+        "ml.tom_features_v1_mv",
+        "ref.city_to_super_metro",
+        "ref.geo_mapping_pinned_super_metro_v4_v1",
+        "ref.postal_code_to_super_metro"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/sql/12_create_entrypoint_and_guard.sql",
+      "sha256_lf": "702de4817b07d0fb3b77ee7ddcfd182cd73caa22ae8362ae3f9339eb835e965d",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.geo_dim_super_metro_v4_t0_train_v",
+        "ml.geo_feature_store_t0_v1_v"
+      ],
+      "directly_references": [
+        "ml.geo_dim_super_metro_v4_t0_v1",
+        "ml.tom_features_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/sql/13_baseline_viewdefs.sql",
+      "sha256_lf": "ad535d3e176589fbfb74c304bcff8c4dd019c9583459e31c26fd12b3b2ec6e2a",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/sql/14_baseline_dataset_hashes_365.sql",
+      "sha256_lf": "06db1ce95042f55cd53f40be9c0ee3cb41b155b418e39c33c087deef0bcddfb5",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [
+        "ml.geo_feature_store_t0_v1_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/geo/sql/15_create_cert_assert_and_runner.sql",
+      "sha256_lf": "c2d2d2c44d59a724dbb757dc48fa7578c319ef73d6b0ee73ada63ac3a0709062",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 2
+    },
+    {
+      "path": "feature-stores/geo/sql/16_run_certification_365.sql",
+      "sha256_lf": "058fa6827173b1a067864c48ae666f753ff5464c1f68394f60ef933995969ceb",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_cert_registry",
+        "ml.geo_dim_super_metro_v4_t0_train_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/image-features/sql/device_image_accessory_features_v1_public.sql",
+      "sha256_lf": "4c7d386ff215e9894804c6bbbf501f06e6f34f49e8f265af54750ebc39573b77",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.device_image_accessory_features_v1"
+      ],
+      "directly_references": [
+        "device.device_image_assets",
+        "ml.device_image_features_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/image-features/sql/device_image_color_features_v1_public.sql",
+      "sha256_lf": "d77c7ffbd1f3d9847df94fd2189ecc55c2cd164fc9d4634a8be033b71deb63ce",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.device_image_color_features_v1"
+      ],
+      "directly_references": [
+        "device.device_image_assets",
+        "device.device_listings",
+        "ml.device_image_features_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/image-features/sql/device_image_damage_features_v1_public.sql",
+      "sha256_lf": "3e36ea529e29d2dda762a0e1da2e6926384bbf0c84e2fa61192c8213a72d4c99",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [
+        "ml.device_image_damage_features_v1"
+      ],
+      "directly_references": [
+        "device.device_image_assets",
+        "ml.device_image_features_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/image-features/sql/device_image_features_unified_v1_public.sql",
+      "sha256_lf": "985d4f9f6d86b3bf5fdbb317ddef49971ed9b15b6823fa7f0e6fcae0a8aa9c1e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.device_image_features_unified_v1"
+      ],
+      "directly_references": [
+        "device.device_image_assets",
+        "ml.device_image_accessory_features_v1",
+        "ml.device_image_color_features_v1",
+        "ml.device_image_damage_features_v1",
+        "ml.device_image_features_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/main/sql/feature_store_certification_guardrails_public.sql",
+      "sha256_lf": "83345c5b0d34bf5a78ddd9c6b168dbea85495383f6e0159bd9400685f1f820ef",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 30,
+      "defines": [
+        "audit.t0_cert_registry",
+        "audit.t0_dataset_hash_baseline",
+        "audit.t0_viewdef_baseline",
+        "ml.survival_feature_store_train_v"
+      ],
+      "directly_references": [
+        "ml.survival_feature_store_t0_v1_v",
+        "ml.tom_features_v1_enriched_ai_clean_mv",
+        "ml.tom_features_v1_enriched_speed_mv",
+        "ml.tom_speed_anchor_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 8
+    },
+    {
+      "path": "feature-stores/main/sql/feature_store_refresh_runbook_snippets_public.sql",
+      "sha256_lf": "8fab3dbd43d82ac0ffcf637c68e5abba4321eea3444b3c82c696325363c15a2d",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 10,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 1
+    },
+    {
+      "path": "feature-stores/main/sql/feature_store_t0_remediation_public.sql",
+      "sha256_lf": "03a27b3cfeddd9f6789e7ee3f1c357335e7b1e554a35046b41b81170d2289394",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 30,
+      "defines": [
+        "ml.geo_dim_super_metro_v4_pinned_v1",
+        "ml.geo_dim_super_metro_v4_t0_v1",
+        "ml.tom_features_v1_enriched_ai_clean_t0_read_v",
+        "ml.tom_features_v1_enriched_ai_clean_t0_v1_mv",
+        "ml.tom_features_v1_enriched_speed_t0_v1_mv"
+      ],
+      "directly_references": [
+        "device.device_ai_enrich",
+        "ml.device_image_features_unified_t0_v1_mv",
+        "ml.survival_feature_store_t0_v1_v",
+        "ml.tom_features_v1_enriched_clean_mv",
+        "ml.tom_features_v1_mv",
+        "ml.tom_speed_anchor_asof_v1_mv",
+        "ref.city_to_super_metro",
+        "ref.geo_mapping_pinned_super_metro_v4_v1",
+        "ref.postal_code_to_super_metro"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 7
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/00_prereqs.sql",
+      "sha256_lf": "dbc0aa8d677a9dd8216973135139ca2e6caf1a89287d04acf5f72cbf7ba1c3c4",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 6,
+      "defines": [
+        "audit.t0_cert_registry",
+        "audit.t0_dataset_hash_baseline",
+        "audit.t0_viewdef_baseline"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/00a_minimal_audit_framework.sql",
+      "sha256_lf": "503f314a0e353cb57eabdcd77ef5c6b82e7c3580041de01acb4c31c08f39276e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 5,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 3
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/01_create_socio_t0_mv.sql",
+      "sha256_lf": "2fcc858e96b029c2f979252ded73361bbdc9cb3a26048950d1d69163cfc7a5f2",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_t0_v1_mv"
+      ],
+      "directly_references": [
+        "ml.device_listings_geo_current",
+        "ml.tom_features_v2_enriched_ai_ob_clean_mv",
+        "ref.kommune_socio_history",
+        "ref.postal_code_to_kommune_history"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/02_create_market_base_table.sql",
+      "sha256_lf": "a5cc1937e8eda94e1e35ef38d22181c42646c870f1cdb2a6334c964c2a16efad",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 5,
+      "defines": [
+        "ml.market_base_socio_t0_v1"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 1
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/03_market_relative_mv.sql",
+      "sha256_lf": "b6b283b2245adeb088bf512d94df38734b29cf1032c25de26e2fc5e1986049e7",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 7,
+      "defines": [
+        "ml.market_relative_socio_t0_v1_mv"
+      ],
+      "directly_references": [
+        "ml.market_base_socio_t0_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/04_create_socio_market_wide_mv.sql",
+      "sha256_lf": "d698dbbaf57ef88fff2cca6774ed8ca41669707b7e718855bf9efd64e51c1869",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_market_t0_v1_mv"
+      ],
+      "directly_references": [
+        "ml.market_relative_socio_t0_v1_mv",
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_t0_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/05_create_entrypoint_and_guard_views.sql",
+      "sha256_lf": "8fb36f07c6a91568d324e96f318d36a61f6f50a2d7886188b968d2a80df96691",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.socio_market_feature_store_t0_v1_v",
+        "ml.socio_market_feature_store_train_v"
+      ],
+      "directly_references": [
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_market_t0_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/06_invariants_checks.sql",
+      "sha256_lf": "4a61ae40a7a2beb06d1fbcc25afabcc8cc2f12783ddb43d3828b3cacb707154b",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 3,
+      "defines": [],
+      "directly_references": [
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_market_t0_v1_mv",
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_t0_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/07_create_cert_functions.sql",
+      "sha256_lf": "db2d2760cce1e5335b2599f6f6479582299ea80e3e960b907a688463b0ca971e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 2
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/08_baseline_viewdefs.sql",
+      "sha256_lf": "cb2a2b15c775132e1075c6279b4c2b526e2fb3ee0e6925e09287fb948b8fafd1",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/09_baseline_dataset_hashes_365.sql",
+      "sha256_lf": "df3550a956bb11e9d7fb4fb4c8b615dd102a23f0c531bafb950a324b8d593441",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [
+        "ml.socio_market_feature_store_t0_v1_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/10_run_certification.sql",
+      "sha256_lf": "d02d16a2862239f907cef908c2d596a3ce07423445d1d2b93d7aeb84a5f46d78",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 3,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_cert_registry"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/11_register_aliases.sql",
+      "sha256_lf": "b1f4d89080146585cf053a42211d2f09feaee0eedc592b336f1320720c5ce5fc",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_dataset_hash_baseline",
+        "audit.t0_viewdef_baseline"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/12_daily_refresh_runbook.sql",
+      "sha256_lf": "851bceb06d05e887f8ab4a3d4fa3e25bc689d54707203e872dc4b48833fae301",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 19,
+      "defines": [],
+      "directly_references": [
+        "ml.market_base_socio_t0_v1",
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_market_t0_v1_mv",
+        "ml.tom_features_v2_enriched_ai_ob_clean_socio_t0_v1_mv",
+        "ref.kommune_socio_latest",
+        "ref.postal_code_to_kommune_latest"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/socio-economic/socio_economic_store_public_release_package/sql/99_introspection_helpers.sql",
+      "sha256_lf": "f6881c0d7dd4ea3d1cde9bb6b2f5650b699d8130c732a6ffc11fa2ac81183803",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 9,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_cert_registry",
+        "audit.t0_dataset_hash_baseline",
+        "audit.t0_viewdef_baseline",
+        "ml.socio_market_feature_store_train_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/trainer-derived/trainer_derived_store_public/sql/00_audit_primitives_public.sql",
+      "sha256_lf": "c241c169e23627dc46db4f5891de496f8bb6be54469d44b97a9cfa64caf678c7",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 12,
+      "defines": [
+        "audit.t0_cert_registry",
+        "audit.t0_dataset_hash_baseline",
+        "audit.t0_viewdef_baseline"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 5
+    },
+    {
+      "path": "feature-stores/trainer-derived/trainer_derived_store_public/sql/01_example_input_surfaces_public.sql",
+      "sha256_lf": "8bce507f5aa2c04e6e4d9f4efa43be04b0bd72feb587f11f91839c91a53ee47d",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 18,
+      "defines": [
+        "ml.anchor_events",
+        "ml.anchor_features_v1_mv",
+        "ml.image_features_unified",
+        "ml.image_features_unified_v1_train_v",
+        "ml.market_feature_store",
+        "ml.market_feature_store_train_v"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/trainer-derived/trainer_derived_store_public/sql/02_create_trainer_derived_store_public.sql",
+      "sha256_lf": "3af31295cedc59e9e78362064b2fb44e8368125610173300fca1dc0ebeacf1f2",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 9,
+      "defines": [
+        "ml.trainer_derived_feature_store_t0_v1_v",
+        "ml.trainer_derived_features_train_v",
+        "ml.trainer_derived_features_v1",
+        "ml.trainer_derived_features_v1_mv"
+      ],
+      "directly_references": [
+        "ml.anchor_features_v1_mv",
+        "ml.image_features_unified_v1_train_v",
+        "ml.market_feature_store_train_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/trainer-derived/trainer_derived_store_public/sql/03_certify_trainer_derived_store_public.sql",
+      "sha256_lf": "2d9c124786c3bb18917a31ff58daac004bc6d8327a4d14871dde2aa0e6b5e1c2",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 6,
+      "defines": [],
+      "directly_references": [
+        "ml.trainer_derived_features_train_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/trainer-derived/trainer_derived_store_public/sql/05_feature_block_normalization_public.sql",
+      "sha256_lf": "75074292744acfa254e00ac8244589b46be8e935274d91c96bce961ccfe94c30",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 6,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [
+        "ml.model_feature_importance_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/trainer-derived/trainer_derived_store_public/sql/07_validation_queries_public.sql",
+      "sha256_lf": "ec80fce3561a169d0d631c56eace087c1f49f9b42d691d4484b312ce6125365e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 3,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_cert_registry",
+        "ml.anchor_features_v1_mv",
+        "ml.trainer_derived_features_train_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/00_audit_primitives.sql",
+      "sha256_lf": "1c0f0213c3a836b0a0ffda1d6fa953ab2c451ae919e55e45ec5bd9e0c0f831f0",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 7,
+      "defines": [
+        "audit.t0_cert_registry",
+        "audit.t0_dataset_hash_baseline",
+        "audit.t0_viewdef_baseline"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 2
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/00_create_tables.sql",
+      "sha256_lf": "5a319bd35fd2c10971da50da795362068eeb5120f3a00b0a95991158dfcbd39f",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 5,
+      "defines": [
+        "ml.woe_anchor_cuts_v1",
+        "ml.woe_anchor_map_v1",
+        "ml.woe_anchor_model_registry_v1",
+        "ml.woe_anchor_scores_v1"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/01_nullable_fold_id_migration.sql",
+      "sha256_lf": "8177851f6761d2fcd6919b44cc7656a055263f71dbc4d87eb8ac5e447c4ffffd",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 12,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/02_add_registry_fields.sql",
+      "sha256_lf": "d539d7a68bff624488eb0f742a589717fa258aff01bd49c7d102186cd1b7377f",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/03_create_banding_view.sql",
+      "sha256_lf": "ec87f599d859abe696df32f2e6bf2f767d9b2dd308d23cf12cd5a6bcd5d9ba9e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [
+        "ml.v_woe_anchor_bands_live_v1"
+      ],
+      "directly_references": [
+        "ml.device_image_features_unified_v1_train_v",
+        "ml.socio_market_feature_store_train_v",
+        "ml.woe_anchor_cuts_v1",
+        "ml.woe_anchor_model_registry_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/04_create_scoring_view.sql",
+      "sha256_lf": "d7593dd9b0f4e022feedb39dbe4537f88a27aa7ac2392977dbbe601687b21228",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 1,
+      "defines": [
+        "ml.woe_anchor_scores_live_v1"
+      ],
+      "directly_references": [
+        "ml.v_woe_anchor_bands_live_v1",
+        "ml.woe_anchor_map_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/05_create_entrypoint_and_guard.sql",
+      "sha256_lf": "c456f2391b37085f713886ed319c515e6eebbfc1064b94f1a507adf0e712eb35",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [
+        "ml.woe_anchor_feature_store_t0_v1_v",
+        "ml.woe_anchor_scores_live_train_v"
+      ],
+      "directly_references": [
+        "ml.woe_anchor_scores_live_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/06_baseline_viewdefs.sql",
+      "sha256_lf": "1a0b07950651c258c4c570fd90262513fbb3834b732ccfa51a08375e595968a1",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/07_baseline_dataset_hashes_last10.sql",
+      "sha256_lf": "13e79d16e4270ebcd3b88163109ed3bac4273988d102393dbdc81bc676fa59bd",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [
+        "ml.woe_anchor_feature_store_t0_v1_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/08_create_cert_assert_and_runner.sql",
+      "sha256_lf": "a9abebb604945fd18c7aee2c0c94cac176526a28db6cecfedec3dfd97d2624a5",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 2,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 2
+    },
+    {
+      "path": "feature-stores/woe-anchor/woe_anchor_store_public/sql/09_run_certification.sql",
+      "sha256_lf": "9424411a85dffa52ecc7ea59d641c73cb5be19516297e595d85e7cef92cb07c0",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 5,
+      "defines": [],
+      "directly_references": [
+        "audit.t0_cert_registry",
+        "ml.woe_anchor_scores_live_train_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/archived/10_image_roles.sql",
+      "sha256_lf": "e40640fb34d26d6ddedf4a7718c17e4ae10cc2dfd85ecbe7bb1f98ce5d54dc87",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 13,
+      "defines": [
+        "image_map.device_image_role_mapping_v2_det",
+        "image_map.device_listing_best_image_slots_v2_det"
+      ],
+      "directly_references": [
+        "device.device_image_assets",
+        "device.device_listings",
+        "ml.device_image_features_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/archived/20_image_reports_slots.sql",
+      "sha256_lf": "5438b692f1628ca6d79a2b5de0e23ba7a905b3c61b981b6e0a8fc438ce23174e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 18,
+      "defines": [
+        "image_map.device_image_labeler_report_en_v1",
+        "image_map.device_listing_image_k8_manifest_v1",
+        "image_map.device_listing_image_k8_slots_v1"
+      ],
+      "directly_references": [
+        "device.device_image_assets",
+        "image_map.device_image_role_mapping_v2_det",
+        "ml.device_image_features_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/archived/30_price_anchor.sql",
+      "sha256_lf": "fef56fba7582aaadcd2bffd81a2cf68bd4a35c751a0634632fe893b3807e3b84",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 39,
+      "defines": [
+        "ml.price_anchor_feature_store_t0_v1_mv",
+        "ml.price_anchor_history_t0_v1_mv",
+        "ml.price_anchor_key_metrics_t0_v1_mv",
+        "ml.price_anchor_prior_daily_t0_v1_mv",
+        "ml.price_anchor_target_keys_t0_v1_mv"
+      ],
+      "directly_references": [
+        "device.device_listings",
+        "image_map.device_listing_image_k8_manifest_v1"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/archived/40_channel_base.sql",
+      "sha256_lf": "b5b9e0a2dcf5b13e2efba35be37e77001bcff5d796762ded8646b2ca9f2a1c8e",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 17,
+      "defines": [
+        "ml.channel_feature_store_t0_v1_v",
+        "ml.channel_listing_flags_t0_v1_mv",
+        "ml.channel_seller_priors_t0_v1_mv",
+        "ml.power_seller_fingerprint_v1",
+        "ml.power_seller_listing_match_one_v1_v",
+        "ml.power_seller_listing_match_v1_v",
+        "ml.power_seller_tracking_snapshot_v1"
+      ],
+      "directly_references": [
+        "device.device_listings"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 1
+    },
+    {
+      "path": "research/feature_store_ddl/archived/50_channel_priors.sql",
+      "sha256_lf": "8d4c99fd27b9ff6039c1885e2e954885c37e93eef1f25ede0ed37594616b84a2",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 10,
+      "defines": [
+        "ml.channel_feature_store_t0_v1_v",
+        "ml.channel_seller_prior_daily_t0_v1_mv",
+        "ml.channel_seller_priors_t0_v2_mv"
+      ],
+      "directly_references": [
+        "ml.channel_listing_flags_t0_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/archived/80_refresh_price.sql",
+      "sha256_lf": "a4c8fcf162cb70459fdafbece0255e0484e0639da91a9bd38beadc2381cfc94c",
+      "omitted_client_directives": 1,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 14,
+      "defines": [],
+      "directly_references": [
+        "ml.price_anchor_feature_store_t0_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/archived/81_refresh_channel.sql",
+      "sha256_lf": "1c3ca79872c2e3b8011cfc23ee25184107c7720ec1952a404f645825a2398851",
+      "omitted_client_directives": 1,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 5,
+      "defines": [],
+      "directly_references": [
+        "ml.channel_feature_store_t0_v1_v"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/archived/90_validate_price.sql",
+      "sha256_lf": "344286e60e8ea037a8d914380675df150a98042fa018a468950e6821159cb68a",
+      "omitted_client_directives": 1,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 6,
+      "defines": [],
+      "directly_references": [
+        "device.device_listings",
+        "ml.price_anchor_feature_store_t0_v1_mv",
+        "ml.price_anchor_history_t0_v1_mv",
+        "ml.price_anchor_key_metrics_t0_v1_mv",
+        "ml.price_anchor_target_keys_t0_v1_mv"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/portable/00_source_contracts.sql",
+      "sha256_lf": "c18b5356fe7fda8f0831f52c13bfcd7a9fc70b407f5f4eaa18d9c577427fbef5",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 10,
+      "defines": [
+        "ref_input.decision",
+        "ref_input.fitted_anchor",
+        "ref_input.geo_release",
+        "ref_input.image_report_version",
+        "ref_input.listing_version",
+        "ref_input.market_observation",
+        "ref_input.outcome_version"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/portable/10_point_in_time_views.sql",
+      "sha256_lf": "ee7c866ff3f4810a98c0ed6f7014140fca13889519faa3ff403150e2f4b895d5",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 4,
+      "defines": [
+        "ref_feature.geo_v",
+        "ref_feature.image_report_v",
+        "ref_feature.labels_v",
+        "ref_feature.main_v"
+      ],
+      "directly_references": [
+        "ref_input.decision",
+        "ref_input.geo_release",
+        "ref_input.image_report_version",
+        "ref_input.listing_version",
+        "ref_input.outcome_version"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/portable/20_history_and_anchors.sql",
+      "sha256_lf": "cf4321d859a7e6ba8eccd29ac44883922f634d04cbae0621e553aaeb8ca88042",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 3,
+      "defines": [
+        "ref_feature.assembled_v",
+        "ref_feature.context_prior_v",
+        "ref_feature.learned_anchor_v"
+      ],
+      "directly_references": [
+        "ref_feature.geo_v",
+        "ref_feature.image_report_v",
+        "ref_feature.main_v",
+        "ref_input.decision",
+        "ref_input.fitted_anchor",
+        "ref_input.market_observation"
+      ],
+      "function_or_do_bodies_not_semantically_checked": 0
+    },
+    {
+      "path": "research/feature_store_ddl/portable/30_certification.sql",
+      "sha256_lf": "2574cce6df3c8fbfa306c671a0cddc6211a664f4bc9b3668158c6f61863d0f78",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 6,
+      "defines": [
+        "ref_audit.certificate"
+      ],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 5
+    },
+    {
+      "path": "research/feature_store_ddl/portable/90_synthetic_fixture.sql",
+      "sha256_lf": "89a188c89ecc1eb619ef616d69ded1142f2b6e8925d60b28b265417b42a3fe14",
+      "omitted_client_directives": 0,
+      "substituted_client_variables": 0,
+      "status": "syntax_parsed",
+      "statement_count": 10,
+      "defines": [],
+      "directly_references": [],
+      "function_or_do_bodies_not_semantically_checked": 1
+    }
+  ],
+  "counts": {
+    "sql_files": 79,
+    "syntax_parsed": 77,
+    "fragment_parsed": 2,
+    "parser_rejected": 0
+  }
+}

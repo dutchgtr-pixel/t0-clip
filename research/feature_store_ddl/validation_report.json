@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "validation": "isolated in-memory PostgreSQL-WASM",
+  "engine": "PostgreSQL 18.3 (PGlite 0.5.8) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 3.1.74 (1092ec30a3fb1d46b1782ff1b4db5094d3d06ae5), 32-bit",
+  "sql_files_executed": [
+    "00_source_contracts.sql",
+    "10_point_in_time_views.sql",
+    "20_history_and_anchors.sql",
+    "30_certification.sql",
+    "90_synthetic_fixture.sql"
+  ],
+  "synthetic_entities": 1,
+  "temporal_fixture_assertions": 7,
+  "empty_uncertified_blocked": true,
+  "changed_content_blocked": true,
+  "expired_certificate_blocked": true,
+  "historical_archived_sql_executed": false,
+  "production_database_connected": false
+}

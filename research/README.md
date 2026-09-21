@@ -5,6 +5,16 @@ separate from the [preserved production network](production_reference/README.md)
 The production reference includes real selected source definitions with hashes;
 it does not include trained weights, private data, or the complete deployed stack.
 
+The extended release also includes the [three-stage cascade](cascade/README.md),
+[feature-store SQL](feature_store_ddl/README.md), [leakage study](leakage/LEAKAGE_STUDY.md),
+and [full PDF monograph](../papers/marketneural/marketneural-thesis.pdf). The cascade
+trains new models from caller-supplied matrices using preserved numerical routines
+and explicitly new portable controllers. It does not reconstruct unavailable
+historical fit datasets or private trained weights.
+
+Private datasets remain proprietary. See the [research data-access policy](../DATA_ACCESS.md).
+No public code license grants access to Parquet files or original record identifiers.
+
 ## Installation
 
 Use Python 3.11 or newer in a clean virtual environment. From the repository root:

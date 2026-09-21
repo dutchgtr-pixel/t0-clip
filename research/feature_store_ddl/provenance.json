@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "scope": "Selected historical SQL, no database snapshot, source rows or credentials. Original source paths withheld. Raw source hashes identify the private evidence; exports normalize newlines to LF.",
+  "sources": [
+    {
+      "source_id": "private_stage2_sql_01",
+      "source_sha256": "1a69d9b1b3da0fbd2be59189b6e786f0df2f25ce28fd6460d6b59011043014d6",
+      "export_path": "archived/10_image_roles.sql",
+      "export_sha256_lf": "e40640fb34d26d6ddedf4a7718c17e4ae10cc2dfd85ecbe7bb1f98ce5d54dc87",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header"
+      ]
+    },
+    {
+      "source_id": "private_stage2_sql_02",
+      "source_sha256": "41e011a52df9ef9fdb7d8c4617e09a0b22874ffe13fc083901536a0106f32dcd",
+      "export_path": "archived/20_image_reports_slots.sql",
+      "export_sha256_lf": "5438b692f1628ca6d79a2b5de0e23ba7a905b3c61b981b6e0a8fc438ce23174e",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header"
+      ]
+    },
+    {
+      "source_id": "private_stage2_sql_03",
+      "source_sha256": "8817f73cd5a5f79bd2aa124622f2c20543ed44b750df071e87e7aeeca7cb4632",
+      "export_path": "archived/30_price_anchor.sql",
+      "export_sha256_lf": "fef56fba7582aaadcd2bffd81a2cf68bd4a35c751a0634632fe893b3807e3b84",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header"
+      ]
+    },
+    {
+      "source_id": "private_stage2_sql_04",
+      "source_sha256": "76906cc7f1902e8f7da3b543e40444cd96cbfb00e0721776dddc036b7215ec54",
+      "export_path": "archived/40_channel_base.sql",
+      "export_sha256_lf": "b5b9e0a2dcf5b13e2efba35be37e77001bcff5d796762ded8646b2ca9f2a1c8e",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header",
+        "removed entire seller fingerprint seed INSERT; no private rows exported",
+        "generalized reference-source label"
+      ]
+    },
+    {
+      "source_id": "private_stage2_sql_05",
+      "source_sha256": "25c20c7cd380a5ed950d82c7304b76ac4212b25aa1cf1519df500b5e271e9efc",
+      "export_path": "archived/50_channel_priors.sql",
+      "export_sha256_lf": "8d4c99fd27b9ff6039c1885e2e954885c37e93eef1f25ede0ed37594616b84a2",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header"
+      ]
+    },
+    {
+      "source_id": "private_stage2_sql_06",
+      "source_sha256": "c35565acfa06cad8683204651bdf6cb1395aec17a29cf5e21f54d7a0d555474f",
+      "export_path": "archived/80_refresh_price.sql",
+      "export_sha256_lf": "a4c8fcf162cb70459fdafbece0255e0484e0639da91a9bd38beadc2381cfc94c",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header"
+      ]
+    },
+    {
+      "source_id": "private_stage2_sql_07",
+      "source_sha256": "52750e21b4aa05fa3825a924ec6d3178956e4ed3e124384aa25458549f6fa2fe",
+      "export_path": "archived/81_refresh_channel.sql",
+      "export_sha256_lf": "1c3ca79872c2e3b8011cfc23ee25184107c7720ec1952a404f645825a2398851",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header"
+      ]
+    },
+    {
+      "source_id": "private_stage2_sql_08",
+      "source_sha256": "7846a92e729e87237ff9b8c3eabf480d219b65447fd3c41738d0a7238ca51cd7",
+      "export_path": "archived/90_validate_price.sql",
+      "export_sha256_lf": "344286e60e8ea037a8d914380675df150a98042fa018a468950e6821159cb68a",
+      "transformations": [
+        "source-neutral identifier substitution",
+        "removed original comments and operator invocation examples",
+        "added evidence-boundary header"
+      ]
+    },
+    {
+      "source_id": "private_prep_sql_01",
+      "source_sha256": "4e97241187e7b54f96cc65e27afd145133e0353d2c590d7bbbf15bb43047de49",
+      "export_path": null,
+      "status": "audited orchestration dependency; not copied because it assumes the original full database and operator variables"
+    },
+    {
+      "source_id": "private_prep_sql_02",
+      "source_sha256": "6fb376f5d528e258b291a19d419f219e043d02a01522b10ed904afd1a0d47ee1",
+      "export_path": null,
+      "status": "audited orchestration dependency; not copied because it assumes the original full database and operator variables"
+    },
+    {
+      "source_id": "private_prep_sql_03",
+      "source_sha256": "60968dc5500aad11725642def2ba9b36e0247f206b5e181a005d2f6abf1cc66e",
+      "export_path": null,
+      "status": "audited orchestration dependency; not copied because it assumes the original full database and operator variables"
+    },
+    {
+      "source_id": "private_prep_sql_04",
+      "source_sha256": "0ed9c67bd6f444688853d548f457117bccbc6ef33bbe820fcb9cd32dd3189846",
+      "export_path": null,
+      "status": "audited orchestration dependency; not copied because it assumes the original full database and operator variables"
+    },
+    {
+      "source_id": "private_prep_sql_05",
+      "source_sha256": "3a6838822bbbbb392946e1ba1677a469a9a83500921cbd5ba2ec978c4c171ffd",
+      "export_path": null,
+      "status": "audited orchestration dependency; not copied because it assumes the original full database and operator variables"
+    },
+    {
+      "source_id": "private_legacy_population_comparison",
+      "source_sha256": "914fb75268875c160548610681ce20c8f0b2a1f5f141ef33fc9bf44fe2119a35",
+      "export_path": null,
+      "status": "excluded legacy diagnostic; intentionally exposes non-temporal comparison and must not enter current training features"
+    }
+  ]
+}

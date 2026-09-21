@@ -1,0 +1,30 @@
+\usepackage{mathpazo}
+\usepackage{fancyhdr,titlesec,caption,needspace,etoolbox,xurl,fvextra}
+\definecolor{ResearchNavy}{HTML}{17334A}
+\definecolor{ResearchTeal}{HTML}{197F83}
+\AtBeginDocument{\hypersetup{colorlinks=true,linkcolor=ResearchNavy,urlcolor=ResearchTeal,citecolor=ResearchTeal}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\sffamily MarketNeural}
+\fancyhead[R]{\footnotesize\sffamily Research monograph / 2026}
+\fancyfoot[C]{\small\thepage}
+\setlength{\headheight}{15pt}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\thepage}\renewcommand{\headrulewidth}{0pt}}
+\titleformat{\chapter}[display]{\normalfont\color{ResearchNavy}}{\sffamily\small\MakeUppercase{\chaptertitlename}\ \thechapter}{12pt}{\Huge\bfseries}
+\titlespacing*{\chapter}{0pt}{0pt}{24pt}
+\titleformat{\section}{\Large\bfseries\color{ResearchNavy}}{\thesection}{.65em}{}
+\titleformat{\subsection}{\large\bfseries\color{ResearchNavy}}{\thesubsection}{.65em}{}
+\captionsetup{font=small,labelfont=bf,labelsep=period,justification=justified,singlelinecheck=false}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 1pt minus 1pt}
+\setlength{\emergencystretch}{3em}
+\setlength{\textfloatsep}{18pt plus 3pt minus 3pt}
+\setcounter{topnumber}{2}
+\renewcommand{\topfraction}{0.88}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.7}
+\widowpenalty=10000
+\clubpenalty=10000
+\AtBeginEnvironment{longtable}{\footnotesize\setlength{\tabcolsep}{3.5pt}}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,fontsize=\small,commandchars=\\\{\}}

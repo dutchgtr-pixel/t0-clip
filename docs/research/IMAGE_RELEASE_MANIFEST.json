@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "reviewed_public_image_derivatives",
+  "review_note": "All historical crops and both real examples visually inspected. No account details, faces or marketplace marks. Text scanning alone cannot inspect pixels.",
+  "files": [
+    {
+      "path": "research/thesis_evidence/figures/h01_aft_error_families.png",
+      "sha256": "61260c7d0c2283e8c43ee8ba086ed53dcc682c0087f9beb0c5ff1235f93b2396",
+      "width": 1296,
+      "height": 735,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/h02_support_shrinkage.png",
+      "sha256": "adbb336e2bdcf569bc12cf9328f21514066cc5311d99d616aaec5d8c46ec228c",
+      "width": 1404,
+      "height": 778,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/h03_anchor_backoff.png",
+      "sha256": "76f1f33809bb239cb01b6d8fb63783c8f5b5d54cdc123a701e2c52d75cfa8fd5",
+      "width": 1470,
+      "height": 714,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/h04_slow21_confusion.png",
+      "sha256": "87bc14985a4e7d814433a113309ad17472a558dcdc19d56fc9dad15164a97772",
+      "width": 1318,
+      "height": 561,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/h05_slow21_sacrifice.png",
+      "sha256": "f0ce89c514f5eb945b121c6e43f128856417f1e42a044fdd5ee38d13b1f8003c",
+      "width": 1287,
+      "height": 708,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/h06_anchor_gain.png",
+      "sha256": "f1112dff0b2d940e75e711bba76fd013f967dd63575b8b224a97aca24799e46d",
+      "width": 1287,
+      "height": 901,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/h07_stock_conditional_lift.png",
+      "sha256": "b0d287e7ebdd9bbeba2096bb70ac34d4268ac43a6d4e6700a4ded10b0573d3b6",
+      "width": 1492,
+      "height": 692,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/h08_enrichment_architecture.png",
+      "sha256": "65c2f8d06ffa1cbe174faf0f8f004f3498d76919e698951e3c98a7fa054c3054",
+      "width": 1362,
+      "height": 817,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/case_a_damage.png",
+      "sha256": "be98de984a859170f72688a7f64fd71e2b84f5ce54e6e9f5c8681d3ee12745f1",
+      "width": 1600,
+      "height": 2133,
+      "review_status": "visually_reviewed"
+    },
+    {
+      "path": "research/thesis_evidence/figures/case_b_reflection.png",
+      "sha256": "a37fa55f324a94368015a12ded9c7af18999152b3a720d29dfff6d8cfdf34d02",
+      "width": 1200,
+      "height": 1600,
+      "review_status": "visually_reviewed"
+    }
+  ]
+}

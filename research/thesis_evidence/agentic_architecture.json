@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only inspection of retained implementation; no external actions or services were executed during publication preparation. Private paths and identity-bearing records are not redistributed.",
+  "sources": [
+    {
+      "id": "rust_analytical_service",
+      "sha256": "17828a1d98737ba4fa963f38e05df335a2ff0d273d778e4748b9e0b85edbf085",
+      "lines": 1455
+    },
+    {
+      "id": "rust_realtime_proxy",
+      "sha256": "85f260498ceb7f46b04ac10657b40faef1e1a9be24188bb52362b50bfe09855b",
+      "lines": 1198
+    },
+    {
+      "id": "python_execution_service",
+      "sha256": "3b16c1fb418b4830937b7a6e9bcafbb1965f74a5dbf732cd8770c3e153114579",
+      "lines": 20379
+    },
+    {
+      "id": "context_packet_builder",
+      "sha256": "267c40662c6b7611e4ab8ceba1e4016061d81edc2a2d976b9bb48d0167900633",
+      "lines": 201
+    },
+    {
+      "id": "proposal_runtime",
+      "sha256": "c4236bf853724bb08d000508dd4d08047d69ac724457ed6f7906643806aedc84",
+      "lines": 87
+    },
+    {
+      "id": "proposal_policy",
+      "sha256": "a7a81cbd28bdc276a5dc98aca561900bb22cb18014fdaa0abab57d31e1d8639b",
+      "lines": 200
+    },
+    {
+      "id": "proposal_schema",
+      "sha256": "71662d57cfd6837121bce0ede7bafac24abbb7e6d376c56def113b6f0f08050c",
+      "lines": 51
+    },
+    {
+      "id": "deal_engine_documentation",
+      "sha256": "46e43781e821dd0489bd5bd4181fd14ca7e9c928a38e7181fb7c16ff6999d5ac",
+      "lines": 100
+    },
+    {
+      "id": "historical_operational_baseline",
+      "sha256": "28da08775d61f4cac809990464e629d1e5ff26f56c970fa3d6deb39e2084718e",
+      "lines": 104
+    },
+    {
+      "id": "historical_passive_read_verification",
+      "sha256": "360673e1d2db92fba8cf6191d21f59cb8a460739f63771e03ff5a4c1fe2c3af6",
+      "lines": 71
+    },
+    {
+      "id": "operation_and_tracking_contract",
+      "sha256": "8f2d315b255a5cc33ab66ed85ab735f16651e81e4efab6bbd2aa28e78a1c418f",
+      "lines": 160
+    }
+  ],
+  "documented_observation": {
+    "passive_read_threads_tested": 5,
+    "unread_counts_unchanged": true,
+    "status": "historical_report_not_new_live_test"
+  },
+  "built_controls": [
+    "typed_single_action_proposal",
+    "bounded_context_packet",
+    "campaign_separation",
+    "offer_ceiling_check",
+    "operator_send_approval",
+    "persisted_run_and_action_events",
+    "realtime_cache_and_serialized_refresh",
+    "restricted_analytical_query_path"
+  ],
+  "boundaries": [
+    "no audited autonomous trading profitability",
+    "model confidence not calibrated",
+    "evidence reference presence not reference verification",
+    "selected agent packet not proven to include full survival curve",
+    "SQL parser is not a complete database security proof"
+  ]
+}

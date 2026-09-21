@@ -1,0 +1,41 @@
+{
+  "kind": "historical_saved_checks",
+  "review_date": "2026-09-21",
+  "narrative_contract_tests": {
+    "generated_at": "2026-04-21T15:00:51.910Z",
+    "tests": 70,
+    "passed": true,
+    "scope": "Evidence-sensitive explanation and formatting behavior; not model accuracy."
+  },
+  "narrative_representation_parity": {
+    "generated_at": "2026-04-19T15:33:40.982Z",
+    "sampled_rows": 5000,
+    "eligible_rows": 6049,
+    "mismatches": 0,
+    "scope": "Two deterministic narrative implementations compared on a selected live-state sample; not neural prediction parity."
+  },
+  "bounded_inference_run": {
+    "leased_rows": 8,
+    "scored_rows": 8,
+    "failed_rows": 0,
+    "measured_total_stage_seconds": 0.8379017070110422,
+    "forward_seconds": 0.7725338409945834,
+    "scope": "One archived eight-row run with vectors already available; not a latency distribution or cold-start benchmark."
+  },
+  "older_serving_contract_parity": {
+    "rows": 523,
+    "decision_and_bucket_columns": 12,
+    "numeric_columns": 91,
+    "max_meta_probability_absolute_difference": 1.005394129061088e-07,
+    "max_point_estimate_hours_absolute_difference": 9.1552734375e-05,
+    "scope": "Saved older model-generation replay comparison. It does not certify later policies or predictive accuracy.",
+    "proof_package_status_at_creation": "NOT_READY_FOR_LIVE_FORWARD"
+  },
+  "captured_live_replay_parity": {
+    "replays": 2,
+    "rows_per_replay": 32,
+    "numeric_columns": 90,
+    "exact_numeric_agreement": true,
+    "scope": "Two bounded captured-input replays; implementation parity, not population accuracy."
+  }
+}

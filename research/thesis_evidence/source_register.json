@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "source_receipt_register",
+  "review_date": "2026-09-21",
+  "note": "Neutral identifiers and byte hashes identify inspected source versions. Raw source locations and private contents are deliberately not redistributed. Hashes attest identity, not independent factual accuracy.",
+  "sources": [
+    {
+      "evidence_id": "visual-worker-contract",
+      "sha256": "63e97c617af544ec1c0c85e0455007179a01e9ae6f787eef70a93735d13cbe91",
+      "bytes": 2930,
+      "scope": "Operational modes, daily window, bounded two-image recovery.",
+      "chapter_ids": [
+        "03",
+        "07"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "text-worker-contract",
+      "sha256": "0a9ad3abee706ea061b312ae7095859664773013baeccb574d121d580fad533c",
+      "bytes": 2473,
+      "scope": "Recurring structured text interpretation and separate post-event audit path.",
+      "chapter_ids": [
+        "03",
+        "07"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "damage-measurement-worker",
+      "sha256": "3501583b4834306367c7f60d345d2f816bb45a09a65463b8e91376da6513e079",
+      "bytes": 71464,
+      "scope": "Owned fields, timeout, database retry and failure isolation.",
+      "chapter_ids": [
+        "03"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "accessory-measurement-worker",
+      "sha256": "89277758342cb77b262cc4d04ce5b6cbe5897236cf43a4fc621ec2f34a656647",
+      "bytes": 59682,
+      "scope": "Conservative evidence task, bounded JSON retry and attribute ownership.",
+      "chapter_ids": [
+        "03"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "identity-measurement-worker",
+      "sha256": "c1448b56ea6b1183769b337e2d7198f33f9f8a2fdf138a384d24deba22cf3cf8",
+      "bytes": 81168,
+      "scope": "Color and bounded identity proposal behavior.",
+      "chapter_ids": [
+        "03"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "identity-incident-and-guard",
+      "sha256": "067d3005250c9e5832fc05856940cb34104903882f1aa5ec1634372ab315f06c",
+      "bytes": 3086,
+      "scope": "Documented conflict incident and stronger consensus override guard.",
+      "chapter_ids": [
+        "03"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "per-image-evidence-contract",
+      "sha256": "44d4d53440220d54b251eaafa1b70920505f13bf7742a836ed225a482c51724f",
+      "bytes": 5376,
+      "scope": "Eight-slot roles, padding, report construction and documented build populations.",
+      "chapter_ids": [
+        "03",
+        "05"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "per-image-vector-builder",
+      "sha256": "170a10d9a6f3afc2bd928158563d3c559919be45a2793b27a69cdd431d028b0f",
+      "bytes": 21826,
+      "scope": "Frozen visual and masked-mean text encoding, dimension/version contracts.",
+      "chapter_ids": [
+        "03"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "recovered-listing-text-builder",
+      "sha256": "a6e54dcf77e70cddb7a2810400c7080368be22d296d5a4fcb50e0a03e108c96c",
+      "bytes": 14610,
+      "scope": "Recovered canonical-text, mean-pooling and normalization contract; original body unavailable.",
+      "chapter_ids": [
+        "02",
+        "03"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    },
+    {
+      "evidence_id": "decision-evidence-display-contract",
+      "sha256": "5ba8bfc890bb49c44dde5f541995bef1d4e4c57626e64a7495f5958b1b9f891a",
+      "bytes": 6412,
+      "scope": "Image-level display evidence and prediction version fields.",
+      "chapter_ids": [
+        "03",
+        "10"
+      ],
+      "access": "private_retained_source_not_redistributed"
+    }
+  ]
+}
