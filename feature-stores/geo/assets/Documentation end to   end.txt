@@ -988,7 +988,7 @@ This file contains the canonical SQL checks that prove the geo mapping is “liv
 
 
 
-Run these in `psql` against the `scrapes` database.
+Run these in `psql` against the `observations` database.
 
 
 
@@ -3698,7 +3698,7 @@ This is a copy/paste checklist.
 
 ```powershell
 
-docker exec -it postgres psql -U postgres -d scrapes
+docker exec -it postgres psql -U postgres -d observations
 
 ```
 

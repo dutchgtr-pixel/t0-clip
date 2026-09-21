@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "illustrative_contract_not_a_ready_bundle",
+  "model_family": "historical_k8_survival_17m",
+  "model_sha256": "<HASH_OF_TRAINED_MODEL>",
+  "feature_contract_sha256": "<HASH_OF_ORDERED_FEATURE_CONTRACT>",
+  "preprocessing_sha256": "<HASH_OF_TRAINING_FITTED_PREPROCESSING>",
+  "encoder_revisions": {
+    "text": "<PINNED_TEXT_ENCODER_REVISION>",
+    "image": "<PINNED_IMAGE_ENCODER_REVISION>",
+    "report": "<PINNED_REPORT_ENCODER_REVISION>"
+  },
+  "features": {
+    "numerical_count": 239,
+    "categorical_count": 81,
+    "text_shape_per_record": [768],
+    "image_shape_per_record": [8, 512],
+    "report_shape_per_record": [8, 768],
+    "missing_mask_shape_per_record": [8],
+    "mask_one_means": "missing",
+    "feature_availability_requirement": "available_at <= decision_time",
+    "categorical_unknown_policy": "reserved_training_vocabulary_index"
+  },
+  "outcome": {
+    "duration_unit": "hours",
+    "event_observed": "1 for observed event, 0 for right-censoring",
+    "model_horizon_hours": 504,
+    "binary_unknown_rule": "censored before the requested horizon",
+    "events_beyond_model_horizon": "censor at model horizon for likelihood"
+  },
+  "recommended_runtime_requirements": [
+    "Require an explicit ready state and all model/preprocessing hashes before startup",
+    "Persist model version and input snapshot revision with each prediction",
+    "Reject mismatched encoder revisions, nonfinite inputs and missing required blocks",
+    "Compare fixed parity fixtures before model promotion",
+    "Use atomic work claims if deploying multiple scoring workers",
+    "Requeue updates newer than the captured input revision, not merely completion time"
+  ]
+}

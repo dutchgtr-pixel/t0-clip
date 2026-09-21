@@ -15,7 +15,7 @@ From `ml.socio_market_feature_store_train_v`:
 - `ai_sale_mode_firm`, `ai_sale_mode_bids`, `ai_sale_mode_obo`
 - `generation`, `listing_id`, `t0`
 
-From `ml.iphone_image_features_unified_v1_train_v`:
+From `ml.device_image_features_unified_v1_train_v`:
 - `image_count`, `caption_share`, `stock_photo_share`
 - `photo_quality_avg`, `bg_clean_avg`
 - `dmg_band_hq_struct` (vision damage band)

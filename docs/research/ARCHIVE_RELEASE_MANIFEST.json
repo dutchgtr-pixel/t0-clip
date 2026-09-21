@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "kind": "reviewed_public_archive_derivatives",
+  "process": "Read every member as UTF-8 text; generalized source-specific product, schema and observation terminology consistently with the source tree; no datasets or binaries included.",
+  "files": [
+    {
+      "path": "feature-stores/damage-fusion/damage_fusion_feature_store_public_sanitized.zip",
+      "sha256": "ea9e51a622135e87f899e91bb3d5f7cb412d8faba562c412b3b4fbbf77fabd18",
+      "members": [
+        {
+          "path": "README.md",
+          "bytes": 1531
+        },
+        {
+          "path": "PUBLIC_RELEASE_NOTES.md",
+          "bytes": 681
+        },
+        {
+          "path": "docs/FUSION_STORE_FULL_DOCUMENTATION.md",
+          "bytes": 10416
+        },
+        {
+          "path": "docs/REFERENCE__Damage_Fusion_Feature_Store_Documentation.txt",
+          "bytes": 19616
+        },
+        {
+          "path": "docs/REFERENCE__Create_Improved_Fusion_View_v2.txt",
+          "bytes": 14512
+        },
+        {
+          "path": "sql/01_create_fusion_views_v2.sql",
+          "bytes": 13372
+        },
+        {
+          "path": "sql/02_create_cert_entrypoint_and_guard.sql",
+          "bytes": 864
+        },
+        {
+          "path": "sql/03_baseline_viewdefs.sql",
+          "bytes": 1382
+        },
+        {
+          "path": "sql/04_baseline_dataset_hashes_365.sql",
+          "bytes": 1239
+        },
+        {
+          "path": "sql/05_cert_functions.sql",
+          "bytes": 6329
+        },
+        {
+          "path": "sql/06_run_certification.sql",
+          "bytes": 532
+        },
+        {
+          "path": "sql/optional/01_create_fusion_scored_t0_sla_matview.sql",
+          "bytes": 2059
+        }
+      ]
+    }
+  ]
+}

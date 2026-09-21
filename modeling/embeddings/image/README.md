@@ -53,8 +53,8 @@ The script expects four logical tables:
 ### 1) Listings table (eligibility + edited_date)
 Default (can be overridden via env vars):
 
-- schema: `LISTINGS_SCHEMA=iPhone`
-- table: `LISTINGS_TABLE=iphone_listings`
+- schema: `LISTINGS_SCHEMA=device`
+- table: `LISTINGS_TABLE=device_listings`
 
 Required columns:
 - `generation` (int)
@@ -65,8 +65,8 @@ Required columns:
 
 ### 2) Image assets table (inventory of images)
 Default:
-- schema: `ASSETS_SCHEMA=iPhone`
-- table: `ASSETS_TABLE=iphone_image_assets`
+- schema: `ASSETS_SCHEMA=device`
+- table: `ASSETS_TABLE=device_image_assets`
 
 Required columns:
 - `generation` (int)
@@ -77,7 +77,7 @@ Required columns:
 ### 3) Per-image features table (optional; used for selection only)
 Default:
 - schema: `ML_SCHEMA=ml`
-- table: `IMAGE_FEATURES_TABLE=iphone_image_features_v1`
+- table: `IMAGE_FEATURES_TABLE=device_image_features_v1`
 
 Used columns:
 - `feature_version` (int)
@@ -147,12 +147,12 @@ CREATE TABLE IF NOT EXISTS ml.img_vec512_v1 (
 
 These are useful if you want to use the script without editing SQL strings:
 
-- `LISTINGS_SCHEMA` (default: `iPhone`)
-- `LISTINGS_TABLE` (default: `iphone_listings`)
-- `ASSETS_SCHEMA` (default: `iPhone`)
-- `ASSETS_TABLE` (default: `iphone_image_assets`)
+- `LISTINGS_SCHEMA` (default: `device`)
+- `LISTINGS_TABLE` (default: `device_listings`)
+- `ASSETS_SCHEMA` (default: `device`)
+- `ASSETS_TABLE` (default: `device_image_assets`)
 - `ML_SCHEMA` (default: `ml`)
-- `IMAGE_FEATURES_TABLE` (default: `iphone_image_features_v1`)
+- `IMAGE_FEATURES_TABLE` (default: `device_image_features_v1`)
 - `VECTORS_TABLE` (default: `img_vec512_v1`)
 
 **Note:** the script validates these values as SQL identifiers (letters/numbers/underscore only) to avoid SQL injection via env vars.

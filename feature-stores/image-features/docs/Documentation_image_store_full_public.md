@@ -1,7 +1,7 @@
-ml.iphone_image_color_features_v1 — Vision Color Feature Store (v1)
+ml.device_image_color_features_v1 — Vision Color Feature Store (v1)
 Purpose
 
-ml.iphone_image_color_features_v1 is a listing-level (one row per (generation, listing_id)) feature store that aggregates image-derived body color predictions from the vision/LLM color pipeline into stable, joinable features for:
+ml.device_image_color_features_v1 is a listing-level (one row per (generation, listing_id)) feature store that aggregates image-derived body color predictions from the vision/LLM color pipeline into stable, joinable features for:
 
 TOM / survival modeling
 
@@ -21,7 +21,7 @@ integrate the LLM-driven model correction (“model_fix”) as an effective mode
 
 Grain and Keys
 
-Grain: one row per iPhone listing with images, defined by "iPhone".iphone_image_assets ((generation,listing_id) universe).
+Grain: one row per device listing with images, defined by "device".device_image_assets ((generation,listing_id) universe).
 
 Join keys:
 
@@ -34,7 +34,7 @@ Notes:
 listing_id is a join key only. Do not feed it into ML models as a feature.
 
 Source Tables and Dependencies
-1) "iPhone".iphone_image_assets (asset inventory)
+1) "device".device_image_assets (asset inventory)
 
 Used to anchor the listing universe and compute n_assets:
 
@@ -42,7 +42,7 @@ One row per image per listing: (generation,listing_id,image_index)
 
 In the view: n_assets = COUNT(*) per listing
 
-2) "iPhone".iphone_listings (listing metadata)
+2) "device".device_listings (listing metadata)
 
 Used only for:
 
@@ -51,7 +51,7 @@ db_model (current model string stored in the DB)
 db_spam (spam tag, e.g. 'below13')
 These are used to compute effective model labels and spam flags.
 
-3) ml.iphone_image_features_v1 (per-image vision outputs)
+3) ml.device_image_features_v1 (per-image vision outputs)
 
 Filtered to:
 
@@ -73,19 +73,19 @@ This is a VIEW (not materialized):
 
 No refresh jobs are needed.
 
-When new (generation,listing_id) appear in "iPhone".iphone_image_assets, the view gains rows.
+When new (generation,listing_id) appear in "device".device_image_assets, the view gains rows.
 
-When the color labeler updates ml.iphone_image_features_v1 (color_done, body_color_*, model_fix_*), the view reflects changes immediately.
+When the color labeler updates ml.device_image_features_v1 (color_done, body_color_*, model_fix_*), the view reflects changes immediately.
 
 Row count behavior:
 
-increases only when the asset listing universe increases (new listings scraped with images).
+increases only when the asset listing universe increases (new listings observed with images).
 
 Processing States: How to Interpret Listings
 
 The view makes processing state explicit via:
 
-has_feature_rows: there exist feature rows in ml.iphone_image_features_v1
+has_feature_rows: there exist feature rows in ml.device_image_features_v1
 
 backlog_not_done: feature rows exist but n_color_done_imgs = 0 (color pipeline not yet run/completed)
 
@@ -114,7 +114,7 @@ n_assets (bigint): number of images available for the listing.
 
 B) Coverage / Completeness (no timestamps)
 
-n_feat_rows (bigint): number of feature rows present in ml.iphone_image_features_v1 for the listing.
+n_feat_rows (bigint): number of feature rows present in ml.device_image_features_v1 for the listing.
 
 n_color_done_imgs (bigint): number of images where color_done = TRUE.
 
@@ -286,7 +286,7 @@ Inputs:
 
 model_fix_new_model from features table (if any)
 
-fallback to "iPhone".iphone_listings.model
+fallback to "device".device_listings.model
 
 Outputs:
 
@@ -316,7 +316,7 @@ is_spam_below13 (boolean): TRUE if either:
 
 model_fix_reason='spam_below13' was observed, OR
 
-iphone_listings.spam='below13'
+device_listings.spam='below13'
 
 Notes:
 
@@ -366,56 +366,56 @@ QA / Validation Queries
 SELECT column_name, data_type
 FROM information_schema.columns
 WHERE table_schema='ml'
-  AND table_name='iphone_image_color_features_v1'
+  AND table_name='device_image_color_features_v1'
   AND data_type LIKE 'timestamp%';
 
 2) Row count matches listing universe with assets
 WITH asset_listings AS (
   SELECT generation, listing_id
-  FROM "iPhone".iphone_image_assets
+  FROM "device".device_image_assets
   GROUP BY 1,2
 )
 SELECT
   (SELECT COUNT(*) FROM asset_listings) AS listings_with_assets,
-  (SELECT COUNT(*) FROM ml.iphone_image_color_features_v1) AS rows_in_view;
+  (SELECT COUNT(*) FROM ml.device_image_color_features_v1) AS rows_in_view;
 
 3) Key uniqueness
 SELECT
   COUNT(*) AS rows,
   COUNT(DISTINCT (generation, listing_id)) AS distinct_keys
-FROM ml.iphone_image_color_features_v1;
+FROM ml.device_image_color_features_v1;
 
 4) Invariants
 SELECT COUNT(*) AS bad
-FROM ml.iphone_image_color_features_v1
+FROM ml.device_image_color_features_v1
 WHERE n_color_done_imgs > n_assets;
 
 SELECT COUNT(*) AS bad
-FROM ml.iphone_image_color_features_v1
+FROM ml.device_image_color_features_v1
 WHERE is_incomplete IS DISTINCT FROM (n_color_done_imgs < n_assets);
 
 5) Prefix-contiguity (should be ~0 exceptions)
 SELECT COUNT(*) AS non_prefix
-FROM ml.iphone_image_color_features_v1
+FROM ml.device_image_color_features_v1
 WHERE color_processed
   AND (min_color_done_idx <> 0 OR n_color_done_imgs <> (max_color_done_idx + 1));
 
 6) Model generation mismatch
 SELECT generation, model_effective_generation, COUNT(*) AS listings
-FROM ml.iphone_image_color_features_v1
+FROM ml.device_image_color_features_v1
 WHERE model_generation_mismatch
 GROUP BY 1,2
 ORDER BY 1,2;
 
 Versioning and Governance
 
-This view is bound to ml.iphone_image_features_v1.feature_version = 1.
+This view is bound to ml.device_image_features_v1.feature_version = 1.
 
 If you update the color prompt/model/enforcement logic:
 
 bump feature_version in the per-image table
 
-create ml.iphone_image_color_features_v2 rather than mutating v1 semantics
+create ml.device_image_color_features_v2 rather than mutating v1 semantics
 
 Limitations / Caveats
 
@@ -431,10 +431,10 @@ The strict color output (color_key_primary_strict) trades recall for precision.
 
 
 
-Documentation: ml.iphone_image_damage_features_v1
+Documentation: ml.device_image_damage_features_v1
 Purpose
 
-ml.iphone_image_damage_features_v1 provides listing-level image-derived damage and presentation features, aggregated from per-image LLM labels.
+ml.device_image_damage_features_v1 provides listing-level image-derived damage and presentation features, aggregated from per-image LLM labels.
 
 This view is designed to:
 
@@ -447,7 +447,7 @@ Support joins into your TOM / survival model feature pipeline via (generation, l
 Inputs and dependencies
 1) Image inventory (Playwright output)
 
-"iPhone".iphone_image_assets
+"device".device_image_assets
 
 One row per image per listing: (generation, listing_id, image_index)
 
@@ -459,7 +459,7 @@ COUNT(*) AS n_assets
 
 2) Per-image damage labels (LLM output)
 
-ml.iphone_image_features_v1
+ml.device_image_features_v1
 
 One row per image per feature_version: (generation, listing_id, image_index, feature_version)
 
@@ -471,7 +471,7 @@ All aggregations come from feature_version = 1.
 
 Grain and keys
 
-One row per listing that has at least one image in "iPhone".iphone_image_assets.
+One row per listing that has at least one image in "device".device_image_assets.
 
 Join keys:
 
@@ -489,9 +489,9 @@ This is a VIEW, not a materialized view.
 
 No refresh job is needed for the view itself.
 
-Whenever new labels are written into ml.iphone_image_features_v1, results are reflected immediately in this view.
+Whenever new labels are written into ml.device_image_features_v1, results are reflected immediately in this view.
 
-Whenever Playwright adds/removes image asset rows in "iPhone".iphone_image_assets, n_assets changes immediately.
+Whenever Playwright adds/removes image asset rows in "device".device_image_assets, n_assets changes immediately.
 
 Output schema (grouped by function)
 A) Keys
@@ -504,7 +504,7 @@ B) Image inventory and labeling coverage
 
 n_assets: total images available for the listing (from assets)
 
-n_feat_rows: feature rows found for listing in ml.iphone_image_features_v1 (any)
+n_feat_rows: feature rows found for listing in ml.device_image_features_v1 (any)
 
 n_dmg_labeled: number of images with visible_damage_level IS NOT NULL
 
@@ -612,7 +612,7 @@ SELECT
   d.has_display_fault_5plus,
   d.has_back_glass_struct_5plus
 FROM ml.tom_features_v1_enriched_ai_clean_mv f
-LEFT JOIN ml.iphone_image_damage_features_v1 d
+LEFT JOIN ml.device_image_damage_features_v1 d
   ON d.generation = f.generation
  AND d.listing_id    = f.listing_id;
 
@@ -640,12 +640,12 @@ Operational monitoring queries
 Coverage by generation
 WITH assets AS (
   SELECT generation, listing_id
-  FROM "iPhone".iphone_image_assets
+  FROM "device".device_image_assets
   GROUP BY 1,2
 ),
 labeled AS (
   SELECT generation, listing_id
-  FROM ml.iphone_image_features_v1
+  FROM ml.device_image_features_v1
   WHERE feature_version=1 AND visible_damage_level IS NOT NULL
   GROUP BY 1,2
 )
@@ -664,7 +664,7 @@ SELECT
   generation, listing_id,
   MAX(damage_done_at) AS damage_done_at,
   COUNT(*) FILTER (WHERE visible_damage_level IS NOT NULL) AS labeled_imgs
-FROM ml.iphone_image_features_v1
+FROM ml.device_image_features_v1
 WHERE feature_version=1 AND damage_done_at IS NOT NULL
 GROUP BY 1,2
 ORDER BY damage_done_at DESC
@@ -681,32 +681,32 @@ Indexes that typically help
 
 If you notice slow group-bys or joins, add:
 
-CREATE INDEX IF NOT EXISTS iphone_assets_gen_listing_idx
-  ON "iPhone".iphone_image_assets (generation, listing_id);
+CREATE INDEX IF NOT EXISTS device_assets_gen_listing_idx
+  ON "device".device_image_assets (generation, listing_id);
 
 CREATE INDEX IF NOT EXISTS imgfeat_v1_gen_listing_idx
-  ON ml.iphone_image_features_v1 (feature_version, generation, listing_id);
+  ON ml.device_image_features_v1 (feature_version, generation, listing_id);
 
 CREATE INDEX IF NOT EXISTS imgfeat_v1_damage_gen_listing_idx
-  ON ml.iphone_image_features_v1 (feature_version, generation, listing_id)
+  ON ml.device_image_features_v1 (feature_version, generation, listing_id)
   WHERE visible_damage_level IS NOT NULL;
 
 Versioning and change control
 
-The view is tied to feature_version = 1 in ml.iphone_image_features_v1.
+The view is tied to feature_version = 1 in ml.device_image_features_v1.
 
 If you change the prompt/model in a way that changes semantics, bump feature_version and create a new view:
 
-ml.iphone_image_damage_features_v2 filtering to feature_version=2.
+ml.device_image_damage_features_v2 filtering to feature_version=2.
 
 Next feature stores
 
 Now you can build, with the same pattern:
 
-ml.iphone_image_accessory_features_v1 (battery screenshot + accessories + box state)
+ml.device_image_accessory_features_v1 (battery screenshot + accessories + box state)
 
-ml.iphone_image_color_features_v1 (body_color_key selection + confidence + from_case)
-Then ml.iphone_image_features_unified_v1 as a join of the three by (generation, listing_id).
+ml.device_image_color_features_v1 (body_color_key selection + confidence + from_case)
+Then ml.device_image_features_unified_v1 as a join of the three by (generation, listing_id).
 
 If you want, paste your accessory and color column inventories (or the scripts you’re using), and I’ll draft the two corresponding views in the same “leak-safe” style.
 
@@ -714,10 +714,10 @@ If you want, paste your accessory and color column inventories (or the scripts y
 
 
 
-ml.iphone_image_accessory_features_v1 — Vision Accessory Feature Store (v1)
+ml.device_image_accessory_features_v1 — Vision Accessory Feature Store (v1)
 Purpose
 
-ml.iphone_image_accessory_features_v1 is a listing-level (one row per (generation, listing_id)) feature store that aggregates image-derived accessory signals produced by the vision/LLM accessory labeler into stable features for:
+ml.device_image_accessory_features_v1 is a listing-level (one row per (generation, listing_id)) feature store that aggregates image-derived accessory signals produced by the vision/LLM accessory labeler into stable features for:
 
 survival/TOM modeling
 
@@ -737,7 +737,7 @@ remain live-updating as new images and new per-image labels arrive
 
 Grain and Keys
 
-Grain: one row per iPhone listing with images ((generation, listing_id)) as observed in "iPhone".iphone_image_assets.
+Grain: one row per device listing with images ((generation, listing_id)) as observed in "device".device_image_assets.
 
 Primary keys (logical):
 
@@ -750,7 +750,7 @@ Notes:
 listing_id is retained for joins only. Do not feed it as a feature to ML models.
 
 Source Tables and Dependencies
-1) "iPhone".iphone_image_assets (asset inventory)
+1) "device".device_image_assets (asset inventory)
 
 Used to determine the listing universe and image counts:
 
@@ -758,7 +758,7 @@ Used to determine the listing universe and image counts:
 
 n_assets = COUNT(*) per listing
 
-2) ml.iphone_image_features_v1 (per-image LLM vision outputs)
+2) ml.device_image_features_v1 (per-image LLM vision outputs)
 
 Used for all accessory signals and pipeline markers, filtered to:
 
@@ -788,19 +788,19 @@ This is a VIEW (not a materialized view).
 
 No refresh job is required for the view.
 
-As new rows arrive in "iPhone".iphone_image_assets:
+As new rows arrive in "device".device_image_assets:
 
 new (generation, listing_id) will appear in the view
 
-n_assets increases for existing listings with newly scraped images
+n_assets increases for existing listings with newly observed images
 
-As the accessory labeler writes into ml.iphone_image_features_v1:
+As the accessory labeler writes into ml.device_image_features_v1:
 
 aggregates update automatically on next query
 
 Row count behavior:
 
-Row count increases only when new listings are added to iphone_image_assets.
+Row count increases only when new listings are added to device_image_assets.
 
 Row count does not increase when more images are added to an existing listing.
 
@@ -838,9 +838,9 @@ B) Coverage / Completeness
 
 These describe what the pipeline actually processed and how complete the per-image feature table is relative to assets.
 
-n_assets (bigint): number of image assets for this listing (from iphone_image_assets).
+n_assets (bigint): number of image assets for this listing (from device_image_assets).
 
-n_feat_rows (bigint): number of rows in ml.iphone_image_features_v1 for this listing (feature_version=1).
+n_feat_rows (bigint): number of rows in ml.device_image_features_v1 for this listing (feature_version=1).
 
 n_acc_done_imgs (bigint): number of images for which accessories_done = TRUE.
 
@@ -1024,19 +1024,19 @@ QA / Monitoring Queries
 1) View row count should equal asset listing count
 WITH asset_listings AS (
   SELECT generation, listing_id
-  FROM "iPhone".iphone_image_assets
+  FROM "device".device_image_assets
   GROUP BY 1,2
 )
 SELECT
   (SELECT COUNT(*) FROM asset_listings) AS listings_with_assets,
-  (SELECT COUNT(*) FROM ml.iphone_image_accessory_features_v1) AS rows_in_view;
+  (SELECT COUNT(*) FROM ml.device_image_accessory_features_v1) AS rows_in_view;
 
 2) Detect “processed but outputs missing” (Gen13 anomaly)
 SELECT generation,
        COUNT(*) AS listings,
        COUNT(*) FILTER (WHERE acc_done_but_all_outputs_null) AS bad,
        ROUND(100.0 * COUNT(*) FILTER (WHERE acc_done_but_all_outputs_null) / NULLIF(COUNT(*),0), 2) AS pct_bad
-FROM ml.iphone_image_accessory_features_v1
+FROM ml.device_image_accessory_features_v1
 GROUP BY 1
 ORDER BY 1;
 
@@ -1047,19 +1047,19 @@ SELECT
   AVG(is_incomplete::int) AS p_incomplete,
   AVG(hit_cap_8::int) AS p_cap8,
   AVG(hit_cap_16::int) AS p_cap16
-FROM ml.iphone_image_accessory_features_v1
+FROM ml.device_image_accessory_features_v1
 GROUP BY 1
 ORDER BY 1;
 
 Versioning and Governance
 
-This store is tied to ml.iphone_image_features_v1.feature_version = 1.
+This store is tied to ml.device_image_features_v1.feature_version = 1.
 
 If you change prompts/model logic in a way that changes semantics, you should:
 
 write new outputs under feature_version = 2
 
-create ml.iphone_image_accessory_features_v2 filtering to v2
+create ml.device_image_accessory_features_v2 filtering to v2
 
 Do not silently change semantics of v1.
 

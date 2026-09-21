@@ -119,10 +119,10 @@ SELLER_GATE_MIN_QUALITY  = None    # combined metric gate; see compute_seller_qu
 
 # per-variant penalties (1.0 = neutral; &lt;= 0.0 = hard block)
 G_MODEL_PENALTIES = {
-    "iPhone 13 Mini": 0.00,
-    "iPhone 13": 1.00,
-    "iPhone 13 Pro": 1.00,
-    "iPhone 13 Pro Max": 1.00,
+    "device 13 Mini": 0.00,
+    "device 13": 1.00,
+    "device 13 Pro": 1.00,
+    "device 13 Pro Max": 1.00,
 }
 
 G_PENALTY_MIN        = 0.90
@@ -289,7 +289,7 @@ UNION_ZERO_SLOW_OUTNAME = "joint_zero_slow_union.csv"
 
 
 # ───────────────────────── misc helpers
-VARIANTS = ["iPhone 13 Mini","iPhone 13","iPhone 13 Pro","iPhone 13 Pro Max"]
+VARIANTS = ["device 13 Mini","device 13","device 13 Pro","device 13 Pro Max"]
 LEAK_SUBS = ("dur", "duration", "sold", "label", "target", "actual", "ground", "is_24", "fast24", "seen", "fetch", "postal")
 BAN_COLS  = ("id", "listing", "url", "description", "title")  # public: exclude identifier/text columns
 
@@ -345,10 +345,10 @@ def coerce_numeric_df(X: pd.DataFrame) -> pd.DataFrame:
 
 def canon_model(name: str) -> str:
     s = str(name).strip().lower()
-    if "pro max" in s: return "iPhone 13 Pro Max"
-    if "pro" in s:     return "iPhone 13 Pro"
-    if "mini" in s:    return "iPhone 13 Mini"
-    if "13" in s:      return "iPhone 13"
+    if "pro max" in s: return "device 13 Pro Max"
+    if "pro" in s:     return "device 13 Pro"
+    if "mini" in s:    return "device 13 Mini"
+    if "13" in s:      return "device 13"
     return str(name) if name is not None else ""
 
 def find_emb_cols_any(df: pd.DataFrame, emb_cfg: List[Tuple[str,int]]) -> List[str]:
@@ -3152,16 +3152,16 @@ def _apply_knobs(k: Dict[str, Any]) -> None:
     # ── Rebuild per-variant penalties from knobs (if provided this trial)
     if any(name in k for name in ("MP_13_MINI", "MP_13", "MP_13_PRO", "MP_13_PRO_MAX")):
         curr = g.get("G_MODEL_PENALTIES", {
-            "iPhone 13 Mini": 1.0,
-            "iPhone 13": 1.0,
-            "iPhone 13 Pro": 1.0,
-            "iPhone 13 Pro Max": 1.0,
+            "device 13 Mini": 1.0,
+            "device 13": 1.0,
+            "device 13 Pro": 1.0,
+            "device 13 Pro Max": 1.0,
         })
         g["G_MODEL_PENALTIES"] = {
-            "iPhone 13 Mini":   float(k.get("MP_13_MINI",    curr.get("iPhone 13 Mini",   1.0))),
-            "iPhone 13":        float(k.get("MP_13",         curr.get("iPhone 13",        1.0))),
-            "iPhone 13 Pro":    float(k.get("MP_13_PRO",     curr.get("iPhone 13 Pro",    1.0))),
-            "iPhone 13 Pro Max":float(k.get("MP_13_PRO_MAX", curr.get("iPhone 13 Pro Max",1.0))),
+            "device 13 Mini":   float(k.get("MP_13_MINI",    curr.get("device 13 Mini",   1.0))),
+            "device 13":        float(k.get("MP_13",         curr.get("device 13",        1.0))),
+            "device 13 Pro":    float(k.get("MP_13_PRO",     curr.get("device 13 Pro",    1.0))),
+            "device 13 Pro Max":float(k.get("MP_13_PRO_MAX", curr.get("device 13 Pro Max",1.0))),
         }
 
 
@@ -3839,10 +3839,10 @@ def _apply_cli_hf_overrides(args):
     # Per-variant penalties from CLI (override for this run)
     global G_MODEL_PENALTIES, _CLI_MP_OVERRIDE
     _CLI_MP_OVERRIDE = {}
-    if getattr(args, "mp_13_mini", None)     is not None: _CLI_MP_OVERRIDE["iPhone 13 Mini"]    = float(args.mp_13_mini)
-    if getattr(args, "mp_13", None)          is not None: _CLI_MP_OVERRIDE["iPhone 13"]         = float(args.mp_13)
-    if getattr(args, "mp_13_pro", None)      is not None: _CLI_MP_OVERRIDE["iPhone 13 Pro"]     = float(args.mp_13_pro)
-    if getattr(args, "mp_13_pro_max", None)  is not None: _CLI_MP_OVERRIDE["iPhone 13 Pro Max"] = float(args.mp_13_pro_max)
+    if getattr(args, "mp_13_mini", None)     is not None: _CLI_MP_OVERRIDE["device 13 Mini"]    = float(args.mp_13_mini)
+    if getattr(args, "mp_13", None)          is not None: _CLI_MP_OVERRIDE["device 13"]         = float(args.mp_13)
+    if getattr(args, "mp_13_pro", None)      is not None: _CLI_MP_OVERRIDE["device 13 Pro"]     = float(args.mp_13_pro)
+    if getattr(args, "mp_13_pro_max", None)  is not None: _CLI_MP_OVERRIDE["device 13 Pro Max"] = float(args.mp_13_pro_max)
     if _CLI_MP_OVERRIDE:
         G_MODEL_PENALTIES.update(_CLI_MP_OVERRIDE)
 

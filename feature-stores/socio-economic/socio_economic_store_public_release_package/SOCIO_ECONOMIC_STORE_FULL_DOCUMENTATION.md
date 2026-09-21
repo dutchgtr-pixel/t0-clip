@@ -155,7 +155,7 @@ In your SHAP reporting taxonomy, the socio_economic_store block is populated by 
 - **Key:** `listing_id` (unique in this environment)
 - **Inputs:**
   - `ml.tom_features_v2_enriched_ai_ob_clean_mv` (listing-level feature surface)
-  - `ml.iphone_listings_geo_current` (geo mapping; provides postal_code and super_metro_v4_geo)
+  - `ml.device_listings_geo_current` (geo mapping; provides postal_code and super_metro_v4_geo)
   - `ref.postal_code_to_kommune_history` (postal→kommune snapshots)
   - `ref.kommune_socio_history` (kommune socio snapshots)
 - **Outputs:**
@@ -217,7 +217,7 @@ ml.socio_market_feature_store_train_v
      -> ml.tom_features_v2_enriched_ai_ob_clean_socio_market_t0_v1_mv
         -> ml.tom_features_v2_enriched_ai_ob_clean_socio_t0_v1_mv
            -> ml.tom_features_v2_enriched_ai_ob_clean_mv
-           -> ml.iphone_listings_geo_current
+           -> ml.device_listings_geo_current
            -> ref.postal_code_to_kommune_history (as-of t0)
            -> ref.kommune_socio_history (as-of t0)
         -> ml.market_relative_socio_t0_v1_mv
@@ -439,7 +439,7 @@ The socio_economic_store depends on:
 - A listing-level base feature surface:
   - `ml.tom_features_v2_enriched_ai_ob_clean_mv`
 - Geo mapping:
-  - `ml.iphone_listings_geo_current` with `(generation, listing_id, postal_code, super_metro_v4_geo)`
+  - `ml.device_listings_geo_current` with `(generation, listing_id, postal_code, super_metro_v4_geo)`
 - Socio reference history tables:
   - `ref.postal_code_to_kommune_history(postal_code, kommune_code4, snapshot_date, loaded_at, ...)`
   - `ref.kommune_socio_history(kommune_code4, centrality_class, income_median_after_tax_nok, snapshot_date, loaded_at, ...)`

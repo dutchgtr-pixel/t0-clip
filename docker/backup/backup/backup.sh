@@ -5,7 +5,7 @@ set -euo pipefail
 # CONFIG
 ##############################################################################
 KEEP_DAYS=${KEEP_DAYS:-14}
-GOLD_TABLE="listings.iphone13_listings"
+GOLD_TABLE="listings.device_listings"
 BACKUP_DIR="${BACKUP_DIR:?need BACKUP_DIR}"
 STAMP="$(date +'%F_%H-%M-%S')"           # for filenames only
 TS="$(date +%s)"                         # epoch seconds – becomes a *value*

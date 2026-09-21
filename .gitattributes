@@ -1,0 +1,6 @@
+# Keep reviewed document and archive bytes stable on every operating system.
+*.pdf binary
+*.zip binary
+# Markdown uses two trailing spaces for intentional hard line breaks.
+*.md whitespace=-blank-at-eol
+*.svg text eol=lf

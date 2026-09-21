@@ -39,7 +39,7 @@ services:
   postgres:
     build:
       context: ./docker/postgres
-    image: scrapes-postgres:15-partman
+    image: observations-postgres:15-partman
     container_name: postgres
     restart: unless-stopped
     ports:
@@ -49,11 +49,11 @@ services:
     - -c
     - shared_preload_libraries=pg_stat_statements,pg_cron
     - -c
-    - cron.database_name=scrapes
+    - cron.database_name=observations
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-scrapes}
+      POSTGRES_DB: ${POSTGRES_DB:-observations}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
     - pgdata:/var/lib/postgresql/data
@@ -322,7 +322,7 @@ services:
     - /bin/sh
     - -lc
     - "apk add --no-cache postgresql-client curl >/dev/null;\nwhile true; do\n  cnt=$$(psql\
-      \ -qtAX -h postgres -U postgres -d scrapes \\\n            -c \"SELECT COUNT(*)\
+      \ -qtAX -h postgres -U postgres -d observations \\\n            -c \"SELECT COUNT(*)\
       \ FROM raw.listings WHERE processed_at IS NULL;\")\n  echo \"raw_listings_processed_at_null_count\
       \ $$cnt\" \\\n    | curl -sS --fail --data-binary @- http://pushgateway:9091/metrics/job/raw_backlog;\n\
       \  sleep 60;\ndone\n"
@@ -355,7 +355,7 @@ services:
       PGHOST: postgres
       PGUSER: ${POSTGRES_USER:-postgres}
       PGPASSWORD: ${POSTGRES_PASSWORD}
-      PGDATABASE: ${POSTGRES_DB:-scrapes}
+      PGDATABASE: ${POSTGRES_DB:-observations}
       BACKUP_DIR: /backups
       PUSHGATEWAY: pushgateway:9091
       KEEP_DAYS: '14'
@@ -403,10 +403,10 @@ services:
       DSN: ${DSN}
       TRANSFORMERS_OFFLINE: '1'
       HF_HOME: /root/.cache/huggingface
-  scrapy-runner:
+  observation-runner:
     build:
-      context: ./docker/scraper
-      dockerfile: Dockerfile.scraper
+      context: ./docker/observer
+      dockerfile: Dockerfile.observer
     depends_on:
     - postgres
     - redis
@@ -534,7 +534,7 @@ services:
     build:
       context: ./docker/condition_storage
       dockerfile: Dockerfile.cleaner
-    image: iphone13-condition-storage:latest
+    image: device-condition-storage:latest
     entrypoint:
     - sleep
     - infinity
@@ -542,7 +542,7 @@ services:
       PGHOST: pgbouncer
       PGPORT: '6432'
       PGUSER: postgres
-      PGDATABASE: scrapes
+      PGDATABASE: observations
       PGPASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
     - pgbouncer
@@ -587,7 +587,7 @@ services:
     restart: on-failure
     command:
     - python
-    - scripts/marketplace_database_scraper.py
+    - scripts/marketplace_database_observer.py
     environment:
     - DATABASE_URL=${DATABASE_URL}
     - MARKETPLACE_BASE_URL=${MARKETPLACE_BASE_URL}
@@ -663,7 +663,7 @@ services:
   seller-allinone:
     build:
       context: .
-      dockerfile: docker/Go_scraper/Dockerfile.allinone
+      dockerfile: docker/Go_observer/Dockerfile.allinone
     container_name: seller-allinone
     volumes:
     - chrome_profile_all:/profile
@@ -677,18 +677,18 @@ services:
     ports:
     - 9222:9222
     restart: 'no'
-  fetchd-iphone:
+  fetchd-device:
     build:
       context: .
-      dockerfile: docker/GO_main_scraper_iphone/Dockerfile.fetchd
-    image: fetchd-iphone:latest
-    container_name: fetchd-iphone
+      dockerfile: docker/GO_main_observer_device/Dockerfile.fetchd
+    image: fetchd-device:latest
+    container_name: fetchd-device
     depends_on:
       pgbouncer:
         condition: service_healthy
     environment:
       PG_DSN: ${PG_DSN}
-      PG_SCHEMA: iPhone
+      PG_SCHEMA: device
       PAGES: '15'
       WORKERS: '32'
       SEARCH_WORKERS: '8'
@@ -701,17 +701,17 @@ services:
     profiles:
     - job
     restart: 'no'
-  survival-iphone:
+  survival-device:
     build:
       context: .
-      dockerfile: docker/Go_survival_scraper/Dockerfile.survival
-    image: survival-iphone:latest
+      dockerfile: docker/Go_survival_observer/Dockerfile.survival
+    image: survival-device:latest
     depends_on:
       pgbouncer:
         condition: service_healthy
     environment:
       PG_DSN: ${PG_DSN}
-      PG_SCHEMA: iPhone
+      PG_SCHEMA: device
       SCAN_SINCE_DAYS: '30'
       MAX_PROBE: '5000'
       WORKERS: '64'
@@ -719,17 +719,17 @@ services:
       SLEEP_BETWEEN: '60'
       MARKETPLACE_BASE_URL: ${MARKETPLACE_BASE_URL}
     restart: 'no'
-  audit-older21days-iphone:
+  audit-older21days-device:
     build:
       context: .
       dockerfile: docker/older_21_days_audit/Dockerfile.audit_older21days
-    image: audit-older21days-iphone:latest
+    image: audit-older21days-device:latest
     depends_on:
       pgbouncer:
         condition: service_healthy
     environment:
       PG_DSN: ${PG_DSN}
-      PG_SCHEMA: iPhone
+      PG_SCHEMA: device
       AUDIT_DAYS: '0'
       AUDIT_LIMIT: '0'
       WORKERS: '96'
@@ -758,7 +758,7 @@ services:
     container_name: damage-binary
     command: python3 /app/scripts/score_damage_binary_db.py
     environment:
-      TABLE: '"iPhone".iphone_listings'
+      TABLE: '"device".device_listings'
       ARTS_DIR: /app/artefacts_nb_bert_damage
     gpus: all
     extra_hosts:
@@ -776,7 +776,7 @@ services:
         condition: service_completed_successfully
     command: python3 /app/scripts/score_damage_severity_db.py
     environment:
-      TABLE: '"iPhone".iphone_listings'
+      TABLE: '"device".device_listings'
       ARTS_DIR: /app/artefacts_nb_bert_severity
     gpus: all
     extra_hosts:

@@ -31,7 +31,7 @@ def env(name: str, default: str = "") -> str:
 
 with DAG(
     dag_id="marketplace_image_pipeline_30m",
-    description="Runs a 4-stage image enrichment pipeline (scrape -> accessories -> color -> damage) every 30 minutes.",
+    description="Runs a 4-stage image enrichment pipeline (observe -> accessories -> color -> damage) every 30 minutes.",
     schedule="*/30 * * * *",
     start_date=datetime(2025, 1, 1),
     catchup=False,

@@ -6,7 +6,7 @@ This document describes a **generic, marketplace-agnostic** “meta-learner” t
 - **Stage-2 (promoter / “mask-23”)**: within the Stage-1 flagged set, learn a constrained flip policy that promotes a limited subset to a fixed **23h** prediction under caps and penalties, using a **time-split** to avoid leakage.
 - **Freeze → Apply-only**: save the best knobs from tuning, then run an apply-only evaluation on an untouched slice.
 
-This public release is intentionally **connector-free**: it does not include any target-specific ingestion, scraping, platform headers, cookies, or real listing data. You bring your own features and base model predictions.
+This public release is intentionally **connector-free**: it does not include any target-specific ingestion, collection, platform headers, cookies, or real listing data. You bring your own features and base model predictions.
 
 ---
 
@@ -111,7 +111,7 @@ Included:
 - artifacts for auditability (JSON knobs, per-trial telemetry, row-level exports)
 
 Intentionally omitted:
-- any marketplace-specific connector, scraping logic, request fingerprints, cookies, headers, endpoints, or HTML/JSON parsing
+- any marketplace-specific connector, collection logic, request fingerprints, cookies, headers, endpoints, or HTML/JSON parsing
 - any real listing identifiers or example rows derived from production data
 - any secrets, credentials, or hard-coded infrastructure endpoints
 

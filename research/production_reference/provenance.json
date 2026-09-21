@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "attribution": "t0-clip project archive; selected implementation released with this repository under Apache-2.0.",
+  "sources": [
+    {
+      "source_label": "archived_stage2_base",
+      "source_sha256": "79afb89aba09ab3889db96f51135cc4235bb920e56fba270c6906b9a91fe4439",
+      "symbols": [
+        {
+          "name": "make_time_edges",
+          "source_start_line": 110,
+          "source_end_line": 119,
+          "source_span_sha256": "21925bb85cb0617fc098c156098f2a922ac81b63ea8736af5f36fe5ec0379683",
+          "ast_sha256": "b465e259acf13d77bd4afbd55a9ec43f03764c3773fdadd45a647197972d8a80"
+        },
+        {
+          "name": "TrainConfig",
+          "source_start_line": 535,
+          "source_end_line": 667,
+          "source_span_sha256": "5d5f1fb8bd7687c9e39ea29ebaab0f9f99e15d71065a85002b576cad3bd13df0",
+          "ast_sha256": "cb8e52b4d722c92789c2580c57547515c0411e223c318644cc83b77fef61b348"
+        },
+        {
+          "name": "FeedForward",
+          "source_start_line": 957,
+          "source_end_line": 973,
+          "source_span_sha256": "3c044c7a6e87eb13f3ea23f58d5ad4979540b0610a0ac85c39b350540a9d241b",
+          "ast_sha256": "9735dc6cae2059ae585c2bb23af27347cb8433a8e3b2e8872159100aea107b14"
+        },
+        {
+          "name": "AttentionBlock",
+          "source_start_line": 976,
+          "source_end_line": 1012,
+          "source_span_sha256": "7a8b75412136e5a5b4a35204942b7f0aa06050d68e0000deb8e1a7ff46e976bd",
+          "ast_sha256": "2b49c04381ff697adc8031999796ceab59091251a6b8b349ec47c1e9fc2908c7"
+        },
+        {
+          "name": "TabTokenizer",
+          "source_start_line": 1015,
+          "source_end_line": 1062,
+          "source_span_sha256": "d27aa2ad269575e44a71df6597de6d01b232f80a39eed1215a9aa6598961b979",
+          "ast_sha256": "de6f9537b644e1be87ed50d1ad3ac73b34ef9b12e3ccf9a213e1910e6044de1d"
+        },
+        {
+          "name": "DenseTokenizer",
+          "source_start_line": 1065,
+          "source_end_line": 1083,
+          "source_span_sha256": "edfefeb47a616ead62c68e60cbce0f4fc0c30db46ed3a1a5e7572c1ec5a4169f",
+          "ast_sha256": "87dfcffaa8358deed71196d2e207a41e9cb4db35df0996145c5972eee9b508cc"
+        },
+        {
+          "name": "K8SlotTokenizer",
+          "source_start_line": 1086,
+          "source_end_line": 1112,
+          "source_span_sha256": "7c010ecf1018086cf88121149914d85121dd83faf6c499ac2fab2e710eca8f01",
+          "ast_sha256": "0e0b82285de97f63828434d6524cc81a2b4d83f8a82da799a1f79d111549e75e"
+        },
+        {
+          "name": "PerceiverFusion",
+          "source_start_line": 1115,
+          "source_end_line": 1141,
+          "source_span_sha256": "6ec37ed7e6dc571bf2444f546e82280d82cbb5238e1655c8563c21cb35c8f83f",
+          "ast_sha256": "501d925e70a99243dda8eb6996f1305bd2f93aece262cf5aa932a097cde7ac26"
+        },
+        {
+          "name": "MoEHazardHead",
+          "source_start_line": 1144,
+          "source_end_line": 1175,
+          "source_span_sha256": "531f08a2aa24cc916aa9a4ae765ae3febe834c9a02c2558aa807c7843fd90a3e",
+          "ast_sha256": "eed6787b83d91a59090e9e4c71d60b293a9e19be034ddeb54d7dd1579bd1419c"
+        },
+        {
+          "name": "_pick_n_heads",
+          "source_start_line": 1178,
+          "source_end_line": 1185,
+          "source_span_sha256": "d69d303d7296365c16f0fac3af6d27303216518d975106f7817739be0af6c7e7",
+          "ast_sha256": "d57364e2c3ee60c9fe95694a71e31b4dd31c8e01e60ea0b0ab12352bcf4c8461"
+        },
+        {
+          "name": "TabTokenizerCompact",
+          "source_start_line": 1188,
+          "source_end_line": 1285,
+          "source_span_sha256": "8f85fa91a831896adb876f03e25ddc05d35cbba16ee8d65df18dda21acf7fa8d",
+          "ast_sha256": "5869e2372791ae4814ef9616811c22e776a3e44c95121b1e7daf883427aaeaba"
+        },
+        {
+          "name": "MultiModalSurvModel",
+          "source_start_line": 1288,
+          "source_end_line": 1427,
+          "source_span_sha256": "efd5cb2ade82b425b811a3fde427610dafc40d12f14c735b0b3a79d5cb9e8868",
+          "ast_sha256": "5fc9ffbc07ce5e23a9f5320007398baebcd9ac0bbf6bb34ebf519be90d15fd37"
+        },
+        {
+          "name": "mixture_surv_prob_at_times",
+          "source_start_line": 1428,
+          "source_end_line": 1473,
+          "source_span_sha256": "c77e1da352853a8cc7aba03aaa90a0a9c755ff7bec99e81429455be4e0e9ac2e",
+          "ast_sha256": "8e747ad8906955847551bfbb33c5e7d7086d48aba62a88d16894b86daae609ca"
+        },
+        {
+          "name": "expected_hours_mixture",
+          "source_start_line": 1476,
+          "source_end_line": 1498,
+          "source_span_sha256": "36eb7a2cc329293eb6f116d34bc183beea40fdcd3785caad307fe88c88b44a1e",
+          "ast_sha256": "b151c30258b96ad102d3abf9e1c76b8b619b722468458950e125476d0af1cd80"
+        },
+        {
+          "name": "_weighted_mean",
+          "source_start_line": 1602,
+          "source_end_line": 1605,
+          "source_span_sha256": "8142c87e402f33014d7020cea021632f6cae4c4c8b8e3a60bad1b86f1542f78e",
+          "ast_sha256": "08a39c56478e9e6a8b15c4ba0d75c2e1c7e7de1ee3bbfe35fc8374c49400cb92"
+        },
+        {
+          "name": "mixture_survival_nll_discrete_vec",
+          "source_start_line": 1608,
+          "source_end_line": 1656,
+          "source_span_sha256": "83e1c93cf875ee26c7212c18d81e57ce2daa25cdc27fda39d3cb571041b686e9",
+          "ast_sha256": "1758294f335f74b68b11e08f87f5d670ab721b84e6a41a456e0837c9aded3184"
+        },
+        {
+          "name": "mixture_survival_nll_discrete",
+          "source_start_line": 1657,
+          "source_end_line": 1666,
+          "source_span_sha256": "679671b9eb0a59acbe714ce06826fcc7776dfa42b77d5bbfbc36311c311a98a0",
+          "ast_sha256": "8645bad4fbadb0217749b829af70cad2f6ec076c44c505bbedabcdc6925da2ce"
+        },
+        {
+          "name": "masked_bce_vec",
+          "source_start_line": 1670,
+          "source_end_line": 1677,
+          "source_span_sha256": "eedf50a123c53d2ee86aeece555b6066375f43a3999b89953cc1acfc8b4b335a",
+          "ast_sha256": "c8b624db507df87f1095287139ea234924f5be9530034305882a31a3ef916b5b"
+        },
+        {
+          "name": "horizon_bce_loss",
+          "source_start_line": 1680,
+          "source_end_line": 1735,
+          "source_span_sha256": "533bf33501e8c1ea60a159e2148d00810fd1c6fedeb93d9c08d4f60a55043545",
+          "ast_sha256": "11f0ceae25ec770472618d9b27efe4500face7e05884a93e47122ce33de258f1"
+        },
+        {
+          "name": "huber_or_l1_vec",
+          "source_start_line": 1737,
+          "source_end_line": 1748,
+          "source_span_sha256": "22a69172cc4510a86921e7ec09c8a1fcccbdb44ccaad559b0e4346dca9175381",
+          "ast_sha256": "52b7e948e2bdc56c69a1050f5bc372a59ad86076a0107c72f39174a139dfdea3"
+        },
+        {
+          "name": "quantile_hours_mixture",
+          "source_start_line": 1751,
+          "source_end_line": 1792,
+          "source_span_sha256": "0f897b2d614dd023b858bbfa87980f93a0991a382a1f4e83ad569b0e260ee6dd",
+          "ast_sha256": "3df74e7fc4e8541b148978db4f5bb1417d4e2fd8e5061e73b73b7ddf963015f7"
+        },
+        {
+          "name": "point_hours_mixture",
+          "source_start_line": 1795,
+          "source_end_line": 1802,
+          "source_span_sha256": "602a071c8b158ec675cd7670ac99fb79f8a79d5d6554e143138d882ba4346174",
+          "ast_sha256": "53798a757481c5b7d3c10a80d8c20b5cf317cbf16a163d7c006ad7fc64c6cc6f"
+        }
+      ]
+    },
+    {
+      "source_label": "archived_stage2_training",
+      "source_sha256": "58d51788da45fbe1a96f22050822967a766b591e9bd16258cbe2730f570b3e02",
+      "symbols": [
+        {
+          "name": "bce_with_logits_masked",
+          "source_start_line": 2924,
+          "source_end_line": 2959,
+          "source_span_sha256": "d90c8ed218f560b7c5dbbf59b99acbb0cc7b18a42d29181997adc1934eb62532",
+          "ast_sha256": "9e8a06e3b293ee8b5bf53dde85dba7beaee33c932e15a86dc716cbd729eba4ba"
+        },
+        {
+          "name": "bce_prob_masked",
+          "source_start_line": 2962,
+          "source_end_line": 2993,
+          "source_span_sha256": "590226e93d8d21f9211e2ef9c5b6da0230cda3db1ead80d922fe23fc1cba55eb",
+          "ast_sha256": "e226f5cd194b0503d88898609a20fa6fe4b30a45462be7d936aaf86350e2dd5f"
+        }
+      ]
+    }
+  ],
+  "export_sha256": "72e7aa4243a9593fff1e47eb124c9f9725256494bf749bcbcc558b888e2f4c24",
+  "export_hash_encoding": "UTF-8 with LF newlines; normalize CRLF before hashing",
+  "transformations": [
+    "Selected named top-level AST definitions; retained exact source bodies and decorators.",
+    "Replaced module preamble/imports with a minimal numpy/PyTorch/typing/dataclass preamble.",
+    "Excluded data loaders, feature-name selectors, private configuration, database access, orchestration, checkpoint files and row-level data.",
+    "Historical architecture metadata contains numerical dimensions and categorical cardinalities only; no fitted vocabulary values.",
+    "training.py is a new generic tensor adapter around archived numerical functions, not a verbatim export of the production training controller."
+  ],
+  "excluded_private_provenance": "Private absolute paths and original infrastructure-specific filename are intentionally omitted. Full source-file hashes and symbol ranges identify the reviewed sources."
+}
