@@ -56,7 +56,7 @@ A recommended governance model:
 
 ## Marketplace Adapter Layer
 
-Public repositories should not embed target-specific scraping or parsing logic. The auditor expects a connector interface that provides:
+Public repositories should not embed target-specific collection or parsing logic. The auditor expects a connector interface that provides:
 
 - `fetch_listing(listing_id)` → raw payload
 - `parse_payload(raw)` → normalized detection fields:

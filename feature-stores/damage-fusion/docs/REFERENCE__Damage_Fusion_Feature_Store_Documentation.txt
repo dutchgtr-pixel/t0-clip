@@ -61,10 +61,10 @@ This is the feature-store join contract and enables seamless integration into yo
 
 2.2 Upstream tables
 
-Listings: "iPhone".iphone_listings
+Listings: "device".device_listings
 Provides generation, listing_id, spam, plus damage_ai_json (text decision + meta flags + battery_effective).
 
-Image features: ml.iphone_image_features_v1
+Image features: ml.device_image_features_v1
 One row per listing image (per image_index conceptually). Includes:
 
 pipeline coverage: feature_version, damage_done
@@ -134,7 +134,7 @@ The v2 view is built in layers:
 
 4.1 img_prof — listing-level image profile aggregation
 
-Source: ml.iphone_image_features_v1
+Source: ml.device_image_features_v1
 Output: one row per listing (generation, listing_id)
 
 It computes:
@@ -205,7 +205,7 @@ These provide both severity and evidence strength (how many independent photos c
 
 4.2 batt_prof — listing-level battery screenshot aggregation
 
-Source: ml.iphone_image_features_v1
+Source: ml.device_image_features_v1
 
 Computed:
 
@@ -221,7 +221,7 @@ The min is used intentionally: sellers may show multiple screenshots; the min is
 
 4.3 base — join listing + image profile + battery profile + text decision/meta
 
-Source: "iPhone".iphone_listings (filtered to spam IS NULL)
+Source: "device".device_listings (filtered to spam IS NULL)
 Left joins img_prof and batt_prof.
 
 Key features extracted from text JSON:
@@ -393,7 +393,7 @@ Below is a practical “block” dictionary (grouped by purpose). This is how I 
 
 6.1 Keys
 
-generation (int): iPhone generation
+generation (int): device generation
 
 listing_id (int/text): listing identifier
 

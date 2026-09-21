@@ -227,7 +227,7 @@ A3. cs = 0.5 → baseline sev=2 (“cs0.5 baseline”). Elevate to sev=3 ONLY fo
 ================================================================
 B) GENERIC/BOILERPLATE/SPEC TEXT (IMPORTANT)
 ----------------------------------------------------------------
-Treat copied specs/boilerplate (“Apple iPhone <model> … passer for brukere som ønsker … høy ytelse / stor lagringsplass”) as NON-EVIDENCE.
+Treat copied specs/boilerplate (“Apple device <model> … passer for brukere som ønsker … høy ytelse / stor lagringsplass”) as NON-EVIDENCE.
 • At cs=0.7 this MUST NOT mint → use sev=1 ("cs0.7 baseline (no neg-wear)") unless A2 global proof exists.
 • At cs=0.9, generic/spec NEVER demotes → default remains mint (sev=0) unless explicit wear/faults exist.
 
@@ -362,7 +362,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 90
-title: iPhone 14 Pro
+title: device 14 Pro
 description:
 Pent brukt, ingen synlige skader. Fungerer som den skal.
 EXPECTED:
@@ -374,9 +374,9 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 95
-title: iPhone 15 Pro
+title: device 15 Pro
 description:
-Apple iPhone 15 Pro mobiltelefon med 128 GB lagringskapasitet. Enheten har en svart farge og er designet for brukere som ønsker høy ytelse.
+Apple device 15 Pro mobiltelefon med 128 GB lagringskapasitet. Enheten har en svart farge og er designet for brukere som ønsker høy ytelse.
 EXPECTED:
 {"id":"X","bin":1,"sev":1,"reason":"cs0.7 baseline (no neg-wear)","lock":"null",
  "meta":{"no_wear_global":false,"protector_only":false,"glass":false,"back_glass":false,"lens_glass":false,"panel_severe":false,"light_panel":false,"charging":false,"non_oem":false,"battery_clamp":false}
@@ -386,7 +386,7 @@ INPUT:
 id:X
 cs: 0.9
 battery_effective: 100
-title: iPhone 15 Pro
+title: device 15 Pro
 description:
 Minimalt med bruksmerker. Ellers strøken. (Ingen spesifikk flate nevnt.)
 EXPECTED:
@@ -398,7 +398,7 @@ INPUT:
 id:X
 cs: 0.9
 battery_effective: 98
-title: iPhone 16 Pro Max
+title: device 16 Pro Max
 description:
 Mobilnettet virker ikke i Norge, fungerer i andre land.
 EXPECTED:
@@ -410,7 +410,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 99
-title: iPhone 14
+title: device 14
 description:
 Skjermbeskytteren er sprukket; skjermen under strøken.
 EXPECTED:
@@ -422,7 +422,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 95
-title: iPhone 14
+title: device 14
 description:
 Må vri for å lade.
 EXPECTED:
@@ -434,7 +434,7 @@ INPUT:
 id:X
 cs: 0.9
 battery_effective: 86
-title: iPhone 15 Pro
+title: device 15 Pro
 description:
 Bare generisk/spec tekst, ingen slitasje omtalt.
 EXPECTED:
@@ -446,7 +446,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 86
-title: iPhone 15 Pro
+title: device 15 Pro
 description:
 Litt merker i rammen (se bilder). Batteri 86 %.
 EXPECTED:
@@ -458,7 +458,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 86
-title: iPhone 14 Pro Max
+title: device 14 Pro Max
 description:
 Ingen riper eller skader.
 EXPECTED:
@@ -470,7 +470,7 @@ INPUT:
 id:X
 cs: 0.5
 battery_effective: 95
-title: iPhone 14
+title: device 14
 description:
 Noen riper i skjerm. Ellers normal bruk.
 EXPECTED:
@@ -483,7 +483,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 79
-title: iPhone 13 Pro – Strøken, ingen skader
+title: device 13 Pro – Strøken, ingen skader
 description:
 Absolutt ingen riper eller skader. Batterikapasitet 79 %. Ellers alt fungerer.
 EXPECTED:
@@ -495,7 +495,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 95
-title: iPhone 14 Pro – Som ny, ingen riper
+title: device 14 Pro – Som ny, ingen riper
 description:
 Ingen skader. Må vri for å lade av og til, ellers fin.
 EXPECTED:
@@ -507,7 +507,7 @@ INPUT:
 id:X
 cs: 0.7
 battery_effective: 96
-title: iPhone 14 – Ripefri
+title: device 14 – Ripefri
 description:
 Ripefri. Liten sprekk i skjermen i hjørnet (se bilde).
 EXPECTED:
@@ -519,7 +519,7 @@ INPUT:
 id:X
 cs: 0.9
 battery_effective: 88
-title: iPhone 15 Pro – Strøken
+title: device 15 Pro – Strøken
 description:
 Skjermen er byttet. Alt fungerer. Ingen riper.
 EXPECTED:
@@ -895,22 +895,22 @@ def _run_golden_tests_smoke() -> None:
     """Optional smoke tests for common edge cases. Only runs if RUN_GOLDENS=1."""
     samples = [
         # device crack vs negation
-        {"cs":0.7,"title":"iPhone 13","desc":"noen sprek på forskjerm","expect_sev":3,"reason_has":"knust"},
-        {"cs":0.7,"title":"iPhone 13","desc":"ikke knust glass. noen bruksmerker","expect_sev":1,"reason_has":"baseline"},
+        {"cs":0.7,"title":"device 13","desc":"noen sprek på forskjerm","expect_sev":3,"reason_has":"knust"},
+        {"cs":0.7,"title":"device 13","desc":"ikke knust glass. noen bruksmerker","expect_sev":1,"reason_has":"baseline"},
         # cs0.7 mint requires global phrase
-        {"cs":0.7,"title":"iPhone 14","desc":"Strøken. Brukt med deksel.","expect_sev":1,"reason_has":"baseline"},
-        {"cs":0.7,"title":"iPhone 14","desc":"Ingen riper eller skader. Brukt med deksel.","expect_sev":0,"reason_has":"mint @ cs0.7"},
+        {"cs":0.7,"title":"device 14","desc":"Strøken. Brukt med deksel.","expect_sev":1,"reason_has":"baseline"},
+        {"cs":0.7,"title":"device 14","desc":"Ingen riper eller skader. Brukt med deksel.","expect_sev":0,"reason_has":"mint @ cs0.7"},
         # protector-only strict
-        {"cs":0.9,"title":"iPhone 14","desc":"Sprukket skjermbeskytter, skjermen under strøken.","expect_sev":0,"reason_has":"protector"},
+        {"cs":0.9,"title":"device 14","desc":"Sprukket skjermbeskytter, skjermen under strøken.","expect_sev":0,"reason_has":"protector"},
         # non-oem examples
-        {"cs":0.9,"title":"iPhone 16 Pro","desc":"Nytt glass i front. Alt annet strøkent.","expect_sev":2,"reason_has":"non-oem"},
+        {"cs":0.9,"title":"device 16 Pro","desc":"Nytt glass i front. Alt annet strøkent.","expect_sev":2,"reason_has":"non-oem"},
         # panel
-        {"cs":0.7,"title":"iPhone X","desc":"Grønn linje midt på skjermen.","expect_sev":3,"reason_has":"panel"},
-        {"cs":0.7,"title":"iPhone X","desc":"En død piksel midt på skjermen.","expect_sev":2,"reason_has":"død piksel"},
+        {"cs":0.7,"title":"device X","desc":"Grønn linje midt på skjermen.","expect_sev":3,"reason_has":"panel"},
+        {"cs":0.7,"title":"device X","desc":"En død piksel midt på skjermen.","expect_sev":2,"reason_has":"død piksel"},
         # charging
-        {"cs":0.7,"title":"iPhone 13","desc":"Må vri for å lade, ellers fin.","expect_sev":2,"reason_has":"ladeport"},
+        {"cs":0.7,"title":"device 13","desc":"Må vri for å lade, ellers fin.","expect_sev":2,"reason_has":"ladeport"},
         # battery <80
-        {"cs":0.9,"title":"iPhone 13","desc":"Batterihelse 79%.","expect_sev":2,"reason_has":"batt<"},
+        {"cs":0.9,"title":"device 13","desc":"Batterihelse 79%.","expect_sev":2,"reason_has":"batt<"},
     ]
     for i, s in enumerate(samples, 1):
         fake_row = {

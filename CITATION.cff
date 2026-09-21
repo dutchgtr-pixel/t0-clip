@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this work, please cite it."
-title: "t0-clip"
+title: "t0-clip: MarketNeural survival research and temporal data governance"
 type: software
 license: "Apache-2.0"
 repository-code: "https://github.com/dutchgtr-pixel/t0-clip"
@@ -13,5 +13,8 @@ keywords:
   - "data-governance"
   - "time-leakage"
   - "survival-analysis"
+  - "multimodal-learning"
+  - "neural-survival"
+  - "reproducible-research"
   - "postgres"
   - "airflow"

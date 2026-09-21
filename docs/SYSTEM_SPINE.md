@@ -54,7 +54,7 @@ Complexity concentrates here by design.
 - modeling\meta\fast24_flagger3.py
 - infra\jobs\quality-control\db-healing\src\dedupe_ai_sql.py
 - infra\jobs\quality-control\db-healing\src\battery_refit_llm_v2.py
-- infra\jobs\labeling\image-pipeline\src\scrape_images_playwright.py
+- infra\jobs\labeling\image-pipeline\src\observe_images_playwright.py
 - infra\jobs\labeling\image-pipeline\src\label_damage.py
 - infra\jobs\labeling\image-pipeline\src\label_color.py
 - modeling\embeddings\sbert\sbert_vec_upsert_title_desc_caption.py

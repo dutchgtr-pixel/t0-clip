@@ -7,7 +7,7 @@ This DAG demonstrates a "job-mode" pattern:
 - No credentials are embedded; all config is supplied via environment variables and/or Airflow Connections.
 
 Public-release constraints:
-- No target-platform identifiers or scraping fingerprints.
+- No target-platform identifiers or collection fingerprints.
 - All marketplace-specific logic must be behind the adapter layer inside the container image.
 """
 

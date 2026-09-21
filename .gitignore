@@ -3,6 +3,14 @@ data/
 .cache/
 **/*.log
 airflow-logs/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+results/
 # Local audit outputs (generated)
 REPO_CAPABILITY_REPORT.md
 _dag_inventory.csv

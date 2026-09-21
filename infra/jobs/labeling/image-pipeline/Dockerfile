@@ -25,9 +25,9 @@ RUN pip install --no-cache-dir \
 RUN python -m playwright install --with-deps chromium
 
 # Copy pipeline scripts
-COPY scrape_images_playwright.py /app/scrape_images_playwright.py
+COPY observe_images_playwright.py /app/observe_images_playwright.py
 COPY analyze_images_gpt5nano.py /app/analyze_images_gpt5nano.py
-COPY images_iphone_color.py /app/images_iphone_color.py
+COPY images_device_color.py /app/images_device_color.py
 COPY image_damage_analysis.py /app/image_damage_analysis.py
 
 # Copy entrypoint

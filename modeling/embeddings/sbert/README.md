@@ -69,7 +69,7 @@ Must include these columns (names configurable via CLI):
 - `edited_at` (timestamptz) — the snapshot timestamp (t0)
 - `title` (text, nullable)
 - `description` (text, nullable)
-- `media_scraped_at` (timestamptz, nullable) — optional but recommended for refresh logic
+- `media_observed_at` (timestamptz, nullable) — optional but recommended for refresh logic
 - `spam_flag` (nullable boolean or any nullable marker) — non-null indicates spam; default behavior excludes spam
 
 ### Image assets table (default: `public.listing_image_assets`)
@@ -106,12 +106,12 @@ Use environment variables (recommended) rather than hardcoding DSNs.
 
 **bash**
 ```bash
-export PG_DSN="postgresql://USER:PASSWORD@HOST:5432/DBNAME"
+export PG_DSN="<PROVIDE_DATABASE_DSN>"
 ```
 
 **PowerShell**
 ```powershell
-$env:PG_DSN = "postgresql://USER:PASSWORD@HOST:5432/DBNAME"
+$env:PG_DSN = "<PROVIDE_DATABASE_DSN>"
 ```
 
 ### 2) Fit PCA and write vectors (example: 64-D)
@@ -150,7 +150,7 @@ python sbert_vec_upsert_title_desc_cap_PUBLIC.py \
 On each run, the script selects candidates that are either:
 
 - missing from the target table, or
-- **stale** because `media_scraped_at > created_at` for the existing embedding row
+- **stale** because `media_observed_at > created_at` for the existing embedding row
 
 If a row is selected only due to refresh timestamps but its **merged text hash is unchanged**, the default behavior is to **touch** `created_at` to stop the row being re-selected forever. This is the purpose of the robust “touch unchanged refresh rows” logic.
 
@@ -232,7 +232,7 @@ Tables and column names are configurable, but must be simple identifiers (or `sc
 - `--edited-at-col` (default: `edited_at`)
 - `--title-col` (default: `title`)
 - `--description-col` (default: `description`)
-- `--media-scraped-at-col` (default: `media_scraped_at`)
+- `--media-observed-at-col` (default: `media_observed_at`)
 - `--spam-flag-col` (default: `spam_flag`)
 - `--caption-text-col` (default: `caption_text`)
 - `--image-index-col` (default: `image_index`)

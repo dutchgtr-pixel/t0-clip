@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "marketneural"
+version = "0.1.0"
+description = "Auditable temporal benchmarks for multimodal marketplace survival models"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0"}
+dependencies = [
+  "numpy>=2.0,<3", "pandas>=2.2,<4", "scipy>=1.13,<2",
+  "scikit-learn>=1.6,<2", "scikit-survival>=0.24,<0.29", "torch>=2.4,<3"
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "pypdf>=5,<7"]
+plots = ["matplotlib>=3.8,<4"]
+
+[project.scripts]
+marketneural = "marketneural.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["marketneural*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

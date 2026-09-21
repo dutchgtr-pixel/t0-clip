@@ -4,7 +4,7 @@
 """
 image_accessories_analysis.py
 
-Image ACCESSORY analysis for iPhone listings using GPT-5 (nano).
+Image ACCESSORY analysis for device listings using GPT-5 (nano).
 
 The model is used ONLY for:
 - accessories / box / cases / charger / earbuds / receipt
@@ -27,8 +27,8 @@ This script is designed to be COMPLEMENTARY to image_damage_analysis.py:
 
 IMPORTANT:
 - This script NEVER writes or updates damage-related columns.
-- It ONLY inserts/updates accessory & battery/box_state columns in ml.iphone_image_features_v1.
-- It uses accessories_done/accessories_done_at in ml.iphone_image_features_v1
+- It ONLY inserts/updates accessory & battery/box_state columns in ml.device_image_features_v1.
+- It uses accessories_done/accessories_done_at in ml.device_image_features_v1
   to avoid re-processing listings and burning tokens.
 """
 
@@ -81,7 +81,7 @@ print("[DEBUG] Using base_url:", os.getenv("OPENAI_BASE_URL", "https://api.opena
 
 # SYSTEM PROMPT LEFT EMPTY ON PURPOSE
 SYSTEM_PROMPT = """
-You are an assistant that labels iPhone listing photos for resale analytics, with a focus on:
+You are an assistant that labels device listing photos for resale analytics, with a focus on:
 
 - accessories and extras (box, charger, cable, earbuds, cases, etc.),
 - battery screenshots and battery health percentage from images,
@@ -89,7 +89,7 @@ You are an assistant that labels iPhone listing photos for resale analytics, wit
 - box presence and box state (sealed vs opened).
 
 You will get:
-- A generation number (iPhone model generation, e.g. 13, 14, 17)
+- A generation number (device model generation, e.g. 13, 14, 17)
 - A marketplace listing id (listing_id)
 - A title and description from the listing text
 - For each image:
@@ -106,7 +106,7 @@ Apply the following rules and output format EXACTLY:
 ACCESSORIES & EXTRAS (PER IMAGE):
 
 - has_box: true/false
-    true if a retail iPhone box is visible (3D cardboard package that can close around a phone, with artwork/Apple logo and real depth).
+    true if a retail device box is visible (3D cardboard package that can close around a phone, with artwork/Apple logo and real depth).
     Rules:
       - Thin shell-shaped objects with camera cut-out are CASES, not boxes.
       - A flat slab under/next to the phone with camera cut-out is almost always a CASE, not a box.
@@ -375,9 +375,9 @@ def get_candidate_listings(limit_listings: int) -> List[Tuple[int, int]]:
     """
     Return (generation, listing_id) pairs that:
     - are eligible listings,
-    - have at least 1 image in iphone_image_assets, and
+    - have at least 1 image in device_image_assets, and
     - have NOT yet had accessories/battery/box_state processed
-      (accessories_done = false) in ml.iphone_image_features_v1.
+      (accessories_done = false) in ml.device_image_features_v1.
 
     This prevents re-running the accessories analysis on listings
     that already have accessories data, so we don't burn tokens twice.
@@ -388,19 +388,19 @@ def get_candidate_listings(limit_listings: int) -> List[Tuple[int, int]]:
             """
             WITH eligible AS (
                 SELECT generation, listing_id
-                FROM "iPhone".iphone_listings
+                FROM "device".device_listings
                 WHERE COALESCE(status,'') IN ('live','sold','older21days')
                   AND spam IS NULL
                   AND url IS NOT NULL
             )
             SELECT e.generation, e.listing_id
             FROM eligible e
-            JOIN "iPhone".iphone_image_assets a
+            JOIN "device".device_image_assets a
               ON a.generation = e.generation
              AND a.listing_id    = e.listing_id
             WHERE NOT EXISTS (
                 SELECT 1
-                FROM ml.iphone_image_features_v1 f
+                FROM ml.device_image_features_v1 f
                 WHERE f.generation      = e.generation
                   AND f.listing_id         = e.listing_id
                   AND f.feature_version = %s
@@ -434,7 +434,7 @@ def get_listing_context(gen: int, listing_id: int) -> Dict[str, Any]:
                 COALESCE(description, '') AS description,
                 condition_score,
                 COALESCE(model, '')       AS model
-            FROM "iPhone".iphone_listings
+            FROM "device".device_listings
             WHERE generation = %s
               AND listing_id    = %s;
             """,
@@ -474,7 +474,7 @@ def get_images_for_listing(
         cur.execute(
             """
             SELECT image_index, storage_path, COALESCE(caption_text, '')
-            FROM "iPhone".iphone_image_assets
+            FROM "device".device_image_assets
             WHERE generation = %s AND listing_id = %s
             ORDER BY image_index
             LIMIT %s;
@@ -767,7 +767,7 @@ def insert_features_from_json(
     gen: int, listing_id: int, data: Dict[str, Any]
 ) -> int:
     """
-    Insert/update rows in ml.iphone_image_features_v1 from LLM JSON.
+    Insert/update rows in ml.device_image_features_v1 from LLM JSON.
 
     IMPORTANT:
     - This script ONLY writes accessory/battery/box_state fields.
@@ -823,7 +823,7 @@ def insert_features_from_json(
         execute_batch(
             cur,
             """
-            INSERT INTO ml.iphone_image_features_v1 (
+            INSERT INTO ml.device_image_features_v1 (
                 generation,
                 listing_id,
                 image_index,
@@ -861,7 +861,7 @@ def insert_features_from_json(
                 battery_screenshot     = EXCLUDED.battery_screenshot,
                 battery_health_pct_img = EXCLUDED.battery_health_pct_img,
                 box_state_level        = EXCLUDED.box_state_level,
-                created_at             = LEAST(ml.iphone_image_features_v1.created_at, now())
+                created_at             = LEAST(ml.device_image_features_v1.created_at, now())
             ;
             """,
             rows,
@@ -873,7 +873,7 @@ def insert_features_from_json(
 
 def mark_accessories_done(gen: int, listing_id: int) -> None:
     """
-    Mark accessories_done/accessories_done_at in ml.iphone_image_features_v1
+    Mark accessories_done/accessories_done_at in ml.device_image_features_v1
     for this (generation, listing_id). This is the processed marker so we don't
     run the accessories script twice on the same listing.
     """
@@ -881,7 +881,7 @@ def mark_accessories_done(gen: int, listing_id: int) -> None:
     def _run(conn, cur):
         cur.execute(
             """
-            UPDATE ml.iphone_image_features_v1
+            UPDATE ml.device_image_features_v1
             SET accessories_done    = TRUE,
                 accessories_done_at = now()
             WHERE generation      = %s
@@ -901,7 +901,7 @@ def mark_accessories_done(gen: int, listing_id: int) -> None:
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Batch ACCESSORY image analysis for iPhone listings using GPT-5 nano."
+        description="Batch ACCESSORY image analysis for device listings using GPT-5 nano."
     )
     ap.add_argument(
         "--limit-listings",

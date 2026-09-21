@@ -6,7 +6,7 @@
 -- present when the image pipeline completed within SLA relative to edited_date.
 --
 -- Prerequisites (from your remediation framework):
---   - ml.iphone_image_features_unified_t0_v1_mv
+--   - ml.device_image_features_unified_t0_v1_mv
 --   - ml.tom_features_v1_enriched_ai_clean_t0_v1_mv
 --   - ml.v_damage_fusion_features_v2_scored
 -- ============================================================
@@ -45,7 +45,7 @@ BEGIN
       %s AS img_within_sla,
       %s
     FROM base b
-    LEFT JOIN ml.iphone_image_features_unified_t0_v1_mv i USING (generation, listing_id)
+    LEFT JOIN ml.device_image_features_unified_t0_v1_mv i USING (generation, listing_id)
     LEFT JOIN ml.v_damage_fusion_features_v2_scored f USING (generation, listing_id)
   $fmt$, ok_expr, cols);
 

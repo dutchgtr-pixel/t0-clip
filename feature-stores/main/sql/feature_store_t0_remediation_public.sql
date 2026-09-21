@@ -11,17 +11,17 @@ DECLARE
   lookback_days int := 730;  -- tune as needed
   listing regclass;
 BEGIN
-  -- Locate iphone_listings robustly regardless of schema case
+  -- Locate device_listings robustly regardless of schema case
   SELECT c.oid::regclass INTO listing
   FROM pg_class c
   JOIN pg_namespace n ON n.oid = c.relnamespace
-  WHERE c.relname='iphone_listings'
+  WHERE c.relname='device_listings'
     AND c.relkind IN ('r','p','f')
-  ORDER BY (n.nspname='iPhone') DESC, (n.nspname='iphone') DESC, n.nspname
+  ORDER BY (n.nspname='device') DESC, (n.nspname='device') DESC, n.nspname
   LIMIT 1;
 
   IF listing IS NULL THEN
-    RAISE EXCEPTION 'Could not locate iphone_listings in pg_catalog';
+    RAISE EXCEPTION 'Could not locate device_listings in pg_catalog';
   END IF;
 
   EXECUTE format(
@@ -215,7 +215,7 @@ FROM ml.tom_features_v1_enriched_speed_t0_v1_mv base
 
 LEFT JOIN LATERAL (
   SELECT *
-  FROM "iPhone".iphone_ai_enrich ai
+  FROM "device".device_ai_enrich ai
   WHERE ai.listing_id = base.listing_id
     AND ai.updated_at <= (base.edited_date + interval '24 hours')
   ORDER BY ai.updated_at DESC
@@ -316,24 +316,24 @@ BEGIN
   INTO done_exprs
   FROM information_schema.columns
   WHERE table_schema='ml'
-    AND table_name='iphone_image_features_v1'
+    AND table_name='device_image_features_v1'
     AND column_name LIKE '%\_done\_at' ESCAPE '\'
     AND data_type LIKE 'timestamp%';
 
   IF done_exprs IS NULL THEN
-    RAISE EXCEPTION 'No *_done_at timestamp columns found on ml.iphone_image_features_v1';
+    RAISE EXCEPTION 'No *_done_at timestamp columns found on ml.device_image_features_v1';
   END IF;
 
-  -- Choose a timestamp column from iphone_image_assets (prefer created_at/updated_at/scraped_at/etc.)
+  -- Choose a timestamp column from device_image_assets (prefer created_at/updated_at/observed_at/etc.)
   SELECT c.column_name
   INTO asset_ts_col
   FROM information_schema.columns c
-  WHERE c.table_schema='iPhone'
-    AND c.table_name='iphone_image_assets'
+  WHERE c.table_schema='device'
+    AND c.table_name='device_image_assets'
     AND c.data_type LIKE 'timestamp%'
   ORDER BY
     CASE
-      WHEN c.column_name IN ('created_at','updated_at','scraped_at','observed_at','ingested_at','captured_at') THEN 0
+      WHEN c.column_name IN ('created_at','updated_at','observed_at','observed_at','ingested_at','captured_at') THEN 0
       ELSE 1
     END,
     c.ordinal_position
@@ -350,13 +350,13 @@ BEGIN
   INTO cols
   FROM information_schema.columns
   WHERE table_schema='ml'
-    AND table_name='iphone_image_features_unified_v1'
+    AND table_name='device_image_features_unified_v1'
     AND column_name NOT IN ('generation','listing_id');
 
-  DROP MATERIALIZED VIEW IF EXISTS ml.iphone_image_features_unified_t0_v1_mv CASCADE;
+  DROP MATERIALIZED VIEW IF EXISTS ml.device_image_features_unified_t0_v1_mv CASCADE;
 
   EXECUTE format($fmt$
-    CREATE MATERIALIZED VIEW ml.iphone_image_features_unified_t0_v1_mv AS
+    CREATE MATERIALIZED VIEW ml.device_image_features_unified_t0_v1_mv AS
     WITH base AS (
       SELECT generation, listing_id, edited_date
       FROM ml.tom_features_v1_enriched_ai_clean_t0_v1_mv
@@ -366,7 +366,7 @@ BEGIN
         generation,
         listing_id,
         GREATEST(%s) AS img_max_done_at
-      FROM ml.iphone_image_features_v1 f
+      FROM ml.device_image_features_v1 f
       GROUP BY generation, listing_id
     ),
     assets AS (
@@ -374,7 +374,7 @@ BEGIN
         generation,
         listing_id,
         MAX(%I)::timestamptz AS img_max_asset_at
-      FROM "iPhone".iphone_image_assets
+      FROM "device".device_image_assets
       GROUP BY generation, listing_id
     )
     SELECT
@@ -388,7 +388,7 @@ BEGIN
       ) AS img_within_sla,
       %s
     FROM base b
-    LEFT JOIN ml.iphone_image_features_unified_v1 u USING (generation, listing_id)
+    LEFT JOIN ml.device_image_features_unified_v1 u USING (generation, listing_id)
     LEFT JOIN status s USING (generation, listing_id)
     LEFT JOIN assets a USING (generation, listing_id)
     CROSS JOIN LATERAL (
@@ -400,21 +400,21 @@ BEGIN
     ) __g
   $fmt$, done_exprs, asset_ts_col, sla_text, sla_text, cols, sla_text, sla_text);
 
-  CREATE UNIQUE INDEX IF NOT EXISTS iphone_image_features_unified_t0_v1_uq
-    ON ml.iphone_image_features_unified_t0_v1_mv (generation, listing_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS device_image_features_unified_t0_v1_uq
+    ON ml.device_image_features_unified_t0_v1_mv (generation, listing_id);
 
-  ANALYZE ml.iphone_image_features_unified_t0_v1_mv;
+  ANALYZE ml.device_image_features_unified_t0_v1_mv;
 END $$;
 
 
 SELECT img_within_sla, COUNT(*) AS n
-FROM ml.iphone_image_features_unified_t0_v1_mv
+FROM ml.device_image_features_unified_t0_v1_mv
 GROUP BY 1
 ORDER BY 1;
 
 SELECT
-  strpos(lower(pg_get_viewdef('ml.iphone_image_features_unified_t0_v1_mv'::regclass,true)),'current_date')>0 AS has_current_date,
-  strpos(lower(pg_get_viewdef('ml.iphone_image_features_unified_t0_v1_mv'::regclass,true)),'now(')>0          AS has_now;
+  strpos(lower(pg_get_viewdef('ml.device_image_features_unified_t0_v1_mv'::regclass,true)),'current_date')>0 AS has_current_date,
+  strpos(lower(pg_get_viewdef('ml.device_image_features_unified_t0_v1_mv'::regclass,true)),'now(')>0          AS has_now;
 
 
 DO $$
@@ -451,7 +451,7 @@ BEGIN
       %s AS img_within_sla,
       %s
     FROM base b
-    LEFT JOIN ml.iphone_image_features_unified_t0_v1_mv i USING (generation, listing_id)
+    LEFT JOIN ml.device_image_features_unified_t0_v1_mv i USING (generation, listing_id)
     LEFT JOIN ml.v_damage_fusion_features_v2_scored f USING (generation, listing_id)
   $fmt$, ok_expr, cols);
 
@@ -466,7 +466,7 @@ DO $$
 DECLARE
   q text;
 BEGIN
-  q := pg_get_viewdef('ml.iphone_device_meta_encoded_v1'::regclass, true);
+  q := pg_get_viewdef('ml.device_device_meta_encoded_v1'::regclass, true);
 
   q := regexp_replace(
         q,
@@ -477,12 +477,12 @@ BEGIN
 
   q := regexp_replace(
         q,
-        '\mml\.iphone_image_features_unified_v1\M',
-        'ml.iphone_image_features_unified_t0_v1_mv',
+        '\mml\.device_image_features_unified_v1\M',
+        'ml.device_image_features_unified_t0_v1_mv',
         'g'
       );
 
-  EXECUTE 'CREATE OR REPLACE VIEW ml.iphone_device_meta_encoded_t0_v1 AS ' || q;
+  EXECUTE 'CREATE OR REPLACE VIEW ml.device_device_meta_encoded_t0_v1 AS ' || q;
 END $$;
 
 
@@ -497,17 +497,17 @@ BEGIN
   INTO cols
   FROM information_schema.columns
   WHERE table_schema='ml'
-    AND table_name='iphone_device_meta_encoded_t0_v1'
+    AND table_name='device_device_meta_encoded_t0_v1'
     AND column_name NOT IN ('generation','listing_id');
 
   IF cols IS NULL THEN
-    RAISE EXCEPTION 'Could not introspect columns for ml.iphone_device_meta_encoded_t0_v1';
+    RAISE EXCEPTION 'Could not introspect columns for ml.device_device_meta_encoded_t0_v1';
   END IF;
 
-  DROP MATERIALIZED VIEW IF EXISTS ml.iphone_device_meta_encoded_t0_v1_mv CASCADE;
+  DROP MATERIALIZED VIEW IF EXISTS ml.device_device_meta_encoded_t0_v1_mv CASCADE;
 
   EXECUTE format($fmt$
-    CREATE MATERIALIZED VIEW ml.iphone_device_meta_encoded_t0_v1_mv AS
+    CREATE MATERIALIZED VIEW ml.device_device_meta_encoded_t0_v1_mv AS
     WITH base AS (
       SELECT generation, listing_id, edited_date
       FROM ml.tom_features_v1_enriched_ai_clean_t0_v1_mv
@@ -518,14 +518,14 @@ BEGIN
       b.edited_date,
       %s
     FROM base b
-    LEFT JOIN ml.iphone_device_meta_encoded_t0_v1 m
+    LEFT JOIN ml.device_device_meta_encoded_t0_v1 m
       ON m.generation=b.generation AND m.listing_id=b.listing_id
   $fmt$, cols);
 
-  CREATE UNIQUE INDEX IF NOT EXISTS iphone_device_meta_encoded_t0_v1_uq
-    ON ml.iphone_device_meta_encoded_t0_v1_mv(generation,listing_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS device_device_meta_encoded_t0_v1_uq
+    ON ml.device_device_meta_encoded_t0_v1_mv(generation,listing_id);
 
-  ANALYZE ml.iphone_device_meta_encoded_t0_v1_mv;
+  ANALYZE ml.device_device_meta_encoded_t0_v1_mv;
 END $$;
 
 
@@ -549,7 +549,7 @@ BEGIN
   )
   INTO img_cols
   FROM pg_attribute a
-  WHERE a.attrelid = 'ml.iphone_image_features_unified_t0_v1_mv'::regclass
+  WHERE a.attrelid = 'ml.device_image_features_unified_t0_v1_mv'::regclass
     AND a.attnum > 0 AND NOT a.attisdropped
     AND a.attname NOT IN ('generation','listing_id','edited_date','img_within_sla');
 
@@ -580,7 +580,7 @@ BEGIN
   )
   INTO dev_cols
   FROM pg_attribute a
-  WHERE a.attrelid = 'ml.iphone_device_meta_encoded_t0_v1_mv'::regclass
+  WHERE a.attrelid = 'ml.device_device_meta_encoded_t0_v1_mv'::regclass
     AND a.attnum > 0 AND NOT a.attisdropped
     AND a.attname NOT IN ('generation','listing_id','edited_date');
 
@@ -590,11 +590,11 @@ BEGIN
       b.*,
       COALESCE(i.img_within_sla,false) AS img_within_sla%s%s%s
     FROM ml.tom_features_v1_enriched_ai_clean_t0_read_v b
-    LEFT JOIN ml.iphone_image_features_unified_t0_v1_mv i
+    LEFT JOIN ml.device_image_features_unified_t0_v1_mv i
       ON i.generation=b.generation AND i.listing_id=b.listing_id
     LEFT JOIN ml.v_damage_fusion_features_v2_scored_t0_v1_mv d
       ON d.generation=b.generation AND d.listing_id=b.listing_id
-    LEFT JOIN ml.iphone_device_meta_encoded_t0_v1_mv m
+    LEFT JOIN ml.device_device_meta_encoded_t0_v1_mv m
       ON m.generation=b.generation AND m.listing_id=b.listing_id;
   $fmt$,
   img_cols,

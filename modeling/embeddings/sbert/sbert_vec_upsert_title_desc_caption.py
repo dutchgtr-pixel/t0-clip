@@ -29,7 +29,7 @@ Listings table (default: public.listings):
   - edited_at         TIMESTAMPTZ  (t0 / snapshot time)
   - title             TEXT
   - description       TEXT
-  - media_scraped_at  TIMESTAMPTZ  (optional; used for "refresh if captions arrived later")
+  - media_observed_at  TIMESTAMPTZ  (optional; used for "refresh if captions arrived later")
   - spam_flag         (nullable; used only for optional spam filtering)
 
 Image assets table (default: public.listing_image_assets):
@@ -194,7 +194,7 @@ def select_candidates_sql(
     col_edited_at: str,
     col_title: str,
     col_description: str,
-    col_media_scraped_at: str,
+    col_media_observed_at: str,
     col_spam_flag: str,
     col_caption_text: str,
     col_image_index: str,
@@ -202,12 +202,12 @@ def select_candidates_sql(
     """
     Candidate selection:
       - Missing embedding rows (no matching row in {table})
-      - Refresh rows where media_scraped_at > embedding.created_at (captions arrived later)
+      - Refresh rows where media_observed_at > embedding.created_at (captions arrived later)
 
     We also explicitly exclude rows where merged text is empty to prevent "can't embed"
     infinite loops.
 
-    Note: If your schema does not have media_scraped_at, you can set --media-scraped-at-col
+    Note: If your schema does not have media_observed_at, you can set --media-observed-at-col
     to a column that is always NULL; refresh selection will effectively be disabled.
     """
     spam_filter = f"( %(include_spam)s OR l.{col_spam_flag} IS NULL )" if col_spam_flag else "TRUE"
@@ -224,7 +224,7 @@ base AS (
   SELECT DISTINCT ON (l.{col_listing_id}, l.{col_edited_at})
       l.{col_listing_id}                 AS listing_id,
       l.{col_edited_at}                  AS edited_at,
-      l.{col_media_scraped_at}           AS media_scraped_at,
+      l.{col_media_observed_at}           AS media_observed_at,
       COALESCE(l.{col_title},'')         AS title,
       COALESCE(l.{col_description},'')   AS description,
       COALESCE(c.captions,'')            AS captions,
@@ -254,12 +254,12 @@ base AS (
       AND (
         s.listing_id IS NULL
         OR (
-          l.{col_media_scraped_at} IS NOT NULL
+          l.{col_media_observed_at} IS NOT NULL
           AND s.created_at IS NOT NULL
-          AND s.created_at < l.{col_media_scraped_at}
+          AND s.created_at < l.{col_media_observed_at}
         )
       )
-  ORDER BY l.{col_listing_id}, l.{col_edited_at}, l.{col_media_scraped_at} DESC NULLS LAST
+  ORDER BY l.{col_listing_id}, l.{col_edited_at}, l.{col_media_observed_at} DESC NULLS LAST
 )
 SELECT *
 FROM base
@@ -283,14 +283,14 @@ DO UPDATE SET
 
 def touch_unchanged_sql(table: str) -> str:
     """
-    If a row is selected only because media_scraped_at > embedding.created_at,
-    but the merged text hash is unchanged, we "touch" created_at to be >= media_scraped_at
+    If a row is selected only because media_observed_at > embedding.created_at,
+    but the merged text hash is unchanged, we "touch" created_at to be >= media_observed_at
     so the row stops getting selected forever.
     """
     return f"""
-WITH v(listing_id, edited_at, source, model_rev, pca_rev, media_scraped_at) AS (VALUES %s)
+WITH v(listing_id, edited_at, source, model_rev, pca_rev, media_observed_at) AS (VALUES %s)
 UPDATE {table} s
-   SET created_at = GREATEST(now(), COALESCE(v.media_scraped_at, now()))
+   SET created_at = GREATEST(now(), COALESCE(v.media_observed_at, now()))
   FROM v
  WHERE s.listing_id=v.listing_id
    AND s.edited_at=v.edited_at
@@ -406,7 +406,7 @@ def run_loop(
     col_edited_at: str,
     col_title: str,
     col_description: str,
-    col_media_scraped_at: str,
+    col_media_observed_at: str,
     col_spam_flag: str,
     col_caption_text: str,
     col_image_index: str,
@@ -422,7 +422,7 @@ def run_loop(
         col_edited_at=col_edited_at,
         col_title=col_title,
         col_description=col_description,
-        col_media_scraped_at=col_media_scraped_at,
+        col_media_observed_at=col_media_observed_at,
         col_spam_flag=col_spam_flag,
         col_caption_text=col_caption_text,
         col_image_index=col_image_index,
@@ -466,7 +466,7 @@ def run_loop(
         skipped_empty = 0
         skipped_unchanged = 0
 
-        # rows = (listing_id, edited_at, media_scraped_at, title, description, captions, old_sha1, old_created)
+        # rows = (listing_id, edited_at, media_observed_at, title, description, captions, old_sha1, old_created)
         for (listing_id, edited_at, media_at, title, desc, captions, old_sha1, old_created) in rows:
             merged = build_merged_text(title, desc, captions)
             if not merged:
@@ -592,7 +592,7 @@ def main() -> None:
     ap.add_argument("--edited-at-col", default=os.getenv("EDITED_AT_COL", "edited_at"))
     ap.add_argument("--title-col", default=os.getenv("TITLE_COL", "title"))
     ap.add_argument("--description-col", default=os.getenv("DESCRIPTION_COL", "description"))
-    ap.add_argument("--media-scraped-at-col", default=os.getenv("MEDIA_SCRAPED_AT_COL", "media_scraped_at"))
+    ap.add_argument("--media-observed-at-col", default=os.getenv("MEDIA_OBSERVED_AT_COL", "media_observed_at"))
     ap.add_argument("--spam-flag-col", default=os.getenv("SPAM_FLAG_COL", "spam_flag"))
 
     ap.add_argument("--caption-text-col", default=os.getenv("CAPTION_TEXT_COL", "caption_text"))
@@ -620,7 +620,7 @@ def main() -> None:
     col_edited_at = _validate_col_ident(args.edited_at_col, "--edited-at-col")
     col_title = _validate_col_ident(args.title_col, "--title-col")
     col_description = _validate_col_ident(args.description_col, "--description-col")
-    col_media_scraped_at = _validate_col_ident(args.media_scraped_at_col, "--media-scraped-at-col")
+    col_media_observed_at = _validate_col_ident(args.media_observed_at_col, "--media-observed-at-col")
     col_spam_flag = _validate_col_ident(args.spam_flag_col, "--spam-flag-col") if args.spam_flag_col else ""
 
     col_caption_text = _validate_col_ident(args.caption_text_col, "--caption-text-col")
@@ -712,7 +712,7 @@ def main() -> None:
         col_edited_at=col_edited_at,
         col_title=col_title,
         col_description=col_description,
-        col_media_scraped_at=col_media_scraped_at,
+        col_media_observed_at=col_media_observed_at,
         col_spam_flag=col_spam_flag,
         col_caption_text=col_caption_text,
         col_image_index=col_image_index,

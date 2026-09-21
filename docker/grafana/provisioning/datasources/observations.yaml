@@ -1,0 +1,20 @@
+﻿# docker/grafana/provisioning/datasources/observations.yaml
+apiVersion: 1
+
+datasources:
+  - name: observations
+    uid:  observations
+    type: postgres
+
+    url:  pgbouncer:6432
+    user: postgres
+
+    secureJsonData:
+      # <<<   MUST be literal text, no ${…}  >>>
+      password: Lilleper5               # <─ put it here
+
+    jsonData:
+      database: observations
+      sslmode: 'disable'
+
+

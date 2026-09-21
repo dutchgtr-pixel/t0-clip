@@ -17,9 +17,9 @@ RULE (hard-coded):
 WHAT IT DOES
 • Calls LLM separately for PSA and MAIN to compute psa_guess and main_guess.
 • Writes ONE final number to:
-  - MAIN "iPhone".iphone_listings.battery_pct_fixed_ai  (or 0 if unknown)
-  - PSA  "iPhone".post_sold_audit.battery_pct_snapshot (or 0 if unknown & UPDATE_PSA=1)
-• Appends one JSON entry per row to "iPhone".post_sold_audit.battery_refit_log (no new columns).
+  - MAIN "device".device_listings.battery_pct_fixed_ai  (or 0 if unknown)
+  - PSA  "device".post_sold_audit.battery_pct_snapshot (or 0 if unknown & UPDATE_PSA=1)
+• Appends one JSON entry per row to "device".post_sold_audit.battery_refit_log (no new columns).
 
 END-OF-RUN METRICS (logs)
 • rows_total, psa_text_rows
@@ -125,7 +125,7 @@ logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
 # ----------------------- Prompt -----------------------
 
 BATTERY_SYSTEM_PROMPT = r"""
-You are extracting the **battery health percentage** for a used iPhone.
+You are extracting the **battery health percentage** for a used device.
 
 INPUTS you may receive (PSA-only or MAIN-only per call):
 - PSA: post_sold_audit snapshot (title/description)
@@ -223,26 +223,26 @@ def ensure_psa_columns(engine: Engine) -> None:
     with engine.begin() as conn:
         # Battery refit log column & index (existing behavior)
         conn.execute(text("""
-        ALTER TABLE "iPhone".post_sold_audit
+        ALTER TABLE "device".post_sold_audit
         ADD COLUMN IF NOT EXISTS battery_refit_log jsonb
         """))
         conn.execute(text("""
-        UPDATE "iPhone".post_sold_audit
+        UPDATE "device".post_sold_audit
         SET battery_refit_log = '[]'::jsonb
         WHERE battery_refit_log IS NULL
         """))
         conn.execute(text("""
         CREATE INDEX IF NOT EXISTS post_sold_audit_listing_id_snapshot_at_idx
-        ON "iPhone".post_sold_audit (listing_id, snapshot_at DESC)
+        ON "device".post_sold_audit (listing_id, snapshot_at DESC)
         """))
         # Sentinel column + helpful index
         conn.execute(text("""
-        ALTER TABLE "iPhone".post_sold_audit
+        ALTER TABLE "device".post_sold_audit
         ADD COLUMN IF NOT EXISTS battery_llm_fetch text
         """))
         conn.execute(text("""
         CREATE INDEX IF NOT EXISTS psa_llm_fetch_idx
-        ON "iPhone".post_sold_audit (day_offset, http_status, battery_llm_fetch)
+        ON "device".post_sold_audit (day_offset, http_status, battery_llm_fetch)
         """))
 
 def parse_listing_ids() -> List[int]:
@@ -293,7 +293,7 @@ def fetch_rows(engine: Engine, limit: int = 0, offset: int = 0) -> List[Dict[str
              a.title_snapshot, a.description_snapshot,
              a.battery_pct_snapshot, a.battery_refit_log,
              a.battery_llm_fetch
-      FROM "iPhone".post_sold_audit a
+      FROM "device".post_sold_audit a
       WHERE a.day_offset = 7
       ORDER BY a.listing_id, a.snapshot_at DESC
     )
@@ -309,7 +309,7 @@ def fetch_rows(engine: Engine, limit: int = 0, offset: int = 0) -> List[Dict[str
       p.description_snapshot  AS psa_desc,
       p.battery_pct_snapshot  AS psa_batt,
       p.battery_refit_log     AS psa_log
-    FROM "iPhone".iphone_listings t
+    FROM "device".device_listings t
     LEFT JOIN latest_psa p ON p.listing_id = t.listing_id
     WHERE {where_clause}
     ORDER BY t.edited_date DESC NULLS LAST, t.generation ASC, t.listing_id ASC
@@ -343,7 +343,7 @@ def fetch_rows_by_ids(engine: Engine, ids: List[int]) -> List[Dict[str, Any]]:
              a.title_snapshot, a.description_snapshot,
              a.battery_pct_snapshot, a.battery_refit_log,
              a.battery_llm_fetch
-      FROM "iPhone".post_sold_audit a
+      FROM "device".post_sold_audit a
       WHERE a.day_offset = 7
       ORDER BY a.listing_id, a.snapshot_at DESC
     )
@@ -360,7 +360,7 @@ def fetch_rows_by_ids(engine: Engine, ids: List[int]) -> List[Dict[str, Any]]:
       p.description_snapshot  AS psa_desc,
       p.battery_pct_snapshot  AS psa_batt,
       p.battery_refit_log     AS psa_log
-    FROM "iPhone".iphone_listings t
+    FROM "device".device_listings t
     JOIN ids ON ids.id = t.listing_id
     LEFT JOIN latest_psa p ON p.listing_id = t.listing_id
     ORDER BY t.edited_date DESC NULLS LAST, t.generation ASC, t.listing_id ASC
@@ -483,7 +483,7 @@ def persist_psa_snapshot(engine: Engine, fid: int, snap_at: Optional[str],
         return
     with engine.begin() as conn:
         conn.execute(text("""
-          UPDATE "iPhone".post_sold_audit
+          UPDATE "device".post_sold_audit
           SET battery_pct_snapshot = :v,
               battery_refit_log = COALESCE(battery_refit_log, '[]'::jsonb) ||
                 jsonb_build_array(jsonb_build_object(
@@ -524,7 +524,7 @@ def mark_psa_fetched(engine: Engine, fid: int, snap_at: Optional[str]) -> None:
         return
     with engine.begin() as conn:
         conn.execute(text("""
-            UPDATE "iPhone".post_sold_audit
+            UPDATE "device".post_sold_audit
             SET battery_llm_fetch = 'fetched'
             WHERE listing_id = :id AND snapshot_at = :snap
         """), {"id": int(fid), "snap": snap_at})
@@ -597,7 +597,7 @@ def process_one(engine: Engine, row: Dict[str, Any]) -> Tuple[int, Outcome]:
         if UPDATE_MAIN and not DRY_RUN:
             with engine.begin() as conn:
                 conn.execute(text("""
-                    UPDATE "iPhone".iphone_listings
+                    UPDATE "device".device_listings
                     SET battery_pct_fixed_ai = :v,
                         battery_pct_fixed_by = :by,
                         battery_pct_fixed_at = now()
@@ -623,7 +623,7 @@ def process_one(engine: Engine, row: Dict[str, Any]) -> Tuple[int, Outcome]:
     if UPDATE_MAIN and not DRY_RUN:
         with engine.begin() as conn:
             conn.execute(text("""
-                UPDATE "iPhone".iphone_listings
+                UPDATE "device".device_listings
                 SET battery_pct_fixed_ai = :v,
                     battery_pct_fixed_by = :by,
                     battery_pct_fixed_at = now()

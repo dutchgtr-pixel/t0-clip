@@ -456,7 +456,7 @@ Keep your contract as-is and only change the view name:
 
 --device_meta_features_view feature_store.device_meta_encoded_t0_v1
 
-keep: --device_meta_feature_set iphone_device_meta_encoded_v2_model
+keep: --device_meta_feature_set device_device_meta_encoded_v2_model
 
 No downstream model code changes required because column names are preserved.
 
@@ -582,13 +582,13 @@ WITH contract AS (
   SELECT fc.feature_name
   FROM feature_store.feature_set fs
   JOIN feature_store.feature_contract fc ON fc.set_id = fs.set_id
-  WHERE fs.name = 'iphone_device_meta_encoded_v2_model'
+  WHERE fs.name = 'device_device_meta_encoded_v2_model'
 ),
 cols AS (
   SELECT column_name AS feature_name
   FROM information_schema.columns
   WHERE table_schema='ml'
-    AND table_name='iphone_device_meta_encoded_v2_t0'
+    AND table_name='device_device_meta_encoded_v2_t0'
 )
 SELECT
   (SELECT COUNT(*) FROM contract) AS n_contract,
@@ -669,13 +669,13 @@ Training CLI change
 
 Switch the view source:
 
-old: --device_meta_features_view feature_store.iphone_device_meta_encoded_v2
+old: --device_meta_features_view feature_store.device_device_meta_encoded_v2
 
 new: --device_meta_features_view feature_store.device_meta_encoded_t0_v1
 
 Keep the same feature set:
 
---device_meta_feature_set iphone_device_meta_encoded_v2_model
+--device_meta_feature_set device_device_meta_encoded_v2_model
 
 Refresh runbook change
 
@@ -701,9 +701,9 @@ The final view feature_store.device_meta_encoded_t0_v1 is a plain view, so it do
 
 
 
-scrapes=#
-scrapes=#
-scrapes=# SELECT
+observations=#
+observations=#
+observations=# SELECT
   'feature_store.v_device_meta_base_t0_v1' AS obj,
   (SELECT relkind FROM pg_class WHERE oid='feature_store.v_device_meta_base_t0_v1'::regclass) AS relkind
 UNION ALL
@@ -721,17 +721,17 @@ SELECT
  feature_store.device_meta_encoded_t0_v1 | v
 (3 rows)
 
-scrapes=# WITH contract AS (
+observations=# WITH contract AS (
   SELECT fc.feature_name
   FROM feature_store.feature_set fs
   JOIN feature_store.feature_contract fc ON fc.set_id = fs.set_id
-  WHERE fs.name = 'iphone_device_meta_encoded_v2_model'
+  WHERE fs.name = 'device_device_meta_encoded_v2_model'
 ),
 cols AS (
   SELECT column_name AS feature_name
   FROM information_schema.columns
   WHERE table_schema='ml'
-    AND table_name='iphone_device_meta_encoded_v2_t0'
+    AND table_name='device_device_meta_encoded_v2_t0'
 )
 SELECT
   (SELECT COUNT(*) FROM contract) AS n_contract,
@@ -743,7 +743,7 @@ SELECT
          61 |     61 |               0 |             0
 (1 row)
 
-scrapes=# SELECT
+observations=# SELECT
   obj,
   (lower(def) ~ '(now\(|current_date|current_timestamp|clock_timestamp\()') AS has_forbidden_time_tokens
 FROM (
@@ -759,7 +759,7 @@ FROM (
  feature_store.device_meta_encoded_t0_v1 | f
 (2 rows)
 
-scrapes=# WITH s AS (
+observations=# WITH s AS (
   SELECT
     t0_day, gen_key, model_variant, color_bucket,
     gmc_color_n_in_seg, gmc_seg_n
@@ -820,11 +820,11 @@ FROM truth;
  2026-01-08 |      17 | pro           | space_black      |                  0 |       746 |                    0 |            746 | t            | t
 (25 rows)
 
-scrapes=#scrapes=# REFRESH MATERIALIZED VIEW CONCURRENTLY feature_store.device_meta_gmc_stats_t0_v1_mv;
+observations=#observations=# REFRESH MATERIALIZED VIEW CONCURRENTLY feature_store.device_meta_gmc_stats_t0_v1_mv;
 ANALYZE feature_store.device_meta_gmc_stats_t0_v1_mv;
 REFRESH MATERIALIZED VIEW
 ANALYZE
-scrapes=#             so did it work or not???    
+observations=#             Review the certification result.
 
 Yes — it worked.
 
@@ -879,7 +879,7 @@ Change only this CLI arg:
 
 old
 
---device_meta_features_view feature_store.iphone_device_meta_encoded_v2
+--device_meta_features_view feature_store.device_device_meta_encoded_v2
 
 new
 
@@ -887,7 +887,7 @@ new
 
 Keep:
 
---device_meta_feature_set iphone_device_meta_encoded_v2_model
+--device_meta_feature_set device_device_meta_encoded_v2_model
 
 2) Add to refresh runbook
 

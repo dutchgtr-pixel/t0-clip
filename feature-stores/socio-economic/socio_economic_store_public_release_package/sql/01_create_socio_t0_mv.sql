@@ -3,7 +3,7 @@
 --
 -- Inputs assumed to exist:
 --   - ml.tom_features_v2_enriched_ai_ob_clean_mv
---   - ml.iphone_listings_geo_current
+--   - ml.device_listings_geo_current
 --   - ref.postal_code_to_kommune_history
 --   - ref.kommune_socio_history
 --
@@ -38,7 +38,7 @@ geo AS (
     g.listing_id,
     g.postal_code,
     g.super_metro_v4_geo
-  FROM ml.iphone_listings_geo_current g
+  FROM ml.device_listings_geo_current g
 ),
 socio_joined AS (
   SELECT

@@ -75,7 +75,7 @@ Example:
 ### 2.4 SLA gating contract (image/damage)
 Image-derived features may be computed later than the listing edit time. To prevent “late-arriving features” from changing historical rows:
 
-- `img_within_sla` is computed per row using pipeline completion timestamps (`*_done_at`) and optionally image asset timestamps (e.g., `iphone_image_assets.created_at`)
+- `img_within_sla` is computed per row using pipeline completion timestamps (`*_done_at`) and optionally image asset timestamps (e.g., `device_image_assets.created_at`)
 - If `img_within_sla=false`, then **every `img__*` and `dmg__*` output column must be NULL**
 
 **Important: wildcard pitfall**
@@ -116,9 +116,9 @@ Labels are not features. Certified feature-store entrypoints must not depend on 
 - `ml.geo_dim_super_metro_v4_t0_v1`
 
 ### 3.4 Image/damage/device stores (T0)
-- `ml.iphone_image_features_unified_t0_v1_mv`
+- `ml.device_image_features_unified_t0_v1_mv`
 - `ml.v_damage_fusion_features_v2_scored_t0_v1_mv`
-- `ml.iphone_device_meta_encoded_t0_v1_mv`
+- `ml.device_device_meta_encoded_t0_v1_mv`
 
 ### 3.5 Certified feature store entrypoint
 - `ml.survival_feature_store_t0_v1_v`

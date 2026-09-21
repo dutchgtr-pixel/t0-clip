@@ -38,7 +38,7 @@ Optional:
 
 Notes
 -----
-- This is an enrichment template. It does not scrape any marketplace. It consumes already-stored text.
+- This is an enrichment template. It does not observe any marketplace. It consumes already-stored text.
 - The LLM prompt is generic and platform-agnostic.
 """
 
@@ -202,7 +202,7 @@ def fetch_targets(engine: Engine) -> List[Dict[str, Any]]:
       l.listing_id,
       COALESCE(l.title,'')       AS title,
       COALESCE(l.description,'') AS description,
-      l.storage_gb               AS storage_scraped
+      l.storage_gb               AS storage_observed
     FROM {listings} l
     LEFT JOIN {enrich} e
       ON e.generation = l.generation AND e.listing_id = l.listing_id
@@ -357,10 +357,10 @@ def validate_payload(payload: Any, text_len: int) -> Tuple[Dict[str, Any], Dict[
     }
     return payload, stats
 
-def sanitize_params(data: Dict[str, Any], scraped_storage: Optional[int]) -> Dict[str, Any]:
+def sanitize_params(data: Dict[str, Any], observed_storage: Optional[int]) -> Dict[str, Any]:
     """Minimal normalization to satisfy DB enums; LLM decides content.
 
-    IMPORTANT: scraped storage always wins. If the scraper already has storage, do NOT write AI storage.
+    IMPORTANT: observed storage always wins. If the observer already has storage, do NOT write AI storage.
     """
     def pick(code: str, cast=None):
         for c in data.get("codes", []):
@@ -380,8 +380,8 @@ def sanitize_params(data: Dict[str, Any], scraped_storage: Optional[int]) -> Dic
     variant_raw = pick("variant_canonical", str)
     storage_raw = pick("storage_gb_fixed_ai", int)
 
-    # STORAGE RULE: if scraper has storage, we do not write AI storage
-    storage_ai = None if (scraped_storage is not None) else _norm_storage(storage_raw)
+    # STORAGE RULE: if observer has storage, we do not write AI storage
+    storage_ai = None if (observed_storage is not None) else _norm_storage(storage_raw)
 
     # Genericized kv key name: opening_offer_amount (accept legacy opening_offer_nok)
     opening_offer = kv.get("opening_offer_amount")
@@ -426,8 +426,8 @@ def sanitize_params(data: Dict[str, Any], scraped_storage: Optional[int]) -> Dic
     }
 
 # ------------------ UPSERT ------------------
-def upsert(engine: Engine, generation: int, listing_id: int, data: Dict[str, Any], scraped_storage: Optional[int]):
-    clean = sanitize_params(data, scraped_storage)
+def upsert(engine: Engine, generation: int, listing_id: int, data: Dict[str, Any], observed_storage: Optional[int]):
+    clean = sanitize_params(data, observed_storage)
     enrich = fqn(PG_SCHEMA, OUTPUT_TABLE)
 
     sql = f"""
@@ -572,7 +572,7 @@ def process_one(engine: Engine, limiter: RateLimiter, row: Dict[str, Any]) -> Tu
     listing_id = int(row["listing_id"])
     title = row.get("title") or ""
     desc = row.get("description") or ""
-    scraped_storage = row.get("storage_scraped")
+    observed_storage = row.get("storage_observed")
 
     body = json.dumps(
         {"listing_id": listing_id, "modules": ["CORE"], "title": title, "description": desc},
@@ -599,7 +599,7 @@ def process_one(engine: Engine, limiter: RateLimiter, row: Dict[str, Any]) -> Tu
             )
             raw = resp.choices[0].message.content or "{}"
             payload, stats = validate_payload(raw, txt_len)
-            upsert(engine, gen, listing_id, payload, scraped_storage)
+            upsert(engine, gen, listing_id, payload, observed_storage)
             dt = (time.perf_counter() - t0) * 1000
             log.info(
                 f"[OK] listing_id={listing_id} gen={gen} | "
@@ -621,7 +621,7 @@ def process_one(engine: Engine, limiter: RateLimiter, row: Dict[str, Any]) -> Tu
         gen,
         listing_id,
         {"codes": [], "kv": {}, "risks": {}, "evidence": {"spans": []}, "conf": {}, "_neg_conflict": False},
-        scraped_storage,
+        observed_storage,
     )
     dt = (time.perf_counter() - t0) * 1000
     log.warning(f"[FAIL] listing_id={listing_id} gen={gen} err={err} | {dt:.0f} ms")
