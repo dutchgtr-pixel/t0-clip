@@ -1,4 +1,4 @@
-# Reproduction, release boundaries and the next decisive experiment
+# Reproduction, release boundaries and further evaluation
 
 ## What the public package reproduces
 
@@ -58,9 +58,9 @@ Publication screening checks source terminology, private paths, secret-like assi
 
 The review scope is the current release tree. Earlier repository history is not rewritten. Source-neutral current files do not imply that every historical commit was anonymized. The release also does not restart or modify the paused private production stack.
 
-## The experiment needed for a stronger modeling claim
+## Reconstructing the comparisons and extending evaluation
 
-The next decisive experiment is a matched, forward-in-time comparison on a frozen real-data cohort with documented feature availability. Its protocol should predeclare the event definition, censoring treatment, initial decision rule, entity grouping, horizons, permitted features, training window and final observation cutoff. Original fit data, learned transforms and model selection must remain under content hashes so later repairs cannot silently replace the experiment.
+The completed historical experiments include the XGBoost baseline, neural training trials, ensemble searches and the improved neural tail-screening results documented in the empirical chapter. Reconstruction should first connect each retained model, prediction file, target convention and selection decision. A further prospective experiment can then compare frozen models on a common future cohort with documented feature availability. Its protocol should predeclare the event definition, censoring treatment, initial decision rule, entity grouping, horizons, permitted features, training window and final observation cutoff. Original fit data, learned transforms and model selection must remain under content hashes so later repairs cannot silently replace the experiment.
 
 Information ablations should compare structured-only inputs, structured plus text, structured plus images, and the full representation. Generated image reports require a separate ablation. If ordinary and whitened vectors are included, the whitening transform must be fitted inside training and preserved with its dimensions and population hash. Conventional estimators should receive meaningful reduced or regularized representations with equivalent information and a documented tuning budget.
 

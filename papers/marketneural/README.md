@@ -3,8 +3,8 @@
 **Author: Ghaffar Masomi**
 
 Read [Learning Time in Moving Markets](marketneural-thesis.pdf), the thesis-style
-PDF, or its [assembled Markdown manuscript](manuscript.md). Fifteen chapters and
-roughly 33,000 words combine the mathematical method with the implemented system,
+PDF, or its [assembled Markdown manuscript](manuscript.md). Across 102 pages,
+fifteen chapters and roughly 33,500 words combine the mathematical method with the implemented system,
 real image examples, architecture diagrams, historical results and reproducible
 engineering checks.
 
@@ -13,8 +13,11 @@ generative image/text enrichment, semantic vectors, Stage 0/1/2, the later K8
 network, meta-tuning, leakage, recency weighting, operational recovery, implemented
 agentic decisions, existing spam controls and a separately labeled fraud extension.
 
-The controlled real-data comparison is **not run**. Historical cohorts and public
-synthetic results are reported separately; neither establishes neural superiority.
+The recorded neural meta-ensemble achieved **F1 0.9209 versus 0.8462 for the
+earlier XGBoost AFT model**, an increase of **7.47 F1 points**. The empirical
+chapter includes the comparison table and chart, cohort sizes, source hashes,
+233 retained neural trial outputs and an 8,000-candidate ensemble search.
+Historical results and the public synthetic benchmark retain their own scopes.
 Raw-plus-whitened vectors are an operator-described design for which a fitted
 transform artifact was not recovered; the inspected selected network consumes one
 listing-text vector. That distinction remains explicit.

@@ -41,7 +41,7 @@
     "row_bearing_source_url_findings": 0,
     "seller_or_account_name_literal_candidates": 0,
     "cached_embedded_image_long_integer_candidates": 0,
-    "remaining_document_gate": "Final 99-page thesis visually reviewed and registered by exact hash in PDF_RELEASE_MANIFEST.json.",
+    "remaining_document_gate": "Current thesis visual-review status and exact hash are recorded in PDF_RELEASE_MANIFEST.json.",
     "sql_files_parsed": 79,
     "sql_parser_rejections": 0,
     "go_format_matches_ignoring_existing_line_endings": true
