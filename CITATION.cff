@@ -15,7 +15,7 @@ preferred-citation:
     - family-names: "Masomi"
       given-names: "Ghaffar"
   year: 2026
-  version: "0.3"
+  version: "0.4"
   url: "https://github.com/dutchgtr-pixel/t0-clip/blob/main/papers/marketneural/marketneural-thesis.pdf"
 keywords:
   - "mlops"

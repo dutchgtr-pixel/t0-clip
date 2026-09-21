@@ -1,6 +1,6 @@
 # MarketNeural model card
 
-Version 0.3 - 2026-09-22. **Historical neural results and executable comparison software.**
+Version 0.4 - 2026-09-22. **Historical neural results and executable comparison software.**
 
 ## Model identity and scope
 
@@ -10,7 +10,7 @@ The compact benchmark consumes precomputed structured and vector inputs. It down
 
 ## Historical neural improvement
 
-Recorded 21-day tail-screening F1 increased from **0.8462 for XGBoost AFT** to **0.9209 for the neural meta-ensemble**, with precision increasing from 0.8314 to 0.9802 and recall from 0.8614 to 0.8684. The earlier tree evaluation contains 941 records and the neural holdout 964. The [empirical chapter](../../papers/marketneural/chapters/06_empirical_evidence.md) and [aggregate evidence](../../research/thesis_evidence/historical_neural_comparison.json) preserve those scopes, source hashes and completed experiment counts. The compact estimators below are a separate public comparison implementation.
+The retained exports verify 964 common entity-and-UTC-origin keys with exactly matching duration labels. AFT F1 recomputed on those rows is **0.8560**; the associated historical neural meta-ensemble records **0.9209**. Precision changes from 0.8062 to 0.9802 and recall from 0.9123 to 0.8684. The earlier 941-row AFT F1 of 0.8462 belongs to the previous evaluation week. The [reconciliation](../../research/thesis_evidence/cohort_reconciliation.json) distinguishes exact AFT recomputation, recovered neural export identity, and the final meta result retained as aggregate output. A final neural decision vector is still needed for a newly reconstructed paired uncertainty analysis. The compact estimators below remain a separate comparison implementation.
 
 
 

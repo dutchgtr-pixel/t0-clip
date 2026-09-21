@@ -6,24 +6,61 @@ The available results belong to three distinct layers. Historical reports and sa
 
 The historical project is substantial: it progressed from temporal feature stores and AFT tail screening to multimodal neural models, stage-specific decisions, calibration, policy selection, and deployed inference. A critical review should acknowledge that progression while examining which final populations were independent of development. The public comparison provides a cleaner experimental scaffold, but its synthetic population does not establish superiority on the historical market data. Aggregate evidence files accompanying this chapter make the numerical distinctions inspectable without releasing private rows.
 
-## Neural ensembles improved on the earlier XGBoost result
+## Neural tail screening on a shared evaluation population
 
-The recorded 21-day tail-screening experiments show a clear historical improvement: **F1 increased from 0.8462 for the earlier XGBoost AFT model to 0.9209 for the later neural meta-ensemble**. This is an increase of **7.47 F1 percentage points**, or approximately **8.83% relative to the earlier score**. Precision increased from 0.8314 to 0.9802, while recall increased from 0.8614 to 0.8684. The later neural system therefore achieved substantially higher recorded precision while maintaining similar recall.
+The retained exports establish a row-for-row comparison population: **all 964 neural evaluation records match the later XGBoost AFT export by entity, UTC time origin and duration label**. The AFT result recomputed on these 964 common observations is **F1 0.8560**, compared with the associated historical neural meta-ensemble's recorded **F1 0.9209**. This is an improvement of **about 6.5 F1 percentage points**. Precision increases from 0.8062 to 0.9802; recall changes from 0.9123 to 0.8684. The gain is a substantially more precise tail screen with a modest recall tradeoff.
 
-The earlier tree evaluation contains 941 sold records, including 166 slow outcomes. The neural holdout contains 964 sold records, including 114 slow outcomes. The table reports each model's recorded evaluation population; it does not silently treat these cohorts as identical.
+| System on the 964-record evaluation population | Precision | Recall | F1 |
+|---|---:|---:|---:|
+| XGBoost AFT, recomputed common rows | 0.8062 | 0.9123 | 0.8560 |
+| Neural top-20 stack, recorded holdout | 0.9307 | 0.8246 | 0.8744 |
+| Neural optimized ensemble, recorded holdout | 0.9091 | 0.8772 | 0.8929 |
+| Neural meta-ensemble, recorded holdout | **0.9802** | 0.8684 | **0.9209** |
 
-| Historical model | Evaluation N | Precision | Recall | F1 |
-|---|---:|---:|---:|---:|
-| XGBoost AFT | 941 | 0.8314 | 0.8614 | 0.8462 |
-| Neural top-20 stack | 964 | 0.9307 | 0.8246 | 0.8744 |
-| Neural optimized ensemble | 964 | 0.9091 | 0.8772 | 0.8929 |
-| Neural meta-ensemble | 964 | **0.9802** | **0.8684** | **0.9209** |
+The evidence has two explicit levels. The AFT value is recomputed from retained row-level predictions on the exact common keys. The neural ensemble values are retained execution results associated with the 964-row, 114-positive holdout stream. Retained neural prediction and evaluation exports also agree exactly in entity identity, UTC origin and duration in row-index order. The final meta-ensemble decision vector has not been recovered for a fresh paired bootstrap or disagreement test. This is a common-cohort aggregate comparison; it does not pretend that every final neural decision was re-executed during publication.
 
-The XGBoost result comes from the earlier empirical paper and its confusion matrix. The neural rows come from retained user-pasted execution output dated 11 February 2026. The output records 49 base candidates with selection and holdout predictions, a top-20 stack, a seed-specific optimized ensemble, and a mean-logit ensemble of ensembles. The accompanying code selects the original top-20 stack's regularization and threshold on SVAL, then applies that threshold to holdout. The later meta-ensemble output preserves its threshold and metrics; its complete selection history has not been reconstructed from that excerpt. The [aggregate comparison record](../../../research/thesis_evidence/historical_neural_comparison.json) identifies the retained sources by hash and provides the arithmetic behind the reported improvements.
+![Slow21 results on the shared 964-record evaluation population. The AFT value is recomputed from retained predictions; neural values are recorded ensemble results associated with that holdout. Source and final-decision recovery scopes are stated in the text.](../figures/r14_historical_neural_advantage.svg)
 
-![Historical tail-screening performance: the neural meta-ensemble records higher F1 and precision than the earlier XGBoost AFT system. The tree evaluation contains 941 records and the neural holdout 964; these are recorded historical cohorts.](../figures/r14_historical_neural_advantage.svg)
+### Reconstructing the actual row relationship
 
-The recorded advantage concerns the selected neural-and-meta system on its historical task. It does not isolate the effect of replacing a tree with a neural network while holding every other input and decision fixed. Feature representations, fitting procedures, ensembles and cohorts evolved together. The older report uses a slow-tail boundary of at least 504 hours, while the recovered neural code uses greater than 504 hours. Those details must remain visible when reconstructing a row-matched comparison. They do not erase the higher neural metrics recorded during development.
+The saved AFT export contains 971 unique entity-and-origin keys. All 964 neural keys are present, their duration labels match exactly, and no neural-only records remain. The seven AFT-only records comprise one correctly predicted slow outcome and six correctly predicted non-slow outcomes under the retained decision rule. Excluding them changes AFT F1 from $210/245=0.857143$ on 971 rows to $208/243=0.855967$ on the 964 common rows. Both exports cover the outcome week from 13 to 20 January 2026 and have no duration exactly at 504 hours.
+
+| Evaluation record | Outcome window | N | Slow outcomes | AFT F1 |
+|---|---|---:|---:|---:|
+| Earlier AFT report | 6-13 January | 941 | 166 | 0.8462 |
+| Later AFT run and retained export | 13-20 January | 971 | 115 | 0.8571 |
+| Later AFT restricted to neural keys | 13-20 January | 964 | 114 | 0.8560 |
+
+The contemporaneous later AFT run independently logs precision 0.8077, recall 0.9130 and F1 0.8571 on 971 observations, with confusion counts $(105,25,10,831)$. Its stored model identifier matches the retained prediction export. The shared-row recalculation therefore recovers a documented decision rule; it does not select a new threshold after inspecting the neural result.
+
+This reconciliation explains the apparent 23-record difference in the earlier headline. The 941-row **evaluation** with F1 0.8462 belongs to the previous outcome week. In the later run, 941 also appears as the **calibration** population, with 166 positives. The actual recovered evaluation relationship is therefore **971 minus 7 equals 964**, rather than a verified 941-plus-23 subset. The earlier score remains part of the development history; it is not the tree score assigned to the later common rows. Differing sample counts did not establish unrelated model development, and the archive now supplies direct evidence of shared evaluation records.
+
+The [cohort reconciliation](../../../research/thesis_evidence/cohort_reconciliation.json) records file and message hashes, exact time-window boundaries, cohort counts and reconstruction scopes. The [shared-cohort audit](../../../scripts/audit_shared_cohort.py) accepts private prediction exports with caller-specified neutral column mappings and emits aggregate checks without publishing identifiers. The [historical experiment receipt](../../../research/thesis_evidence/historical_neural_comparison.json) retains the original reports and ensemble-search evidence.
+
+### What improved at the operating point?
+
+On the common rows, AFT has $(TP,FP,FN,TN)=(104,25,10,825)$. Conditional on the meta result using the recorded 964-row, 114-positive holdout, its four-decimal precision, recall and F1 uniquely imply $(99,2,15,848)$. The latter matrix is inferred from rounded metrics and cohort counts, rather than copied from a separately printed meta confusion matrix.
+
+The aggregate comparison has **23 fewer false-positive tail calls and five additional missed slow outcomes**. That is a meaningful change in operating behavior. It explains why precision and F1 improve while recall falls. Whether it is the best deployment policy depends on the relative costs of false-positive and missed-tail decisions; an F1 improvement alone is not a profit estimate. The F1 difference calculated from the two integer matrices is 6.4963 percentage points, consistent with the approximate 6.5-point statement above.
+
+Both systems developed within SVAL and EVAL roles over the same source chronology. The later AFT calibration split has 941 records and 166 positives; the retained neural SVAL export has 933 records and the same 166 positive count, occupying the corresponding preceding outcome week. This supports common temporal roles while retaining model-specific row admissibility. It does not establish that every selection input or optimizer objective was identical. The preserved AFT optimizer scores EVAL labels, whereas the neural top-20 code selects its regularization and threshold on SVAL. The reported experiments are substantial retrospective development evidence, not a newly sealed future test.
+
+Shared records control evaluation-population differences. They do not isolate the contribution of each representation, feature, survival objective, ensemble or selection decision. Those are components of the fitted systems being compared. Ablations can attribute the improvement more narrowly; they are not required to acknowledge the measured system-level F1 and precision advantage.
+
+An earlier saved neural expected-duration output makes no tail calls when its mean is simply thresholded at 504 hours; the corresponding fixed-rule diagnostic is retained in the reconciliation receipt. It is a different output and checkpoint from the later dedicated tail-probability/meta system. Keeping this diagnostic prevents the final ensemble result from being attributed to every saved neural forecast or to a generic mean-duration threshold.
+
+### A separate 23-record sensitivity calculation
+
+The proposed 23-extra-record explanation can also be examined mathematically, without pretending it describes the dated exports. Under fixed labels and predictions, the inferred neural matrix $(99,2,15,848)$ has its smallest F1 after removing 23 observations when every removed observation is a true positive:
+
+$$
+F_{1,\min}=\frac{2(99-23)}{2(99-23)+2+15}
+=\frac{152}{169}=0.899408.
+$$
+
+Removing all 17 errors and six true negatives yields an attainable maximum of 1.0000. Exhaustive enumeration of all 744 feasible confusion-cell deletion allocations confirms these sharp bounds. Thus adding 23 records alone could not explain the earlier reported F1 gap **under the specified unchanged-label subset assumption**. The audit identifies different weeks for the earlier 941-row report and later neural holdout, so this remains a counterfactual sensitivity result, not evidence that those particular 941 records were nested. The directly recovered 964-row intersection supplies the empirical cohort comparison.
+
+The [aggregate sensitivity script](../../../scripts/analyze_cohort_sensitivity.py) reproduces the calculation and rejects the earlier 166-positive subset claim against a 114-positive parent. The bounds are not confidence intervals, do not include retraining or policy changes, and do not replace a paired uncertainty analysis of final decision vectors.
 
 ### Scale of the completed experiments
 
@@ -132,7 +169,7 @@ The main result of these runs is methodological: the benchmark executes, freezes
 
 ## Extending the completed comparisons
 
-Reconstructing a common-cohort comparison from the completed experiments requires a versioned decision-time cohort, explicit event provenance, resolved temporal overlap, train-fitted transforms, and the recorded model and policy choices. Extending it prospectively adds a final population that has not influenced those choices. Each duration region also needs enough observed events to assess its corresponding stage.
+Completing the score-to-snapshot reconciliation for the already shared-data experiments requires a versioned decision-time cohort, explicit event provenance, resolved temporal overlap, train-fitted transforms, and the recorded model and policy choices. Extending it prospectively adds a final population that has not influenced those choices. Each duration region also needs enough observed events to assess its corresponding stage.
 
 The most informative next study would combine the established operational evidence with a sealed future evaluation. Its first analysis would compare whole-curve performance and calibration across the six model families. Prespecified ablations would then isolate structured attributes, listing text, pooled visual vectors, and per-image reports. A temporal analysis would compare recent and older training windows while holding the test period fixed. A policy analysis would evaluate selected fraction, precision, recall, and explicitly stated utility, keeping prediction and intervention claims separate.
 

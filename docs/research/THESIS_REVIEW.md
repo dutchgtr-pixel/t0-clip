@@ -297,3 +297,45 @@ it does not claim a new model-training or local software-suite run.
 Publication audits passed for all 251 additions/changes since the original
 public baseline and all 412 current public files, with zero findings. The
 proprietary records, original identifiers and fitted weights remain excluded.
+
+## Cohort reconciliation, novelty and prospective protocol: edition0.4
+
+The archive now distinguishes the earlier941-row AFT evaluation week from the
+later971-row run. An exact join finds964 common AFT/neural keys with964 matching
+duration labels. The saved AFT rule reproduces its logged971-row confusion
+matrix; restricting it to common keys gives F1 0.855967. The associated neural
+meta run records F1 0.9209. Its final confusion matrix is inferred from rounded
+metrics and cohort counts, and its final decision vector is not represented as
+recovered. The manuscript states the precision/recall tradeoff and source scope.
+The23-row deletion calculation is explicitly a separate counterfactual bound.
+
+A dedicated original-contribution chapter develops five implemented research
+claims and their precedents. The reproduction chapter answers all eight
+requirements for a sealed future cohort, separating prospective validity from
+novelty and from completed retrospective experimentation. One primary leakage
+reference is added to the bibliography.
+
+The release now contains **109 pages,16 chapters,36,145 chapter words,23 figures
+and17 references**, credited to **Ghaffar Masomi**. All110 pages of its initial
+build received independent visual review. After a compact table was kept
+together and the new chapter's sparse continuation was removed,70 final page
+bodies were pixel-identical to the reviewed edition; reviewers inspected all39
+changed final pages, including shifted page furniture. No blocking defects were
+found. Original sparse chapter endings and one table-caption continuation are
+retained as minor typography observations.
+
+Final PDF SHA-256:
+`820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e`.
+
+Both aggregate audit scripts are public and accept neutral input mappings. Six
+public synthetic regression tests were added; the full suite passed **107 tests**
+with the same two historical-estimator deprecation warnings. Additional bounded
+checks covered29 cohort-audit cases and1,536 small sensitivity cases. Source
+hashes, commands and numerical scopes are recorded separately from predictive
+performance. No new model training or prospective collection was performed.
+
+The proprietary observation files, mappings, identifiers and model weights remain
+private. The Downloads copy matches the released PDF bytes.
+
+Final publication screening passed for257 additions/changes since the original
+public baseline and all418 current public files, with zero findings.

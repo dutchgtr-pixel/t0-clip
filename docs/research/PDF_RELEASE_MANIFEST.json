@@ -129,8 +129,8 @@
     },
     {
       "path": "papers/marketneural/marketneural-thesis.pdf",
-      "sha256": "a938e2eca511e3c7ce7a8904df30478de2d33da3b15bd45a436e96cb917c398e",
-      "pages": 102,
+      "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
+      "pages": 109,
       "changed_pages": [
         1,
         2,
@@ -233,17 +233,24 @@
         99,
         100,
         101,
-        102
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109
       ],
       "review_status": "visually_reviewed",
       "process": "Newly typeset research monograph from published chapters, figures, aggregate evidence and references.",
-      "visual_review": "All 102 physical pages visually reviewed from final Poppler renders; enlarged checks of revised empirical table/chart and dense technical pages. No blocking defects. Exact-hash review in THESIS_BUILD_MANIFEST.json.",
+      "visual_review": "All110 pages of the initial edition0.4 build reviewed. After table and new-chapter layout refinements,70 final page bodies match that review exactly; all39 changed final pages and shifted page furniture visually rechecked. Final109-page hash and mapping recorded in THESIS_BUILD_MANIFEST.json.",
       "build_manifest": "docs/research/THESIS_BUILD_MANIFEST.json"
     }
   ],
   "process": "Historical PDFs: text redaction and neutral replacement, plus reviewed embedded-image replacements. New monograph: ReportLab cover and Pandoc/Tectonic typesetting.",
   "scope": "Source/product identifiers and source-access terminology generalized. Numerical text tokens preserved. Historical methods, results, and cohort limitations are retained.",
-  "review": "Historical edition: 63 edited or metadata-check pages reviewed; subsequent review inspected all 81 embedded raster images and OCR screening. Edition 0.3 monograph: all 102 final pages visually reviewed.",
+  "review": "Historical PDF reviews retained. Final109-page monograph reviewed through full110-page reference inspection, exact body-pixel comparison and visual reinspection of every changed final page.",
   "numeric_preservation": "Historical text derivatives preserve numerical token multisets and page counts. The new monograph contains newly assembled text, equations, figures and aggregate results.",
   "layout_scope": "Scoped editorial derivatives retain historical layouts. Existing dense diagrams and unsupported-glyph artifacts in source reports are not represented as newly typeset material.",
   "metadata": "Historical derivatives had identifying metadata reset and obsolete objects removed. The new monograph uses project-level metadata and public source/repository links.",

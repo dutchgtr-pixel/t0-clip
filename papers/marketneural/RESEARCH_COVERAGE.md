@@ -33,7 +33,7 @@ Raw operational rows, personal information, source identifiers, local paths, and
 | Actual image and paired interpretation snapshots | Retained visual evidence and corresponding generated judgments | Anonymized, visually reviewed case panels; generated judgments distinguished from truth | Image case-study chapter |
 | Historical trainer, model and serving packages | Stage horizons, routing, tokenization, expert mixtures, losses, fitted transforms and deployment outputs | Exact selected-generation descriptions and distinctions from compact benchmark | Neural cascade chapter; Chapters 01, 05 and 07 |
 | Feature exports, target audit and saved policy predictions | Missingness incident, availability rules, cohort nesting, zero-duration sensitivity and possible overlap | [Historical policy aggregates](../../research/thesis_evidence/historical_policy_aggregates.json); leakage limitations retained | Chapter 06; leakage and schema chapter |
-| Saved neural execution output, trial-pool manifests and ensemble histories | Four historical 21-day tail results, 233 trial prediction pairs plus three best snapshots, and 8,000 ensemble candidates | [Historical neural comparison](../../research/thesis_evidence/historical_neural_comparison.json): F1 0.9209 versus earlier XGBoost AFT 0.8462, with cohorts and selection limits | Chapters 05, 06 and 08 |
+| Saved neural execution output, trial-pool manifests and ensemble histories | Four historical 21-day tail results, 233 trial prediction pairs plus three best snapshots, and 8,000 ensemble candidates | [Historical neural comparison](../../research/thesis_evidence/historical_neural_comparison.json): recorded neural F1 0.9209 versus AFT 0.8560 recomputed on the shared evaluation keys, with source and selection scopes | Chapters 05, 06 and 08 |
 | Retained database metadata and scheduler history | Storage bytes, relation counts, workflow states, execution interval and duplicates | [Operational counts](../../research/thesis_evidence/operational_counts.json) with denominators and receipt hashes | Chapter 07 |
 | Saved restoration reports | Six reports, matching file hashes, critical relation counts and profiles | Historical checks, not a newly performed restore | Chapter 07 |
 | Saved serving and narrative checks | Model replay, numerical tolerances, explanation tests and representation parity | [Historical checks](../../research/thesis_evidence/historical_checks.json), each with its distinct scope | Chapter 07 |
@@ -69,3 +69,13 @@ The experiment uses three blocks. A separate calibration block and a matched rea
 ## Review status
 
 Independent mathematical cross-review of the foundations, enrichment, comparison, and results chapters found no major mismatch and corrected the image/report contract to retain separate availability masks. Operational cross-review verified the database counts, scheduler states, restoration counts, and receipt hashes against the retained audit evidence. A separate reader reviewed the orientation, image case studies, agentic decisions, and fraud extension for scope and source-neutrality. Final typesetting and integration include the separately authored cascade and schema/leakage methods. The parent publication workflow records the final release checks and visual inspection of the complete PDF; these are distinct from the content reviews recorded here.
+
+## Contribution and prospective-validation expansion
+
+The [original-contribution chapter](chapters/12_original_contributions.md) states
+five implemented contributions, their precedents and the evidence supporting
+each. The empirical chapter adds exact cohort reconciliation and aggregate audit
+scripts; the final methods chapter answers all eight freezing, recording,
+outcome-maturation and evaluation requirements for a sealed future cohort.
+Prospective predictive validity is distinguished from originality and from
+the already completed retrospective experiments.
