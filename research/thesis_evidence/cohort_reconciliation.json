@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-09-22",
+  "kind": "historical_cohort_and_run_reconciliation",
+  "scope": "Retained prediction-file identity audit, dated-run reconciliation and comparison of recomputed AFT decisions with logged neural ensemble aggregates. No new training, threshold selection or prospective test.",
+  "privacy": "Aggregate counts, dates, mathematical summaries and source hashes only. No row identifiers, private paths or trained weights.",
+  "earlier_aft_report": {
+    "eval_lower_cutoff_utc": "2026-01-06T22:19:35.283617Z",
+    "eval_max_sold_utc": "2026-01-13T22:19:35.283617Z",
+    "selection_lower_cutoff_utc": "2025-12-30T22:19:35.283617Z",
+    "selection_upper_cutoff_utc": "2026-01-06T22:19:35.283617Z",
+    "evaluation_rows": 941,
+    "positives": 166,
+    "f1": 0.8462,
+    "run_started_timestamp_as_logged": "2026-01-13T23:05:53",
+    "run_reported_timestamp_as_logged": "2026-01-14T00:04:10"
+  },
+  "later_aft_window": {
+    "eval_lower_cutoff_utc": "2026-01-13T22:53:54.637456Z",
+    "eval_max_sold_utc": "2026-01-20T22:53:54.637456Z",
+    "selection_lower_cutoff_utc": "2026-01-06T22:53:54.637456Z",
+    "selection_upper_cutoff_utc": "2026-01-13T22:53:54.637456Z",
+    "evaluation_rows": 971
+  },
+  "verified_prediction_join": {
+    "keys": "record identity plus edited/origin timestamp normalized to UTC",
+    "common_rows": 964,
+    "aft_only": 7,
+    "neural_only": 0,
+    "exact_duration_matches": 964,
+    "duration_matches_atol_1e_8": 964,
+    "common_tail_gt_504_hours": 114,
+    "aft_only_tail_gt_504_hours": 1,
+    "aft_only_zero_duration": 1,
+    "common_event_observed_rows": 964,
+    "neural_prediction_to_eval_export_ordinal_identity_matches": 964,
+    "neural_prediction_to_eval_export_ordinal_duration_matches": 964
+  },
+  "aft_export": {
+    "rows": 971,
+    "unique_entity_origin_keys": 971,
+    "tail_gt_504_hours": 115,
+    "exactly_504_hours": 0,
+    "zero_duration": 2,
+    "negative_duration": 0,
+    "null_duration": 0,
+    "rows_with_positive_duration": 969
+  },
+  "neural_export": {
+    "rows": 964,
+    "unique_entity_origin_keys": 964,
+    "tail_gt_504_hours": 114,
+    "exactly_504_hours": 0,
+    "zero_duration": 1,
+    "negative_duration": 0,
+    "null_duration": 0,
+    "rows_with_positive_duration": 963
+  },
+  "window_membership": {
+    "old_941_run_window_neural_rows": 0,
+    "later_971_window_neural_rows": 964,
+    "old_941_run_window_aft_export_rows_using_origin_plus_duration": 0,
+    "later_971_window_aft_export_rows_using_origin_plus_duration_tolerance_1ms": 971,
+    "notes": "Actual neural sold timestamps; AFT sold timestamp reconstructed from saved origin+duration for count-only crosscheck. No row-level identifiers retained."
+  },
+  "later_original_aft_run": {
+    "run_reported_timestamp_as_logged": "2026-01-21 00:11:25",
+    "eval": {
+      "n": 971,
+      "positive": 115,
+      "tp": 105,
+      "fp": 25,
+      "fn": 10,
+      "tn": 831,
+      "precision_logged": 0.8077,
+      "recall_logged": 0.913,
+      "f1_logged": 0.8571
+    },
+    "calibration": {
+      "n": 941,
+      "positive": 166,
+      "tp": 156,
+      "fp": 78,
+      "fn": 10,
+      "tn": 697,
+      "precision_logged": 0.6667,
+      "recall_logged": 0.9398,
+      "f1_logged": 0.78
+    },
+    "optuna_best_score_logged": 0.8571,
+    "exact_saved_model_key_present_in_message": true,
+    "model_key_sha256": "52b62efe8c2f958201383ba0e04a84120b1388061b13a24ca410bb14675bdfde",
+    "model_key_occurrence_message_lines": [
+      241,
+      242,
+      243,
+      244
+    ],
+    "saved_all_971_fixed_rule_confusion_equals_logged_confusion": true,
+    "evidence": "User-pasted run log; conversation010/index81/node1051; results lines170,187-189. Matched964 metric is a retrospective exact-key recomputation of the fixed saved-output rule, not an originally logged964 metric."
+  },
+  "common_cohort_comparison": {
+    "n": 964,
+    "positives": 114,
+    "aft": {
+      "n": 964,
+      "tp": 104,
+      "fp": 25,
+      "fn": 10,
+      "tn": 825,
+      "precision": 0.8062015503875969,
+      "recall": 0.9122807017543859,
+      "f1": 0.8559670781893004
+    },
+    "neural_meta": {
+      "precision": 0.9802,
+      "recall": 0.8684,
+      "f1": 0.9209,
+      "confusion_inferred_from_rounded_metrics": {
+        "tp": 99,
+        "fp": 2,
+        "fn": 15,
+        "tn": 848
+      },
+      "f1_from_inferred_integer_counts": 0.9209302325581395
+    },
+    "delta_from_integer_counts": {
+      "f1_percentage_points": 6.496315436883915,
+      "precision_percentage_points": 17.39964694143833,
+      "recall_percentage_points": -4.385964912280693,
+      "fewer_false_positive_calls": 23,
+      "additional_false_negative_calls": 5
+    },
+    "evidence_granularity": "AFT decisions are recomputed on the exact964 keys of a retained neural export. The later neural meta result is a logged aggregate associated with the964-row114-positive holdout stream; its complete final decision vector has not been recovered for a paired bootstrap or disagreement test.",
+    "neural_ensemble_row_alignment": "The retained top20 script aligns trial outputs by row_index; all20 holdout members report964 rows with zero dropped. Labels are taken from the first member. The following optimized/meta result stream retains964/114; a cryptographic final-decision-to-export manifest is not present.",
+    "reported_metric_delta_f1_percentage_points": 6.493292181069965
+  },
+  "selection_provenance": {
+    "later_aft_calibration_n": 941,
+    "later_aft_calibration_positives": 166,
+    "neural_sval_n": 933,
+    "neural_sval_positives": 166,
+    "neural_sval_sold_min_utc": "2026-01-07T05:58:05.665023Z",
+    "neural_sval_sold_max_utc": "2026-01-13T22:19:35.283617Z",
+    "interpretation": "The retained selection data occupy the corresponding preceding outcome week, with941 and933 admissible rows. Equality of source windows does not prove identical feature admissibility or optimizer use. The preserved AFT optimizer scores EVAL; the neural top20 selection code uses SVAL. Do not describe the entire historical evaluation as sealed.",
+    "neural_prediction_to_sval_export_ordinal_identity_matches": 933
+  },
+  "reconciliation_conclusion": "The documented941/.8462 evaluation is the previous outcome week. The later AFT run has971 rows and F1.8571; all964 retained neural records are a subset of that export. The recovered relation is971 minus7, not941 plus23. The later AFT calibration split separately has941 rows.",
+  "fixed_saved_duration_diagnostic": {
+    "n": 964,
+    "tail_rule": "truth duration_hours>504; each saved expected-duration prediction>504; no threshold fitted",
+    "aft": {
+      "n": 964,
+      "tp": 104,
+      "fp": 25,
+      "fn": 10,
+      "tn": 825,
+      "precision": 0.8062015503875969,
+      "recall": 0.9122807017543859,
+      "f1": 0.8559670781893004
+    },
+    "early_neural": {
+      "n": 964,
+      "tp": 0,
+      "fp": 0,
+      "fn": 114,
+      "tn": 850,
+      "precision": null,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "interpretation": "The early neural expected-duration output is distinct from its survival-tail probability score and the later final meta-ensemble. This side experiment must not be used as the reported final neural classifier comparison."
+  },
+  "sources": [
+    {
+      "evidence_id": "retained_aft_prediction_export",
+      "sha256": "af8e7ff6339b53fb3132e40375bb59e200db8c5e25cd1d1182ea8dbdd10c02b5",
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "retained_neural_prediction_export",
+      "sha256": "1e9b444210409a020cc762c4d9fe3eabcf24ef88743e1ab109f87cb0862e4204",
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "earlier_aft_run_log",
+      "archive_sha256": "dcb35edc4e4f14ee345f686ef21e0dcee318d04139637ce6d87491aee5535530",
+      "message_sha256": "8069135f194fef135a63f6f4b9ef95619be7d786e6ea3701db4424262fde76f5",
+      "conversation_index_zero_based": 42,
+      "node_index_zero_based": 4,
+      "role": "user_pasted_execution_output",
+      "result_lines": [
+        438,
+        439,
+        440
+      ],
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "later_aft_run_log",
+      "archive_sha256": "dcb35edc4e4f14ee345f686ef21e0dcee318d04139637ce6d87491aee5535530",
+      "message_sha256": "1b4cff762acb6878aa56cb344186d09572b29d3de3f22ca91183c5169645cacd",
+      "conversation_index_zero_based": 81,
+      "node_index_zero_based": 1051,
+      "role": "user_pasted_execution_output",
+      "result_lines": [
+        170,
+        187,
+        188,
+        189
+      ],
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "retained_neural_sval_export",
+      "sha256": "d57c48cd54dabb6aaa2a10c74fd456e5403b94bab7297ef9d6ca018bdfb22838",
+      "n": 933,
+      "positives": 166,
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "neural_execution_stream",
+      "sha256": "b9bf5dd7c22accd73d51970913bedfaf54d289ef289e3cb269b22f431b10618f",
+      "alignment_lines": [
+        4923,
+        4935,
+        5074,
+        5078,
+        5234,
+        5253
+      ],
+      "metric_lines": [
+        5254,
+        5291,
+        5294
+      ],
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "neural_evaluation_export",
+      "sha256": "a2f90327374228f1448d9a920c1c3f5253adabf165db15fc2eb601eccb5c66ac",
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "neural_ordinal_holdout_predictions",
+      "sha256": "0814b9534b41060e18c30cc5b0c9873bfd1d95b15528e11df9339cd8e3edd3e9",
+      "access": "private_not_redistributed"
+    },
+    {
+      "evidence_id": "neural_ordinal_sval_predictions",
+      "sha256": "6651f7dc3950f84ab2dae859965f6c4628907e8d4137178d5d239839a728dbf6",
+      "access": "private_not_redistributed"
+    }
+  ]
+}
