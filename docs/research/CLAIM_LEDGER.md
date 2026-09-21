@@ -1,6 +1,6 @@
 # Research claim ledger
 
-Version 0.2 — 2026-09-21. Historical evidence, synthetic execution and proposed experiments retain their own populations and measurement scopes.
+Version 0.3 — 2026-09-22. Historical evidence, synthetic execution and proposed experiments retain their own populations and measurement scopes.
 
 ## Evidence categories
 
@@ -25,7 +25,7 @@ Version 0.2 — 2026-09-21. Historical evidence, synthetic execution and propose
 | C15 | Cox had the lowest observed test IBS in that smoke run | IBS 0.180544 versus MLP 0.193811 and compact Perceiver-MoE 0.193862 | Universal Cox superiority; a contradiction of the proposed neural research question |
 | C16 | The compact benchmark checks temporal boundaries, entity disjointness, train-only preprocessing, and survival-output validity | Public [`data.py`](../../marketneural/data.py), [`models.py`](../../marketneural/models.py), [`metrics.py`](../../marketneural/metrics.py) | Verification of raw upstream timestamps, hidden image/text content, or delayed-label availability |
 | C17 | A selected earlier numerical architecture is preserved with source and symbol hashes | [`research/production_reference/provenance.json`](../../research/production_reference/provenance.json) | Released private weights/data, a complete production controller, or a reproduction of historical metrics |
-| C18 | Neural models improve over Cox/trees on controlled real marketplace data | **PENDING / NOT ESTABLISHED**; [protocol](PROTOCOL.md) | No superiority wording is permitted before a valid result |
+| C18 | The recorded neural meta-ensemble achieved F1 0.9209 versus 0.8462 for the earlier XGBoost AFT system; precision improved from 0.8314 to 0.9802 | **HISTORICAL RESULT**; [comparison evidence](../../research/thesis_evidence/historical_neural_comparison.json), neural N964 and earlier tree N941 | A causal model-family effect on an identical cohort, superiority over every tree configuration or Cox, or prospective transfer |
 | C19 | The model improves real decision utility or profit | **PENDING / NOT ESTABLISHED** | Prediction scores do not establish causal or economic effects |
 | C20 | The historical cascade contains three ordered survival-policy stages, preserved numerical definitions, portable fitting and inference, ensemble selection and persistence | [Cascade methods](../../research/cascade/METHODS.md), source hashes and executable tests | A single calibrated conditional-duration factorization, or reproduction of historical metrics without the private training artifacts |
 | C21 | A retained database snapshot contains 55,260 listing rows and 240,622 image assets within 29.1 GB | [Operational evidence](../../research/thesis_evidence/operational_counts.json), snapshot dated 28 April 2026 | An equal number of independent survival outcomes or a complete lifetime census |
@@ -50,3 +50,14 @@ No published synthetic ranking will be promoted to a real-world claim. Negative 
 ## Availability of historical evidence
 
 The public PDFs are independently readable. The later audited aggregates rely on private artifacts inspected during preparation; raw records and their identities are deliberately not redistributed. Readers can inspect the limitations and arithmetic summaries, but cannot reproduce those historical scores from this repository alone. The public synthetic artifacts and future controlled-study manifests are separate evidence paths designed to improve that reproducibility boundary.
+
+## Empirical evidence amendment: 22 September 2026
+
+The previous edition marked the broad neural-over-Cox/trees claim pending and
+described the real-data comparison as not run. Recovered user-pasted execution
+logs, neural trial-pool manifests and ensemble-search histories establish
+completed experimentation and higher recorded neural tail-screening metrics.
+C18 now states that bounded historical result. The same-cohort and prospective
+questions remain distinct. These historical evaluation results were already
+visible during development; this amendment records existing results and does
+not select a newly fitted model.

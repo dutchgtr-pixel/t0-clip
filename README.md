@@ -7,8 +7,11 @@
 [manuscript](papers/marketneural/manuscript.md), an executable three-stage survival
 cascade, feature-store SQL, and audited historical evidence. Fifteen chapters cover
 the operational platform, image and text enrichment, neural tuning, leakage,
-market adaptation, agentic decisions, and fraud/spam extensions. The controlled
-real-data model comparison remains pending.
+market adaptation, agentic decisions, and fraud/spam extensions. The recorded
+neural meta-ensemble improves historical tail-screening F1 from **0.8462 for
+XGBoost AFT to 0.9209**, with precision increasing from **0.8314 to 0.9802**.
+The [empirical chapter](papers/marketneural/chapters/06_empirical_evidence.md)
+shows the results, experiment counts and the respective evaluation cohorts.
 
 The monograph is authored by **Ghaffar Masomi**.
 

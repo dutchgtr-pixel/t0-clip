@@ -1,12 +1,18 @@
 # MarketNeural model card
 
-Version 0.2 — 2026-09-21. **Research software; controlled real-data comparison pending.**
+Version 0.3 - 2026-09-22. **Historical neural results and executable comparison software.**
 
 ## Model identity and scope
 
 This release contains three distinct model resources. The compact `marketneural` package is a runnable comparison implementation. `research/cascade/` preserves the historical Stage 0/1/2 numerical definitions and supplies portable fitting, ensemble selection, routing and persistence. `research/production_reference/` preserves the later slot-based multimodal architecture with source hashes and a generic tensor training adapter. The manuscript documents their mathematical and operational context. Each resource has its own configuration and execution scope.
 
 The compact benchmark consumes precomputed structured and vector inputs. It downloads no pretrained image or text model and includes no private model checkpoint. It is intended for research, debugging temporal evaluation, and comparing survival estimators on explicitly provided data. It is not a turnkey collection service, a live marketplace recommendation product, a causal pricing model, or a profit estimator.
+
+## Historical neural improvement
+
+Recorded 21-day tail-screening F1 increased from **0.8462 for XGBoost AFT** to **0.9209 for the neural meta-ensemble**, with precision increasing from 0.8314 to 0.9802 and recall from 0.8614 to 0.8684. The earlier tree evaluation contains 941 records and the neural holdout 964. The [empirical chapter](../../papers/marketneural/chapters/06_empirical_evidence.md) and [aggregate evidence](../../research/thesis_evidence/historical_neural_comparison.json) preserve those scopes, source hashes and completed experiment counts. The compact estimators below are a separate public comparison implementation.
+
+
 
 ## Included compact estimators
 
