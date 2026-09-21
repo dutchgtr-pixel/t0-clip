@@ -87,8 +87,8 @@ including receipt hashes: 15,360 scheduler rows and their state breakdown,
 29,106,213,679 database bytes, seven principal relation counts, and six restoration
 reports. The most recent recorded restoration compared 10,230 files, 23 relation
 counts and eight profiles. These checks are historical evidence, not a new
-restore performed during review. The operator-reported approximately 70,000
-lifetime successful runs remains separately attributed. Explanation parity,
+restore performed during review. The platform completed more than 70,000 successful Airflow workflow runs; the
+retained snapshot supplies a detailed breakdown for a subset of that history. Explanation parity,
 neural serving parity, predictive accuracy and uptime remain distinct quantities.
 
 One enrichment claim needed version qualification: the current private accessory
@@ -169,7 +169,7 @@ The review does not establish prospective superiority, calibrated decision value
 fraud-detection accuracy or complete historical reproducibility. Those claims
 require the separate, governed real-data studies described in the manuscript.
 
-## Visual review receipt: PDF pages 67Ã¢â‚¬â€œ83
+## Visual review receipt: PDF pages 67ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“83
 
 The operations reviewer inspected all 17 pages in this physical PDF range using
 the completed 100-dpi Poppler renders. The reviewed PDF had 99 pages and SHA-256
@@ -214,33 +214,48 @@ The final software suite passed **101 tests** with two known deprecation warning
 from a preserved historical estimator. The [validation receipt](../../research/thesis_evidence/current_validation.json)
 records the commands, environment, source and test hashes, and installed-wheel
 check. All five portable SQL files executed in the isolated in-memory PostgreSQL
-engine; the historical SQL inventory parsed 77 standalone scripts and two
-wrapped fragments without rejection.
+engine; the historical SQL inventory parsed 77 standalone scripts and two wrapped
+fragments without rejection. GitHub's research, Python and Go workflows passed
+for the initial release commit.
 
-The final monograph contains **99 pages, 15 chapters, 32,746 chapter words,
-22 figures and 16 bibliography entries**. Every final page was visually reviewed:
-one reviewer covered physical pages 1â€“33 and 80â€“99; another covered 34â€“79.
-The coordinating reviewer additionally checked the cover, bibliography, source
-links and page geometry. No clipping, overlapping content or missing-glyph
-blockers were found. A short chapter-ending continuation on page 93 and a reference
-split across pages 98â€“99 are retained as minor layout choices. The final PDF hash is
-`b6377260d358167f18227f1ab5897927e6179516e4e06e9a398568296d402d96`.
-The [build manifest](THESIS_BUILD_MANIFEST.json) records all chapter hashes and tool
-versions; the [PDF manifest](PDF_RELEASE_MANIFEST.json) binds review to this file.
+The final monograph by **Ghaffar Masomi** contains **99 pages, 15 chapters,
+32,704 chapter words, 22 figures and 16 bibliography entries**. Every page of the
+completed typography edition was visually reviewed. The final author and
+operating-total revision changed only physical pages 1, 2, 3, 9, 10, 72 and 81;
+all seven were visually inspected again. The other 92 pages are pixel-identical
+to the earlier reviewed edition in a page-by-page 72-DPI comparison. No clipping,
+overlap, missing-glyph or pagination blockers were found.
+
+The final PDF SHA-256 is
+`eda6f34e88242a7a361d5ed79b59b628629714311354182fa9233192b5003401`.
+The [build manifest](THESIS_BUILD_MANIFEST.json) records chapter hashes, tool
+versions and the layout comparison; the [PDF manifest](PDF_RELEASE_MANIFEST.json)
+binds review to this file. The author is credited on the cover, in PDF metadata,
+the Markdown manuscript and the repository citation file. The Downloads copy
+matches these exact PDF bytes.
+
+The platform completed **more than 70,000 successful Airflow workflow runs** over
+its operating lifetime. The retained scheduler snapshot supplies the detailed
+breakdown for a subset of that history.
 
 All 81 unique embedded raster images in the nine historical PDFs were visually
-inspected and screened through cached OCR matched to the final image hashes.
-Three source-specific raster issues were corrected; their obsolete image objects
-were removed. The new monograph uses the reviewed figure derivatives and two
-expressly approved anonymous photographs. No original record identifiers or
-seller/source links accompany the photographs.
+inspected and screened through cached OCR matched to their final image hashes.
+Three source-specific raster issues were corrected and obsolete image objects
+removed. The monograph uses reviewed figure derivatives and two expressly
+approved anonymous photographs without original record identifiers or seller links.
+
+A follow-up [Stage0 implementation map](../../research/cascade/STAGE0_IMPLEMENTATION.md)
+compares the original recovery sources with the public package. It verifies
+46 preserved Stage0-related numerical definitions within the 122-definition
+cascade export and maps training, ensembles, scoring and integration boundaries.
+Its complete artificial example trained for two epochs and produced finite
+survival predictions. This follow-up changed documentation rather than runtime code.
 
 The [data-access policy](../../DATA_ACCESS.md) keeps all working datasets
 proprietary, including Parquet observations and training exports. Researchers may
-request separately approved access. The final public-tree inventory contains no
-Parquet, raw tabular exports, private vocabulary or trained-weight files. Both
-publication audits screen the final files and reviewed documents; the record
-privacy receipt documents the current-tree identifier corrections.
+request separately approved access. The public tree contains no Parquet, raw
+tabular exports, private vocabulary or trained-weight files. Publication screening
+covers the current files, reviewed PDFs, archive members and approved images.
 
-Final publication screening passed for all 248 additions/changes since the original
-public baseline and all 409 files in the current public tree, with zero findings.
+Final publication audits passed for all 249 additions/changes since the original
+public baseline and all 410 current public files, with zero findings.

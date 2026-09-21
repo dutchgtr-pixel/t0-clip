@@ -93,3 +93,6 @@ substituted silently for this legacy family.
 
 Read [`METHODS.md`](METHODS.md) for targets, losses, conditional-population limits,
 recency mechanisms, tuning, leakage investigations and evidence boundaries.
+The [`Stage0 implementation guide`](STAGE0_IMPLEMENTATION.md) maps original
+module responsibilities to released code, records the recovery/source checks,
+and provides a standalone runnable Stage0 example.

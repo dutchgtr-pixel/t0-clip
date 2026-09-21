@@ -38,7 +38,8 @@ Raw operational rows, personal information, source identifiers, local paths, and
 | Saved serving and narrative checks | Model replay, numerical tolerances, explanation tests and representation parity | [Historical checks](../../research/thesis_evidence/historical_checks.json), each with its distinct scope | Chapter 07 |
 | Implemented decision and analytical services | Controlled analytical queries, context manifest, caching, serialization, streaming, quotas, timeouts and lifecycle | Actual architecture separately identified from decision theory | Agentic-decisions chapter |
 | Fraud and spam pipeline | Filters, evidence measures and operational decision boundaries | Implemented detection distinguished from adjudicated fraud truth | Fraud and spam chapter |
-| Operator account | Approximately 70,000 successful lifetime runs, rapid change, recent-data emphasis, ordinary-plus-whitened vector design | Explicitly attributed; corroborated mechanisms separated from unlocated fitted artifacts or unmeasured optimality | Chapters 03, 07 and 08 |
+| Platform operating history | More than 70,000 successful Airflow workflow runs; rapid market movement and emphasis on recent data | Lifetime scale is distinct from the retained scheduler subset; implemented recency weighting is documented separately from optimal-window experiments | Chapters 03, 07 and 08 |
+| Representation design | Ordinary-plus-whitened text vectors | Fitted dual-band transform artifacts remain to be recovered; the selected inspected network uses one listing-text vector | Chapters 05 and 08 |
 
 ## New public experiment
 
@@ -56,7 +57,7 @@ The experiment uses three blocks. A separate calibration block and a matched rea
 - Verify that source availability, transform completion, decision time, and event time remain distinct throughout all chapters and captions.
 - Treat zero-duration exclusion as sensitivity analysis, not an automatically corrected target or proof that all zero durations are erroneous.
 - Confirm that model replay, narrative tests, restoration checks, and predictive evaluation have separate scopes and denominators.
-- Preserve the attribution of approximately 70,000 successful lifetime runs while reporting the independently counted retained subset without treating it as a lifetime census.
+- Report more than 70,000 successful Airflow workflow runs as the platform lifetime total; label the retained snapshot as a subset rather than a lifetime census.
 - Distinguish constrained generation from mathematical determinism and distinguish generated attribute confidence from calibrated correctness.
 - Check the ordinary-plus-whitened representation account against any subsequently recovered fitted transform; do not infer a second inspected neural text branch from an operator description.
 - Separate implemented recency parameters and refresh mechanisms from evidence that a particular 60-day window is optimal or that online learning was deployed.

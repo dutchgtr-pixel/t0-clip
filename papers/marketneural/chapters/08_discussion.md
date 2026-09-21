@@ -64,4 +64,4 @@ Finally, a measurement-and-decision study should connect enrichment accuracy to 
 
 ## Overall assessment
 
-The retained work is technically advanced applied research and systems engineering. Its depth comes from the combination of temporal feature governance, multimodal measurement, censored-outcome modeling, stage-specific policies, operational automation, numerical replay, and restoration evidence. The reported lifetime volume and independently audited retained run history are consistent with a platform that was operated extensively, not merely demonstrated once.
+The retained work is technically advanced applied research and systems engineering. Its depth comes from the combination of temporal feature governance, multimodal measurement, censored-outcome modeling, stage-specific policies, operational automation, numerical replay, and restoration evidence. More than 70,000 successful Airflow workflow runs demonstrate the sustained operational scale behind this research; the retained scheduler history provides a detailed view of one part of that operation.
