@@ -265,12 +265,12 @@ def parse_args():
     # --- External feature blocks (governed by feature contracts) ---
     ap.add_argument(
         "--image_features_view",
-        default="ml.iphone_image_features_unified_v1",
+        default="ml.device_image_features_unified_v1",
         help="Vision features view (joined by generation,listing_id).",
     )
     ap.add_argument(
         "--image_feature_set",
-        default="iphone_image_unified_v1_model",
+        default="device_image_unified_v1_model",
         help="ml.feature_set name that defines the contract for --image_features_view.",
     )
     ap.add_argument("--image_chunk_size", type=int, default=20000)
@@ -294,12 +294,12 @@ def parse_args():
 
     ap.add_argument(
         "--device_meta_features_view",
-        default="ml.iphone_device_meta_encoded_v1",
+        default="ml.device_device_meta_encoded_v1",
         help="Encoded device meta view (generation/model-variant/color). Joined by generation,listing_id.",
     )
     ap.add_argument(
         "--device_meta_feature_set",
-        default="iphone_device_meta_encoded_v1_model",
+        default="device_device_meta_encoded_v1_model",
         help="ml.feature_set name that defines the contract for --device_meta_features_view.",
     )
     ap.add_argument("--device_meta_chunk_size", type=int, default=20000)
@@ -423,7 +423,7 @@ def parse_args():
 
 
 # ---------------- Utils ----------------
-NUM_BLOCK_EXACT  = {"listing_id","postal_code","id","listing_id","tise_id"}
+NUM_BLOCK_EXACT  = {"listing_id","postal_code","id","source_record_id"}
 NUM_BLOCK_SUBSTR = ("sold","duration","label","target","bucket","pred","actual","ground","gate","uuid","url","zip","plz")
 
 # Explicit allowlist for good "sold"-ish features we actually WANT
@@ -682,7 +682,7 @@ def attach_stock_features_python(
     t0_col: str = "edited_date",
     geo_dim_view: str = "ml.geo_dim_super_metro_v4_t0_train_v",
     meta_view: str = "ml.socio_market_feature_store_train_v",
-    listings_table: str = '"iPhone".iphone_listings',
+    listings_table: str = '"device".device_listings',
 ) -> pd.DataFrame:
     """Attach live-inventory ('stock') features computed at t0.
 
@@ -836,7 +836,7 @@ def attach_stock_features_python(
     intervals["start"] = intervals["first_seen"]
     m = intervals["_t0"].notna()
     if m.any():
-        # allow t0 to slightly precede first_seen (scrape lag)
+        # allow t0 to slightly precede first_seen (observe lag)
         intervals.loc[m, "start"] = intervals.loc[m, ["first_seen", "_t0"]].min(axis=1)
 
     intervals["start_ns"] = intervals["start"].astype("int64")
@@ -2476,7 +2476,7 @@ def load_rows_with_strict_anchor(conn, limit: Optional[int], features_view: str 
                  WHERE caption_text IS NOT NULL AND caption_text <> ''
                )
         END AS caption_count
-      FROM "iPhone".iphone_image_assets ia
+      FROM "device".device_image_assets ia
       WHERE ia.generation = b.generation
         AND ia.listing_id    = b.listing_id
     ) img ON TRUE
@@ -2485,7 +2485,7 @@ def load_rows_with_strict_anchor(conn, limit: Optional[int], features_view: str 
     LEFT JOIN LATERAL (
       SELECT
         MAX(i.battery_health_pct_img) AS battery_pct_img
-      FROM ml.iphone_image_features_v1 i
+      FROM ml.device_image_features_v1 i
       WHERE i.feature_version = 1
         AND i.battery_screenshot IS TRUE
         AND i.battery_health_pct_img IS NOT NULL
@@ -2500,7 +2500,7 @@ def load_rows_with_strict_anchor(conn, limit: Optional[int], features_view: str 
         SELECT
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY s.sold_price::numeric) AS med,
           COUNT(*)::int AS n
-        FROM "iPhone".iphone_listings s, t0
+        FROM "device".device_listings s, t0
         WHERE s.spam IS NULL
           AND s.status = 'sold'
           AND s.sold_price IS NOT NULL
@@ -2526,7 +2526,7 @@ def load_rows_with_strict_anchor(conn, limit: Optional[int], features_view: str 
         SELECT
           PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY s.sold_price::numeric) AS med,
           COUNT(*)::int AS n
-        FROM "iPhone".iphone_listings s, t0
+        FROM "device".device_listings s, t0
         WHERE s.spam IS NULL
           AND s.status = 'sold'
           AND s.sold_price IS NOT NULL
@@ -2600,7 +2600,7 @@ def load_rows_with_strict_anchor(conn, limit: Optional[int], features_view: str 
           fv.seller_rating::double precision AS seller_rating,
           fv.review_count,
           fv.member_since_year
-        FROM "iPhone".iphone_listings s
+        FROM "device".device_listings s
         JOIN ml.tom_features_v1_mv fv USING (listing_id)
         JOIN t0 ON TRUE
         WHERE s.spam IS NULL
@@ -2880,7 +2880,7 @@ def load_all_rows(conn, limit: Optional[int], features_view: str = "ml.tom_featu
                  WHERE caption_text IS NOT NULL AND caption_text <> ''
                )
         END AS caption_count
-      FROM "iPhone".iphone_image_assets ia
+      FROM "device".device_image_assets ia
       WHERE ia.generation = e.generation
         AND ia.listing_id    = e.listing_id
     ) img ON TRUE
@@ -2889,7 +2889,7 @@ def load_all_rows(conn, limit: Optional[int], features_view: str = "ml.tom_featu
     LEFT JOIN LATERAL (
       SELECT
         MAX(i.battery_health_pct_img) AS battery_pct_img
-      FROM ml.iphone_image_features_v1 i
+      FROM ml.device_image_features_v1 i
       WHERE i.feature_version = 1
         AND i.battery_screenshot IS TRUE
         AND i.battery_health_pct_img IS NOT NULL
@@ -2945,8 +2945,8 @@ def load_image_agg_features(
     listing_ids: list[int],
     generations: list[int],
     *,
-    image_features_view: str = "ml.iphone_image_features_unified_v1",
-    feature_set_name: str = "iphone_image_unified_v1_model",
+    image_features_view: str = "ml.device_image_features_unified_v1",
+    feature_set_name: str = "device_image_unified_v1_model",
     chunk_size: int = 20000,
     fetch_size: int = 5000,
 ) -> pd.DataFrame:
@@ -3016,7 +3016,7 @@ def load_damage_fusion_features(
     listing_ids: list[int],
     generations: Optional[list[int]] = None,
     *,
-    fusion_features_view: str = "ml.iphone_damage_fusion_v2_scored",
+    fusion_features_view: str = "ml.device_damage_fusion_v2_scored",
     feature_set_name: str = "damage_fusion_v2_scored_model",
     chunk_size: int = 20000,
     fetch_size: int = 2000,
@@ -3145,8 +3145,8 @@ def load_device_meta_features(
     listing_ids: list[int],
     generations: list[int],
     *,
-    device_meta_features_view: str = "ml.iphone_device_meta_encoded_v1",
-    feature_set_name: str = "iphone_device_meta_encoded_v1_model",
+    device_meta_features_view: str = "ml.device_device_meta_encoded_v1",
+    feature_set_name: str = "device_device_meta_encoded_v1_model",
     chunk_size: int = 20000,
     fetch_size: int = 5000,
 ) -> pd.DataFrame:
@@ -3236,7 +3236,7 @@ def load_first_inactive_meta_edited_at(
       e.generation,
       e.listing_id,
       MIN(e.meta_edited_at) AS first_inactive_meta_edited_at
-    FROM "iPhone".iphone_inactive_state_events e
+    FROM "device".device_inactive_state_events e
     JOIN target t USING (generation, listing_id)
     WHERE e.is_inactive = TRUE
       AND e.meta_edited_at IS NOT NULL
@@ -3290,7 +3290,7 @@ def attach_damage_fusion_features(
     df: pd.DataFrame,
     *,
     prefix: str = "fusion_",
-    fusion_features_view: str = "ml.iphone_damage_fusion_v2_scored",
+    fusion_features_view: str = "ml.device_damage_fusion_v2_scored",
     feature_set_name: str = "damage_fusion_v2_scored_model",
     chunk_size: int = 20000,
 ) -> pd.DataFrame:
@@ -3347,8 +3347,8 @@ def attach_device_meta_features(
     conn,
     df: pd.DataFrame,
     *,
-    device_meta_features_view: str = "ml.iphone_device_meta_encoded_v1",
-    feature_set_name: str = "iphone_device_meta_encoded_v1_model",
+    device_meta_features_view: str = "ml.device_device_meta_encoded_v1",
+    feature_set_name: str = "device_device_meta_encoded_v1_model",
     chunk_size: int = 20000,
 ) -> pd.DataFrame:
     """Left-join encoded device meta features onto df (join keys: generation,listing_id)."""
@@ -3997,7 +3997,7 @@ def infer_feature_block(feature_name: str) -> str:
     """Heuristic feature block classifier used for model_feature_importance_v1 meta."""
     f = feature_name or ""
 
-    # Stock (live-inventory) — computed in Python from iphone_listings intervals
+    # Stock (live-inventory) — computed in Python from device_listings intervals
     if f in {"stock_n_sm4_gen_sbucket", "stock_n_sm4_gen", "stock_share_sbucket"}:
         return "stock_store"
 

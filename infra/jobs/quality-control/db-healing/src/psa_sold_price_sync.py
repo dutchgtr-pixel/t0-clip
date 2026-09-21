@@ -11,7 +11,7 @@ Matches your SQL logic where:
 
 So:
   - If PSA has sold_price_snapshot
-  - AND iphone_listings.sold_price IS DISTINCT FROM that value
+  - AND device_listings.sold_price IS DISTINCT FROM that value
   → we overwrite sold_price from PSA and append an audit JSON entry.
 
 We also log, for EVERY row:

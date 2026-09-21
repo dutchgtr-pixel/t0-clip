@@ -3,12 +3,12 @@
 """
 psa_condition_sync_and_rescore.py
 
-Synchronize PSA condition scores into iPhone.iphone_listings, append an audit entry,
+Synchronize PSA condition scores into device.device_listings, append an audit entry,
 apply hard-rule damage clamps for cs ∈ {1.0, 0.2}, and queue remaining rows
 for LLM damage re-scoring by clearing damage_ai_version.
 
 Run this right after:
-  REFRESH MATERIALIZED VIEW "iPhone".post_sold_audit;
+  REFRESH MATERIALIZED VIEW "device".post_sold_audit;
 and before launching gbt_damage.py (with SKIP_ALREADY_LABELED=1).
 
 Environment:
@@ -34,8 +34,8 @@ import logging
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 
-SCHEMA   = '"iPhone"'
-LISTINGS = f'{SCHEMA}.iphone_listings'
+SCHEMA   = '"device"'
+LISTINGS = f'{SCHEMA}.device_listings'
 PSA      = f'{SCHEMA}.post_sold_audit'
 
 
@@ -131,7 +131,7 @@ def apply_sync_and_queue(
             conn.execute(
                 text("""
                     SELECT 1 FROM information_schema.columns
-                    WHERE table_schema='iPhone' AND table_name='iphone_listings' AND column_name='damage_ai_at'
+                    WHERE table_schema='device' AND table_name='device_listings' AND column_name='damage_ai_at'
                 """)
             ).fetchone()
         )

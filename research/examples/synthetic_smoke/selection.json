@@ -1,0 +1,456 @@
+{
+  "km": {
+    "selected_candidate": 0,
+    "selected_parameters": {},
+    "candidate_results": [
+      {
+        "candidate": 0,
+        "parameters": {},
+        "seeds": [
+          {
+            "seed": 42,
+            "fit_seconds": 0.0006310000317171216,
+            "validation": {
+              "integrated_brier_score": 0.2169871385183287,
+              "brier_by_time": [
+                0.13641042697097425,
+                0.18661583422221184,
+                0.22655839449661275,
+                0.24685797644887714,
+                0.2540230808118031,
+                0.24470688267546223,
+                0.2233589638636368,
+                0.21036918844311486,
+                0.2005001942760365,
+                0.18337703588343274
+              ],
+              "time_grid_hours": [
+                12.0,
+                24.0,
+                36.0,
+                48.0,
+                60.0,
+                72.0,
+                84.0,
+                96.0,
+                108.0,
+                120.0
+              ],
+              "censor_survival_at_grid_end": 0.5941174697288121,
+              "ipcw_concordance": 0.5
+            },
+            "operating_point": {
+              "eligible": 233,
+              "unresolved_censored": 34,
+              "tp": 0,
+              "fp": 0,
+              "fn": 143,
+              "tn": 90,
+              "precision": null,
+              "recall": 0.0,
+              "f1": 0.0,
+              "flagged_all_rows": 0,
+              "flagged_unresolved": 0,
+              "threshold": null,
+              "selection_status": "no_feasible_validation_threshold_reject_all",
+              "target_precision": 0.8,
+              "min_flagged": 10
+            },
+            "best_epoch": null
+          }
+        ],
+        "mean_validation_ibs": 0.2169871385183287
+      }
+    ],
+    "selection_rule": "lowest mean SVAL IBS across prespecified seeds; candidate order breaks exact ties"
+  },
+  "coxph": {
+    "selected_candidate": 0,
+    "selected_parameters": {
+      "alpha": 1.0
+    },
+    "candidate_results": [
+      {
+        "candidate": 0,
+        "parameters": {
+          "alpha": 1.0
+        },
+        "seeds": [
+          {
+            "seed": 42,
+            "fit_seconds": 0.17944819998228922,
+            "validation": {
+              "integrated_brier_score": 0.18598301717167637,
+              "brier_by_time": [
+                0.11873849218584807,
+                0.17443813707095093,
+                0.19795050970432992,
+                0.2168768956469985,
+                0.21924527196713908,
+                0.1928652285728746,
+                0.18838889516618568,
+                0.17537014630374903,
+                0.17509501054601237,
+                0.14849562694784615
+              ],
+              "time_grid_hours": [
+                12.0,
+                24.0,
+                36.0,
+                48.0,
+                60.0,
+                72.0,
+                84.0,
+                96.0,
+                108.0,
+                120.0
+              ],
+              "censor_survival_at_grid_end": 0.5941174697288121,
+              "ipcw_concordance": 0.6719610263459169
+            },
+            "operating_point": {
+              "eligible": 233,
+              "unresolved_censored": 34,
+              "tp": 97,
+              "fp": 24,
+              "fn": 46,
+              "tn": 66,
+              "precision": 0.8016528925619835,
+              "recall": 0.6783216783216783,
+              "f1": 0.7348484848484849,
+              "flagged_all_rows": 133,
+              "flagged_unresolved": 12,
+              "threshold": 0.5222882122390724,
+              "selection_status": "selected_on_validation",
+              "target_precision": 0.8,
+              "min_flagged": 10
+            },
+            "best_epoch": null
+          }
+        ],
+        "mean_validation_ibs": 0.18598301717167637
+      }
+    ],
+    "selection_rule": "lowest mean SVAL IBS across prespecified seeds; candidate order breaks exact ties"
+  },
+  "rsf": {
+    "selected_candidate": 0,
+    "selected_parameters": {
+      "n_estimators": 60,
+      "max_depth": 6,
+      "min_samples_leaf": 8
+    },
+    "candidate_results": [
+      {
+        "candidate": 0,
+        "parameters": {
+          "n_estimators": 60,
+          "max_depth": 6,
+          "min_samples_leaf": 8
+        },
+        "seeds": [
+          {
+            "seed": 42,
+            "fit_seconds": 0.8809976000338793,
+            "validation": {
+              "integrated_brier_score": 0.18952580400790844,
+              "brier_by_time": [
+                0.12429984308537059,
+                0.17110463055743771,
+                0.1997015804123694,
+                0.21568686011041216,
+                0.22125534993986837,
+                0.20563482638229452,
+                0.19278699500076454,
+                0.18097850293857445,
+                0.1774050787458442,
+                0.15805698088185002
+              ],
+              "time_grid_hours": [
+                12.0,
+                24.0,
+                36.0,
+                48.0,
+                60.0,
+                72.0,
+                84.0,
+                96.0,
+                108.0,
+                120.0
+              ],
+              "censor_survival_at_grid_end": 0.5941174697288121,
+              "ipcw_concordance": 0.6595692115297173
+            },
+            "operating_point": {
+              "eligible": 233,
+              "unresolved_censored": 34,
+              "tp": 96,
+              "fp": 24,
+              "fn": 47,
+              "tn": 66,
+              "precision": 0.8,
+              "recall": 0.6713286713286714,
+              "f1": 0.7300380228136882,
+              "flagged_all_rows": 135,
+              "flagged_unresolved": 15,
+              "threshold": 0.5596431321421983,
+              "selection_status": "selected_on_validation",
+              "target_precision": 0.8,
+              "min_flagged": 10
+            },
+            "best_epoch": null
+          }
+        ],
+        "mean_validation_ibs": 0.18952580400790844
+      }
+    ],
+    "selection_rule": "lowest mean SVAL IBS across prespecified seeds; candidate order breaks exact ties"
+  },
+  "gbsa": {
+    "selected_candidate": 0,
+    "selected_parameters": {
+      "n_estimators": 80,
+      "max_depth": 2,
+      "learning_rate": 0.05
+    },
+    "candidate_results": [
+      {
+        "candidate": 0,
+        "parameters": {
+          "n_estimators": 80,
+          "max_depth": 2,
+          "learning_rate": 0.05
+        },
+        "seeds": [
+          {
+            "seed": 42,
+            "fit_seconds": 0.5224860000307672,
+            "validation": {
+              "integrated_brier_score": 0.1837670258186521,
+              "brier_by_time": [
+                0.12370761105366646,
+                0.16486988951121287,
+                0.19709277716006784,
+                0.21197569631910193,
+                0.21592934668015254,
+                0.1960942998750945,
+                0.1837415033591132,
+                0.17245713181332506,
+                0.17343798539063413,
+                0.15290159346466708
+              ],
+              "time_grid_hours": [
+                12.0,
+                24.0,
+                36.0,
+                48.0,
+                60.0,
+                72.0,
+                84.0,
+                96.0,
+                108.0,
+                120.0
+              ],
+              "censor_survival_at_grid_end": 0.5941174697288121,
+              "ipcw_concordance": 0.6764646229864867
+            },
+            "operating_point": {
+              "eligible": 233,
+              "unresolved_censored": 34,
+              "tp": 97,
+              "fp": 24,
+              "fn": 46,
+              "tn": 66,
+              "precision": 0.8016528925619835,
+              "recall": 0.6783216783216783,
+              "f1": 0.7348484848484849,
+              "flagged_all_rows": 133,
+              "flagged_unresolved": 12,
+              "threshold": 0.5747844273873844,
+              "selection_status": "selected_on_validation",
+              "target_precision": 0.8,
+              "min_flagged": 10
+            },
+            "best_epoch": null
+          }
+        ],
+        "mean_validation_ibs": 0.1837670258186521
+      }
+    ],
+    "selection_rule": "lowest mean SVAL IBS across prespecified seeds; candidate order breaks exact ties"
+  },
+  "mlp": {
+    "selected_candidate": 0,
+    "selected_parameters": {
+      "horizon": 120,
+      "n_bins": 24,
+      "epochs": 25,
+      "patience": 6,
+      "width": 48,
+      "batch_size": 128,
+      "learning_rate": 0.003,
+      "device": "cpu"
+    },
+    "candidate_results": [
+      {
+        "candidate": 0,
+        "parameters": {
+          "horizon": 120,
+          "n_bins": 24,
+          "epochs": 25,
+          "patience": 6,
+          "width": 48,
+          "batch_size": 128,
+          "learning_rate": 0.003,
+          "device": "cpu"
+        },
+        "seeds": [
+          {
+            "seed": 42,
+            "fit_seconds": 11.981509699951857,
+            "validation": {
+              "integrated_brier_score": 0.19128079919150304,
+              "brier_by_time": [
+                0.1257052707488568,
+                0.1801288288066593,
+                0.20460820135531105,
+                0.227568605204721,
+                0.22594016096361133,
+                0.1982278886375065,
+                0.19319488339273816,
+                0.17688654704655893,
+                0.17647150404926237,
+                0.15129587578546072
+              ],
+              "time_grid_hours": [
+                12.0,
+                24.0,
+                36.0,
+                48.0,
+                60.0,
+                72.0,
+                84.0,
+                96.0,
+                108.0,
+                120.0
+              ],
+              "censor_survival_at_grid_end": 0.5941174697288121,
+              "ipcw_concordance": 0.6572565534740226
+            },
+            "operating_point": {
+              "eligible": 233,
+              "unresolved_censored": 34,
+              "tp": 95,
+              "fp": 21,
+              "fn": 48,
+              "tn": 69,
+              "precision": 0.8189655172413793,
+              "recall": 0.6643356643356644,
+              "f1": 0.7335907335907336,
+              "flagged_all_rows": 132,
+              "flagged_unresolved": 16,
+              "threshold": 0.5431613922119141,
+              "selection_status": "selected_on_validation",
+              "target_precision": 0.8,
+              "min_flagged": 10
+            },
+            "best_epoch": 13
+          }
+        ],
+        "mean_validation_ibs": 0.19128079919150304
+      }
+    ],
+    "selection_rule": "lowest mean SVAL IBS across prespecified seeds; candidate order breaks exact ties"
+  },
+  "perceiver_moe": {
+    "selected_candidate": 0,
+    "selected_parameters": {
+      "horizon": 120,
+      "n_bins": 24,
+      "epochs": 25,
+      "patience": 6,
+      "width": 32,
+      "heads": 4,
+      "n_latents": 8,
+      "layers": 1,
+      "experts": 3,
+      "batch_size": 128,
+      "learning_rate": 0.003,
+      "device": "cpu"
+    },
+    "candidate_results": [
+      {
+        "candidate": 0,
+        "parameters": {
+          "horizon": 120,
+          "n_bins": 24,
+          "epochs": 25,
+          "patience": 6,
+          "width": 32,
+          "heads": 4,
+          "n_latents": 8,
+          "layers": 1,
+          "experts": 3,
+          "batch_size": 128,
+          "learning_rate": 0.003,
+          "device": "cpu"
+        },
+        "seeds": [
+          {
+            "seed": 42,
+            "fit_seconds": 5.739673700009007,
+            "validation": {
+              "integrated_brier_score": 0.18361135378018553,
+              "brier_by_time": [
+                0.118147514564426,
+                0.16221603747556881,
+                0.19091406834330446,
+                0.21309302730432425,
+                0.21756763174065685,
+                0.19192767606033512,
+                0.18555088791383184,
+                0.17391569251420252,
+                0.1769343941675506,
+                0.16261802243936466
+              ],
+              "time_grid_hours": [
+                12.0,
+                24.0,
+                36.0,
+                48.0,
+                60.0,
+                72.0,
+                84.0,
+                96.0,
+                108.0,
+                120.0
+              ],
+              "censor_survival_at_grid_end": 0.5941174697288121,
+              "ipcw_concordance": 0.6821307756226065
+            },
+            "operating_point": {
+              "eligible": 233,
+              "unresolved_censored": 34,
+              "tp": 100,
+              "fp": 25,
+              "fn": 43,
+              "tn": 65,
+              "precision": 0.8,
+              "recall": 0.6993006993006993,
+              "f1": 0.746268656716418,
+              "flagged_all_rows": 139,
+              "flagged_unresolved": 14,
+              "threshold": 0.47331559658050537,
+              "selection_status": "selected_on_validation",
+              "target_precision": 0.8,
+              "min_flagged": 10
+            },
+            "best_epoch": 14
+          }
+        ],
+        "mean_validation_ibs": 0.18361135378018553
+      }
+    ],
+    "selection_rule": "lowest mean SVAL IBS across prespecified seeds; candidate order breaks exact ties"
+  }
+}

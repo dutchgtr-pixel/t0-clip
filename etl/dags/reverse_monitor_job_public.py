@@ -6,7 +6,7 @@ runs a bounded reverse-survival sweep and exits.
 
 Redactions / public-release constraints:
 - No embedded credentials (PG_DSN must be supplied via environment or Airflow Connections).
-- No target-platform identifiers or scraping fingerprints.
+- No target-platform identifiers or collection fingerprints.
 - Platform-specific logic must live behind an adapter inside the container image.
 """
 

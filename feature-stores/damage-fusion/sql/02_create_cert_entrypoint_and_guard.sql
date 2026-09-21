@@ -7,7 +7,7 @@ CREATE OR REPLACE VIEW ml.fusion_feature_store_t0_v1_v AS
 SELECT
   l.edited_date,
   f.*
-FROM "iPhone".iphone_listings l
+FROM "device".device_listings l
 JOIN ml.v_damage_fusion_features_v2_scored f
   ON f.generation = l.generation
  AND f.listing_id    = l.listing_id

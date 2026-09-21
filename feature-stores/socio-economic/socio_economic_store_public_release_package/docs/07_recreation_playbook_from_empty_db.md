@@ -9,7 +9,7 @@ The socio_economic_store depends on:
 - A listing-level base feature surface:
   - `ml.tom_features_v2_enriched_ai_ob_clean_mv`
 - Geo mapping:
-  - `ml.iphone_listings_geo_current` with `(generation, listing_id, postal_code, super_metro_v4_geo)`
+  - `ml.device_listings_geo_current` with `(generation, listing_id, postal_code, super_metro_v4_geo)`
 - Socio reference history tables:
   - `ref.postal_code_to_kommune_history(postal_code, kommune_code4, snapshot_date, loaded_at, ...)`
   - `ref.kommune_socio_history(kommune_code4, centrality_class, income_median_after_tax_nok, snapshot_date, loaded_at, ...)`

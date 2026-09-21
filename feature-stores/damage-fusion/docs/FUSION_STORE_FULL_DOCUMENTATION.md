@@ -47,7 +47,7 @@ The wrapper adds “known/scored” semantics so missingness never silently masq
 
 3) **Certified entrypoint**
 - `ml.fusion_feature_store_t0_v1_v`
-- Adds `edited_date` for dataset hashing by joining to `"iPhone".iphone_listings`
+- Adds `edited_date` for dataset hashing by joining to `"device".device_listings`
 
 4) **Guarded consumption view**
 - `ml.v_damage_fusion_features_v2_scored_train_v`
@@ -67,14 +67,14 @@ This is the join contract expected by your wider feature store and by the slow21
 
 ## 4. Upstream sources
 
-### 4.1 Listing source: `"iPhone".iphone_listings`
+### 4.1 Listing source: `"device".device_listings`
 
 Required fields:
 - `generation`, `listing_id`
 - `spam` (used to exclude spam rows)
 - `damage_ai_json` (JSON: decision, meta flags, battery_effective)
 
-### 4.2 Image feature source: `ml.iphone_image_features_v1`
+### 4.2 Image feature source: `ml.device_image_features_v1`
 
 Used for:
 - pipeline coverage (`feature_version`, `damage_done`)
@@ -118,7 +118,7 @@ Design choice: use the **minimum** screenshot battery as the most conservative e
 
 ### 5.3 `base` — join listing + image profile + battery profile + text decision/meta
 
-- Joins `"iPhone".iphone_listings` (spam filtered) to `img_prof` and `batt_prof`
+- Joins `"device".device_listings` (spam filtered) to `img_prof` and `batt_prof`
 - Parses numeric fields from JSON robustly using regex guards:
   - `batt_eff_text` from `damage_ai_json->>'battery_effective'`
   - `text_sev_decision`, `text_bin_decision` from `damage_ai_json->'decision'`

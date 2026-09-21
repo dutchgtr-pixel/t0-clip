@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # Public-release entrypoint for a 4-stage, job-oriented image enrichment pipeline:
-#   (1) scrape_images_playwright.py
+#   (1) observe_images_playwright.py
 #   (2) analyze_images_gpt5nano.py        (accessories + battery screenshot)
-#   (3) images_iphone_color.py            (body color + model consistency)
+#   (3) images_device_color.py            (body color + model consistency)
 #   (4) image_damage_analysis.py          (damage + photo quality)
 #
 # NO secrets are embedded. Provide all credentials via environment variables.
@@ -52,13 +52,13 @@ echo "[PIPELINE] PLAYWRIGHT_BATCH_SIZE=${PLAYWRIGHT_BATCH_SIZE} PLAYWRIGHT_MAX_I
 echo "[PIPELINE] LIMIT_LISTINGS=${PIPELINE_LIMIT_LISTINGS}"
 
 # -----------------------------
-# (1) Scrape/download images
+# (1) Observe/download images
 # -----------------------------
-echo "[STEP 1/4] scrape_images_playwright.py"
+echo "[STEP 1/4] observe_images_playwright.py"
 IMAGE_ROOT_DIR="${IMAGE_ROOT_DIR}" \
 PLAYWRIGHT_BATCH_SIZE="${PLAYWRIGHT_BATCH_SIZE}" \
 PLAYWRIGHT_MAX_IMAGES="${PLAYWRIGHT_MAX_IMAGES}" \
-python -u /app/scrape_images_playwright.py
+python -u /app/observe_images_playwright.py
 
 # -----------------------------
 # (2) Accessories analysis (requires OPENAI_API_KEY)
@@ -78,13 +78,13 @@ python -u /app/analyze_images_gpt5nano.py \
 # -----------------------------
 # (3) Color analysis (requires OPENAI_API_KEY)
 # -----------------------------
-echo "[STEP 3/4] images_iphone_color.py (color)"
+echo "[STEP 3/4] images_device_color.py (color)"
 OPENAI_API_BASE="${OPENAI_API_BASE:-https://api.openai.com/v1}" \
 OPENAI_BASE_URL="${OPENAI_BASE_URL:-https://api.openai.com/v1}" \
 IMAGE_ROOT_DIR="${IMAGE_ROOT_DIR}" \
 MAX_IMAGE_LONG_SIDE="${COLOR_MAX_IMAGE_LONG_SIDE}" \
 JPEG_QUALITY="${COLOR_JPEG_QUALITY}" \
-python -u /app/images_iphone_color.py \
+python -u /app/images_device_color.py \
   --limit-listings "${PIPELINE_LIMIT_LISTINGS}" \
   --model "${MODEL_COLOR}" \
   --max-images-per-listing "${MAX_IMAGES_COLOR}"

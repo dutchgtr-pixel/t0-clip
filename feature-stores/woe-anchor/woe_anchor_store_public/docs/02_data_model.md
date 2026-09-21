@@ -45,7 +45,7 @@ Stores row-level scores (optional but useful):
 A deterministic banding view that produces the categorical “band_value” keys for each listing using
 **certified feature stores** as inputs:
 - `ml.socio_market_feature_store_train_v` (T0 safe, guarded)
-- `ml.iphone_image_features_unified_v1_train_v` (vision store, guarded)
+- `ml.device_image_features_unified_v1_train_v` (vision store, guarded)
 
 Outputs include:
 - `dsold_band`, `trust_tier`, `ship_band`, `sale_band`, `cond_band`, `dmg_ai_band`, `bat_band`

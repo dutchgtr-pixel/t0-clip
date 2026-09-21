@@ -27,7 +27,7 @@ The legacy TOM pipeline relies on objects that are **as-of-now** rather than **a
 The merged document describes feature joins without enforcing **SLA-based gating**. If image pipelines finish late, features can “appear later” for past rows unless gated.
 
 **Fix implemented**:
-- `ml.iphone_image_features_unified_t0_v1_mv` adds `img_within_sla` and nulls out image feature columns when not within SLA.
+- `ml.device_image_features_unified_t0_v1_mv` adds `img_within_sla` and nulls out image feature columns when not within SLA.
 - `ml.v_damage_fusion_features_v2_scored_t0_v1_mv` gates damage features on the same SLA condition.
 
 ### 1.3 Labels leaking into feature closure

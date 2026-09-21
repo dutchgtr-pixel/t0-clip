@@ -104,7 +104,7 @@ WITH img_prof AS (
         AND visible_damage_level >= 8
     ) AS img_n_ge8_real_q2
 
-  FROM ml.iphone_image_features_v1
+  FROM ml.device_image_features_v1
   GROUP BY 1,2
 ),
 batt_prof AS (
@@ -120,7 +120,7 @@ batt_prof AS (
     COUNT(*) FILTER (
       WHERE feature_version=1 AND battery_screenshot=TRUE AND battery_health_pct_img BETWEEN 50 AND 100
     ) AS batt_img_hits
-  FROM ml.iphone_image_features_v1
+  FROM ml.device_image_features_v1
   GROUP BY 1,2
 ),
 base AS (
@@ -185,7 +185,7 @@ base AS (
     COALESCE((l.damage_ai_json->'decision'->'meta'->>'non_oem')::boolean,false)        AS txt_non_oem,
     COALESCE((l.damage_ai_json->'decision'->'meta'->>'battery_clamp')::boolean,false)  AS txt_battery_clamp
 
-  FROM "iPhone".iphone_listings l
+  FROM "device".device_listings l
   LEFT JOIN img_prof  i ON i.generation=l.generation AND i.listing_id=l.listing_id
   LEFT JOIN batt_prof b ON b.generation=l.generation AND b.listing_id=l.listing_id
   WHERE l.spam IS NULL

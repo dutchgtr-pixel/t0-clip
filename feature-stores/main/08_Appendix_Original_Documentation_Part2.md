@@ -10,7 +10,7 @@ Continuation of the original merged documentation. The only edits applied are **
   ai.storage_gb_fixed_ai::int                                     AS ai_storage_gb_fixed
 
 FROM ml.tom_features_v1_enriched_speed_mv AS b
-LEFT JOIN "iPhone".iphone_ai_enrich AS ai
+LEFT JOIN "device".device_ai_enrich AS ai
   USING (listing_id);
 
 -- Unique index to allow CONCURRENT refresh on this read layer
@@ -283,7 +283,7 @@ SELECT e.listing_id,
        ai.repair_provider, ai.negotiability_ai, ai.lqs_textonly, ai.opening_offer_nok,
        ai.storage_gb_fixed_ai, ai.updated_at
 FROM ml.tom_features_v1_enriched_ai_clean_mv e
-JOIN "iPhone".iphone_ai_enrich ai USING (listing_id)
+JOIN "device".device_ai_enrich ai USING (listing_id)
 LIMIT 50;
 
 
@@ -315,7 +315,7 @@ That’s the updated doc: you can save this as your new
 
 all your existing enriched + speed features (from the base view), and
 
-the AI-derived features from iphone_ai_enrich.
+the AI-derived features from device_ai_enrich.
 Phase-1 Architecture — Leak-Safe Feature Store (Postgres)
 Design goals (what this does)
 
@@ -331,7 +331,7 @@ Fast to refresh, easy to reason about, easy to extend.
 
 Visual wireframe (dataflow)
               ┌───────────────────────────────┐
-              │  "iPhone".iphone_listings     │   (raw source; spam filtered everywhere)
+              │  "device".device_listings     │   (raw source; spam filtered everywhere)
               └───────────────┬───────────────┘
                               │
                               │  t₀ = edited_date, spam IS NULL
@@ -376,7 +376,7 @@ Visual wireframe (dataflow)
 What each MV/view contains (and why)
 A) ml.tom_features_v1_mv — base feature snapshot @ t₀
 
-Input: "iPhone".iphone_listings filtered with spam IS NULL.
+Input: "device".device_listings filtered with spam IS NULL.
 
 Logic: DISTINCT ON (listing_id) by earliest edited_date (t₀).
 
@@ -393,7 +393,7 @@ Indexes: (listing_id) unique, (edited_date, generation, storage_gb) for PIT join
 
 B) ml.tom_labels_v1_mv — leak-safe labels
 
-Input: A’s listing_id/edited_date + "iPhone".iphone_listings outcomes.
+Input: A’s listing_id/edited_date + "device".device_listings outcomes.
 
 Logic:
 sold_event = sold_date IS NOT NULL
@@ -497,7 +497,7 @@ listing_id is key only (never a model feature).
 
 Troubleshooting & gotchas (you hit most of these)
 
-Typos: table is "iPhone".iphone_listings (not iphone_lis etc.).
+Typos: table is "device".device_listings (not device_lis etc.).
 
 EXTRACT not EXPLICIT for epoch; no inline comments on SQL lines (psql will choke).
 
@@ -531,7 +531,7 @@ Add 30/60-day anchors (copy the lateral block; change interval).
 
 Add generation-only fallback if sold_cnt_30d is small; wrap with COALESCE.
 
-Add enrichment fields from iphone_ai_enrich with time guard (e.updated_at <= edited_date) to avoid leakage.
+Add enrichment fields from device_ai_enrich with time guard (e.updated_at <= edited_date) to avoid leakage.
 
 Add NLP (SVD/SBERT) on title/description to create real numeric features; then add those derived columns to the contract.
 
@@ -1133,7 +1133,7 @@ $env:WORKERS = '64'
 $env:QPS = '1.5'
 $env:LOG_LEVEL = 'INFO' 
 $env:PYTHONUNBUFFERED = '1' 
-python .\iphone_ai_enrich_upserter.py
+python .\device_ai_enrich_upserter.py
 
 
 post sold command 
@@ -1348,7 +1348,7 @@ $env:WORKERS = '64'
 $env:QPS = '1.5'
 $env:LOG_LEVEL = 'INFO' 
 $env:PYTHONUNBUFFERED = '1' 
-python .\iphone_ai_enrich_upserter.py
+python .\device_ai_enrich_upserter.py
 
 
 

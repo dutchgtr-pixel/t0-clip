@@ -36,7 +36,7 @@ WITH t0 AS (
          l.postal_code,
          l.title,                   -- raw text (store-only; not a model feature yet)
          l.description              -- raw text (store-only; not a model feature yet)
-  FROM "iPhone".iphone_listings l
+  FROM "device".device_listings l
   WHERE l.spam IS NULL
   ORDER BY l.listing_id, l.edited_date ASC NULLS LAST
 )
@@ -81,13 +81,13 @@ WITH base AS (
 ),
 sold AS (
   SELECT listing_id, MIN(sold_date) AS sold_date
-  FROM   "iPhone".iphone_listings
+  FROM   "device".device_listings
   WHERE  spam IS NULL AND sold_date IS NOT NULL
   GROUP BY listing_id
 ),
 last_seen AS (
   SELECT listing_id, MAX(last_seen) AS last_seen
-  FROM   "iPhone".iphone_listings
+  FROM   "device".device_listings
   WHERE  spam IS NULL
   GROUP BY listing_id
 )
@@ -143,7 +143,7 @@ SELECT
   storage_gb,
   sold_date::date AS sold_day,
   EXTRACT(EPOCH FROM (sold_date - edited_date))/3600.0 AS duration_hours
-FROM "iPhone".iphone_listings
+FROM "device".device_listings
 WHERE spam IS NULL
   AND sold_date IS NOT NULL
   AND edited_date IS NOT NULL;
@@ -167,7 +167,7 @@ SELECT
   edited_date::date AS ask_day,
   PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY price) AS ask_median_price,
   COUNT(*) AS ask_cnt
-FROM "iPhone".iphone_listings
+FROM "device".device_listings
 WHERE spam IS NULL
   AND edited_date IS NOT NULL
 GROUP BY generation, storage_gb, edited_date::date;
@@ -190,7 +190,7 @@ SELECT
   storage_gb,
   sold_date::date AS sold_day,
   COALESCE(real_sold_price, sold_price) AS sold_price
-FROM "iPhone".iphone_listings
+FROM "device".device_listings
 WHERE spam IS NULL
   AND sold_date IS NOT NULL
   AND storage_gb IS NOT NULL
@@ -706,7 +706,7 @@ You can now train against ml.tom_train_base_v1_mv (+ enriched), assert the contr
 
 -- Create a spam-clean materialized view for training/inference.
 -- It pulls rows from your enriched read layer and excludes any listing
--- whose raw "spam" flag (text) in "iPhone".iphone_listings resolves to TRUE
+-- whose raw "spam" flag (text) in "device".device_listings resolves to TRUE
 -- under your semantics (wtb/wanted/duplicate-junk/junk/bundled/below13, etc.).
 
 CREATE MATERIALIZED VIEW IF NOT EXISTS ml.tom_features_v1_enriched_clean_mv AS
@@ -714,7 +714,7 @@ SELECT e.*
 FROM ml.tom_features_v1_enriched_mv e
 WHERE NOT EXISTS (
   SELECT 1
-  FROM "iPhone".iphone_listings l
+  FROM "device".device_listings l
   WHERE l.listing_id = e.listing_id
     AND (
       CASE
@@ -748,7 +748,7 @@ CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS tom_features_v1_enriched_clean_mv
 --
 -- Expect 0 spam-present rows:
 -- WITH spam_raw AS (
---   SELECT listing_id FROM "iPhone".iphone_listings l
+--   SELECT listing_id FROM "device".device_listings l
 --   WHERE CASE
 --           WHEN l.spam IS NULL THEN FALSE
 --           WHEN trim(lower(l.spam)) IN ('t','true','1','yes','y','spam','wtb','wanted','duplicate-junk','junk','bundled','below13') THEN TRUE
@@ -768,7 +768,7 @@ Added a spam-clean materialized view:
 
 ml.tom_features_v1_enriched_clean_mv
 
-It selects from your enriched read layer and excludes spam/wtb/duplicate/bundled/below13 rows using your raw "iPhone".iphone_listings.spam text flag.
+It selects from your enriched read layer and excludes spam/wtb/duplicate/bundled/below13 rows using your raw "device".device_listings.spam text flag.
 
 Enforced uniqueness on (listing_id) so we can REFRESH CONCURRENTLY.
 
@@ -813,7 +813,7 @@ SELECT e.*
 FROM ml.tom_features_v1_enriched_mv e
 WHERE NOT EXISTS (
   SELECT 1
-  FROM "iPhone".iphone_listings l
+  FROM "device".device_listings l
   WHERE l.listing_id = e.listing_id
     AND (
       CASE
@@ -895,7 +895,7 @@ FROM ml.tom_features_v1_enriched_clean_mv;
 -- Spot-check: spam rows excluded (should be 0)
 WITH spam_raw AS (
   SELECT listing_id
-  FROM "iPhone".iphone_listings l
+  FROM "device".device_listings l
   WHERE CASE
           WHEN l.spam IS NULL THEN FALSE
           WHEN trim(lower(l.spam)) IN (
@@ -975,7 +975,7 @@ AI‑augmented read view ml.tom_features_v1_enriched_ai_clean_mv
 
 Built on top of your spam‑clean, unique base read view ml.tom_features_v1_enriched_clean_mv.
 
-Joins to "iPhone".iphone_ai_enrich and derives 25 AI features (one‑hots, 0/1 bins, normalized numeric, and a ratio).
+Joins to "device".device_ai_enrich and derives 25 AI features (one‑hots, 0/1 bins, normalized numeric, and a ratio).
 
 Unique on listing_id so you can REFRESH CONCURRENTLY like your other read layers.
 
@@ -1015,7 +1015,7 @@ Paste this block as‑is. It drops & recreates the MV, adds a unique index on li
 
 -- =====================================================================
 -- AI-augmented read view (built on the spam-clean, unique-by-listing_id view)
--- Produces 25 AI features from "iPhone".iphone_ai_enrich and base price.
+-- Produces 25 AI features from "device".device_ai_enrich and base price.
 -- =====================================================================
 
 DROP MATERIALIZED VIEW IF EXISTS ml.tom_features_v1_enriched_ai_clean_mv CASCADE;
@@ -1072,7 +1072,7 @@ SELECT
   ai.storage_gb_fixed_ai::int                                     AS ai_storage_gb_fixed
 
 FROM ml.tom_features_v1_enriched_clean_mv AS b
-LEFT JOIN "iPhone".iphone_ai_enrich AS ai
+LEFT JOIN "device".device_ai_enrich AS ai
   USING (listing_id);
 
 -- Unique index to allow CONCURRENT refresh on this read layer
@@ -1099,12 +1099,12 @@ All one‑hots/booleans are 0/1 ints (easier for most trainers).
 
 Ratios are clipped (0..5) for sanity; undefined denominators produce NULL (not 0).
 
-"iPhone".iphone_ai_enrich column names match the catalog you listed (sale_mode, owner_type, can_ship, pickup_only, repair_provider, negotiability_ai, urgency_ai, lqs_textonly, opening_offer_nok, storage_gb_fixed_ai, …).
+"device".device_ai_enrich column names match the catalog you listed (sale_mode, owner_type, can_ship, pickup_only, repair_provider, negotiability_ai, urgency_ai, lqs_textonly, opening_offer_nok, storage_gb_fixed_ai, …).
 
 Optional time‑guard (commented design)
 If/when you want “as‑of” semantics (e.g., only use AI rows with ai.updated_at <= edited_date), add the predicate to the JOIN:
 
-LEFT JOIN "iPhone".iphone_ai_enrich ai
+LEFT JOIN "device".device_ai_enrich ai
   ON ai.listing_id = b.listing_id
  AND (ai.updated_at IS NULL OR ai.updated_at <= b.edited_date)
 
@@ -1374,7 +1374,7 @@ SELECT e.listing_id,
        ai.repair_provider, ai.negotiability_ai, ai.lqs_textonly, ai.opening_offer_nok,
        ai.storage_gb_fixed_ai, ai.updated_at
 FROM ml.tom_features_v1_enriched_ai_clean_mv e
-JOIN "iPhone".iphone_ai_enrich ai USING (listing_id)
+JOIN "device".device_ai_enrich ai USING (listing_id)
 WHERE e.listing_id IN (432361614, 432364948, 432099498);
 
 
@@ -1387,7 +1387,7 @@ SELECT
   COUNT(*) FILTER (WHERE ai.updated_at  > b.edited_date) AS n_ai_after_edit,
   COUNT(*) FILTER (WHERE ai.updated_at IS NULL)          AS n_ai_null
 FROM ml.tom_features_v1_enriched_clean_mv b
-LEFT JOIN "iPhone".iphone_ai_enrich ai USING (listing_id);
+LEFT JOIN "device".device_ai_enrich ai USING (listing_id);
 
 7) How to change things later (safe edits)
 
@@ -1486,7 +1486,7 @@ All your original enriched features (ptv_final, anchors, etc.)
 
 Speed anchors: speed_fast7_anchor, speed_fast24_anchor, speed_slow21_anchor, speed_median_hours_ptv, speed_n_eff_ptv from ml.tom_speed_anchor_v1_mv.
 
-AI layer: joins "iPhone".iphone_ai_enrich and derives ~25 AI features:
+AI layer: joins "device".device_ai_enrich and derives ~25 AI features:
 
 Sale mode / owner type / shipping / repair provider one-hots
 
@@ -1516,7 +1516,7 @@ Paste this whole block into psql (or your schema migration) to recreate the AI+s
 -- AI+Speed augmented read view (spam-clean, unique-by-listing_id)
 -- Base: ml.tom_features_v1_enriched_speed_mv
 --  • includes all enriched + speed_* anchors
--- AI: joins "iPhone".iphone_ai_enrich and adds ~25 AI features.
+-- AI: joins "device".device_ai_enrich and adds ~25 AI features.
 -- =====================================================================
 
 DROP MATERIALIZED VIEW IF EXISTS ml.tom_features_v1_enriched_ai_clean_mv CASCADE;

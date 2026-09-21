@@ -5,7 +5,7 @@
 // This program:
 //   - Selects sold listings from Postgres (schema/table names configurable).
 //   - Enforces a minimum age (default 7 days) before taking a snapshot.
-//   - Fetches listing payloads via a pluggable marketplace adapter (no site-specific scraping).
+//   - Fetches listing payloads via a pluggable marketplace adapter (no site-specific collection).
 //   - Inserts one audit snapshot per listing_id/day_offset.
 //
 // Intentionally omitted from the public version:

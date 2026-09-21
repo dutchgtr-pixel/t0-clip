@@ -82,14 +82,14 @@ def qname(schema: str, table: str) -> str:
     return f"{qident(schema)}.{qident(table)}"
 
 
-LISTINGS_SCHEMA = os.getenv("LISTINGS_SCHEMA", "iPhone")
-LISTINGS_TABLE = os.getenv("LISTINGS_TABLE", "iphone_listings")
+LISTINGS_SCHEMA = os.getenv("LISTINGS_SCHEMA", "device")
+LISTINGS_TABLE = os.getenv("LISTINGS_TABLE", "device_listings")
 
-ASSETS_SCHEMA = os.getenv("ASSETS_SCHEMA", "iPhone")
-ASSETS_TABLE = os.getenv("ASSETS_TABLE", "iphone_image_assets")
+ASSETS_SCHEMA = os.getenv("ASSETS_SCHEMA", "device")
+ASSETS_TABLE = os.getenv("ASSETS_TABLE", "device_image_assets")
 
 ML_SCHEMA = os.getenv("ML_SCHEMA", "ml")
-IMAGE_FEATURES_TABLE = os.getenv("IMAGE_FEATURES_TABLE", "iphone_image_features_v1")
+IMAGE_FEATURES_TABLE = os.getenv("IMAGE_FEATURES_TABLE", "device_image_features_v1")
 VECTORS_TABLE = os.getenv("VECTORS_TABLE", "img_vec512_v1")
 
 LISTINGS_FQN = qname(LISTINGS_SCHEMA, LISTINGS_TABLE)

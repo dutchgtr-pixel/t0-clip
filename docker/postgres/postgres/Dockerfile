@@ -37,7 +37,7 @@ RUN set -eux; \
 # Enable pg_cron on startup
 RUN echo "shared_preload_libraries = 'pg_cron'" \
        >> /usr/share/postgresql/postgresql.conf.sample; \
-    echo "cron.database_name = 'scrapes'" \
+    echo "cron.database_name = 'observations'" \
        >> /usr/share/postgresql/postgresql.conf.sample
 
 USER postgres

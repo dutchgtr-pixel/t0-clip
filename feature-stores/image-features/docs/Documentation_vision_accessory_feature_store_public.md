@@ -1,7 +1,7 @@
-ml.iphone_image_accessory_features_v1 — Vision Accessory Feature Store (v1)
+ml.device_image_accessory_features_v1 — Vision Accessory Feature Store (v1)
 Purpose
 
-ml.iphone_image_accessory_features_v1 is a listing-level (one row per (generation, listing_id)) feature store that aggregates image-derived accessory signals produced by the vision/LLM accessory labeler into stable features for:
+ml.device_image_accessory_features_v1 is a listing-level (one row per (generation, listing_id)) feature store that aggregates image-derived accessory signals produced by the vision/LLM accessory labeler into stable features for:
 
 survival/TOM modeling
 
@@ -21,7 +21,7 @@ remain live-updating as new images and new per-image labels arrive
 
 Grain and Keys
 
-Grain: one row per iPhone listing with images ((generation, listing_id)) as observed in "iPhone".iphone_image_assets.
+Grain: one row per device listing with images ((generation, listing_id)) as observed in "device".device_image_assets.
 
 Primary keys (logical):
 
@@ -34,7 +34,7 @@ Notes:
 listing_id is retained for joins only. Do not feed it as a feature to ML models.
 
 Source Tables and Dependencies
-1) "iPhone".iphone_image_assets (asset inventory)
+1) "device".device_image_assets (asset inventory)
 
 Used to determine the listing universe and image counts:
 
@@ -42,7 +42,7 @@ Used to determine the listing universe and image counts:
 
 n_assets = COUNT(*) per listing
 
-2) ml.iphone_image_features_v1 (per-image LLM vision outputs)
+2) ml.device_image_features_v1 (per-image LLM vision outputs)
 
 Used for all accessory signals and pipeline markers, filtered to:
 
@@ -72,19 +72,19 @@ This is a VIEW (not a materialized view).
 
 No refresh job is required for the view.
 
-As new rows arrive in "iPhone".iphone_image_assets:
+As new rows arrive in "device".device_image_assets:
 
 new (generation, listing_id) will appear in the view
 
-n_assets increases for existing listings with newly scraped images
+n_assets increases for existing listings with newly observed images
 
-As the accessory labeler writes into ml.iphone_image_features_v1:
+As the accessory labeler writes into ml.device_image_features_v1:
 
 aggregates update automatically on next query
 
 Row count behavior:
 
-Row count increases only when new listings are added to iphone_image_assets.
+Row count increases only when new listings are added to device_image_assets.
 
 Row count does not increase when more images are added to an existing listing.
 
@@ -122,9 +122,9 @@ B) Coverage / Completeness
 
 These describe what the pipeline actually processed and how complete the per-image feature table is relative to assets.
 
-n_assets (bigint): number of image assets for this listing (from iphone_image_assets).
+n_assets (bigint): number of image assets for this listing (from device_image_assets).
 
-n_feat_rows (bigint): number of rows in ml.iphone_image_features_v1 for this listing (feature_version=1).
+n_feat_rows (bigint): number of rows in ml.device_image_features_v1 for this listing (feature_version=1).
 
 n_acc_done_imgs (bigint): number of images for which accessories_done = TRUE.
 
@@ -308,19 +308,19 @@ QA / Monitoring Queries
 1) View row count should equal asset listing count
 WITH asset_listings AS (
   SELECT generation, listing_id
-  FROM "iPhone".iphone_image_assets
+  FROM "device".device_image_assets
   GROUP BY 1,2
 )
 SELECT
   (SELECT COUNT(*) FROM asset_listings) AS listings_with_assets,
-  (SELECT COUNT(*) FROM ml.iphone_image_accessory_features_v1) AS rows_in_view;
+  (SELECT COUNT(*) FROM ml.device_image_accessory_features_v1) AS rows_in_view;
 
 2) Detect “processed but outputs missing” (Gen13 anomaly)
 SELECT generation,
        COUNT(*) AS listings,
        COUNT(*) FILTER (WHERE acc_done_but_all_outputs_null) AS bad,
        ROUND(100.0 * COUNT(*) FILTER (WHERE acc_done_but_all_outputs_null) / NULLIF(COUNT(*),0), 2) AS pct_bad
-FROM ml.iphone_image_accessory_features_v1
+FROM ml.device_image_accessory_features_v1
 GROUP BY 1
 ORDER BY 1;
 
@@ -331,19 +331,19 @@ SELECT
   AVG(is_incomplete::int) AS p_incomplete,
   AVG(hit_cap_8::int) AS p_cap8,
   AVG(hit_cap_16::int) AS p_cap16
-FROM ml.iphone_image_accessory_features_v1
+FROM ml.device_image_accessory_features_v1
 GROUP BY 1
 ORDER BY 1;
 
 Versioning and Governance
 
-This store is tied to ml.iphone_image_features_v1.feature_version = 1.
+This store is tied to ml.device_image_features_v1.feature_version = 1.
 
 If you change prompts/model logic in a way that changes semantics, you should:
 
 write new outputs under feature_version = 2
 
-create ml.iphone_image_accessory_features_v2 filtering to v2
+create ml.device_image_accessory_features_v2 filtering to v2
 
 Do not silently change semantics of v1.
 

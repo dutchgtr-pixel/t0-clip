@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-images_iphone_color.py
+images_device_color.py
 
-Image BODY COLOR + MODEL CONSISTENCY analysis for iPhone listings using GPT-5 (nano).
+Image BODY COLOR + MODEL CONSISTENCY analysis for device listings using GPT-5 (nano).
 
 The model is used for:
 - body_color_name
@@ -16,16 +16,16 @@ The model is used for:
 This script is designed to be COMPLEMENTARY to:
 - image_damage_analysis.py (mini)  → damage + quality + protector
 - analyze_images_gpt5nano.py       → accessories + battery + box_state
-- images_iphone_color.py (nano)    → body color ONLY + model consistency / below-13 detection
+- images_device_color.py (nano)    → body color ONLY + model consistency / below-13 detection
 
 IMPORTANT:
 - This script NEVER writes or updates damage-related or accessory columns.
-- It ONLY inserts/updates body_color_* fields in ml.iphone_image_features_v1.
+- It ONLY inserts/updates body_color_* fields in ml.device_image_features_v1.
 - It may ALSO:
-    • update the MODEL string in "iPhone".iphone_listings when the LLM
+    • update the MODEL string in "device".device_listings when the LLM
       flags a clear 13–17 model mismatch and we accept the fix.
-    • mark spam='below13' when the LLM (model_check) clearly indicates a pre–13 or non-iPhone device.
-- All model / spam evidence is recorded in ml.iphone_image_features_v1 via:
+    • mark spam='below13' when the LLM (model_check) clearly indicates a pre–13 or non-device device.
+- All model / spam evidence is recorded in ml.device_image_features_v1 via:
     • model_fix_old_model
     • model_fix_new_model
     • model_fix_reason
@@ -33,7 +33,7 @@ IMPORTANT:
     • model_fix_at (timestamp)
 - It ENFORCES that body_color_name must be one of the official Apple colors
   for the given generation + variant (base vs pro). Anything else is nulled.
-- It uses color_done/color_done_at in ml.iphone_image_features_v1 to avoid
+- It uses color_done/color_done_at in ml.device_image_features_v1 to avoid
   re-processing listings and wasting tokens.
 """
 
@@ -92,7 +92,7 @@ client = OpenAI(
 
 # SYSTEM PROMPT LEFT EMPTY ON PURPOSE – YOU PASTE IT YOURSELF
 SYSTEM_PROMPT = """
-You are an assistant that labels iPhone listing photos for resale analytics.
+You are an assistant that labels device listing photos for resale analytics.
 
 Your PRIMARY job in this task:
 - For EACH IMAGE, label ONLY the FACTORY BODY COLOR of the phone.
@@ -100,16 +100,16 @@ Your PRIMARY job in this task:
 Your SECONDARY job:
 - Check if the MODEL string from the database is obviously wrong.
 - This includes three kinds of mistakes:
-    • wrong variant inside the same generation (e.g. "iPhone 13" vs "iPhone 13 Pro Max"),
-    • wrong generation (e.g. listing is actually pre–13: iPhone 11 / 12 / XR / XS / SE / 8 / 7),
-    • not an iPhone at all.
+    • wrong variant inside the same generation (e.g. "device 13" vs "device 13 Pro Max"),
+    • wrong generation (e.g. listing is actually pre–13: device 11 / 12 / XR / XS / SE / 8 / 7),
+    • not an device at all.
 - If there is a CLEAR mismatch, suggest a corrected model label in a top-level model_check object.
 - If you are NOT clearly sure, you MUST NOT suggest any change (leave inferred_model = null).
 
 You will get:
-- A generation number (iPhone model generation, e.g. 13, 14, 17)
+- A generation number (device model generation, e.g. 13, 14, 17)
 - A marketplace listing id (listing_id)
-- A MODEL string from the database (e.g. "iPhone 13", "iPhone 13 Pro Max", "UNKNOWN_MODEL")
+- A MODEL string from the database (e.g. "device 13", "device 13 Pro Max", "UNKNOWN_MODEL")
 - A title and description from the listing text
 - For each image:
     - an image_index (0-based)
@@ -121,7 +121,7 @@ Then, only when there is a possible conflict, use the photos (camera layout, phy
 - mini / base / Plus
 - Pro / Pro Max
 - pre–13 models (11, 12, XR, XS, X, SE, 8, 7…)
-- non-iPhone devices.
+- non-device devices.
 
 When TITLE + DESCRIPTION and MODEL + GENERATION look consistent and nothing contradicts them,
 you SHOULD assume they are correct and keep your model_check analysis minimal (short reason, no change).
@@ -133,11 +133,11 @@ PART 1 – OFFICIAL APPLE BODY COLORS (PRIMARY TASK)
 ======================================================================
 
 Your job in this part:
-- For EACH IMAGE, label ONLY the Apple factory BODY COLOR of the iPhone (back glass / frame).
+- For EACH IMAGE, label ONLY the Apple factory BODY COLOR of the device (back glass / frame).
 - You MUST NOT label accessories, boxes, chargers, damage, or anything else.
 - Focus solely on the phone body color signal as shipped from the factory.
 
-The "body" means the actual iPhone glass / metal:
+The "body" means the actual device glass / metal:
 - back glass panel,
 - exposed metal frame.
 
@@ -151,8 +151,8 @@ Do NOT use the color of:
 Use the listing title, description, and per-image captions as SOFT hints, but ALWAYS follow the pixels when you can see the body clearly.
 
 IMPORTANT:
-- The color sets below apply ONLY to iPhone generations 13–17.
-- If you conclude from text/images that the device is pre–13 or not an iPhone, you MUST NOT force it into these color sets.
+- The color sets below apply ONLY to device generations 13–17.
+- If you conclude from text/images that the device is pre–13 or not an device, you MUST NOT force it into these color sets.
   In that situation, set body_color_name = null and body_color_key = null for that image, and explain why in model_check.reason.
 
 Generation (13–17) and MODEL string are hints about which official color set is valid. You must obey the official color sets below.
@@ -164,17 +164,17 @@ OFFICIAL APPLE COLOR SETS (YOU MUST CHOOSE ONLY FROM THESE)
 First, determine if the phone is a BASE model or PRO model (for generations 13–17):
 
 - BASE: models like
-    "iPhone 13", "iPhone 13 mini",
-    "iPhone 14", "iPhone 14 Plus",
-    "iPhone 15", "iPhone 15 Plus",
-    "iPhone 16", "iPhone 16 Plus",
-    "iPhone 17", "iPhone 17 Plus".
+    "device 13", "device 13 mini",
+    "device 14", "device 14 Plus",
+    "device 15", "device 15 Plus",
+    "device 16", "device 16 Plus",
+    "device 17", "device 17 Plus".
 - PRO: models like
-    "iPhone 13 Pro", "iPhone 13 Pro Max",
-    "iPhone 14 Pro", "iPhone 14 Pro Max",
-    "iPhone 15 Pro", "iPhone 15 Pro Max",
-    "iPhone 16 Pro", "iPhone 16 Pro Max",
-    "iPhone 17 Pro", "iPhone 17 Pro Max".
+    "device 13 Pro", "device 13 Pro Max",
+    "device 14 Pro", "device 14 Pro Max",
+    "device 15 Pro", "device 15 Pro Max",
+    "device 16 Pro", "device 16 Pro Max",
+    "device 17 Pro", "device 17 Pro Max".
 
 Heuristic for BASE vs PRO:
 - If the MODEL string contains "Pro" or "Pro Max", treat it as PRO.
@@ -193,7 +193,7 @@ IMPORTANT (MODEL-CHECK TRIGGER WHEN COLOR CONTRADICTS VARIANT):
     • 2 rear camera lenses → BASE
 
 - If evidence supports PRO but db_model implies BASE, you MUST set model_check.inferred_model to a PRO model
-  within the SAME generation (e.g. "iPhone 13 Pro" or "iPhone 13 Pro Max" if size is clearly visible),
+  within the SAME generation (e.g. "device 13 Pro" or "device 13 Pro Max" if size is clearly visible),
   and set model_check.confidence >= 0.8 with a short reason referencing title/description and/or camera count.
 
 - Do NOT output an “illegal” color under the wrong variant. Instead, fix the model via model_check and then
@@ -211,28 +211,28 @@ IMPORTANT (MODEL-CHECK TRIGGER WHEN COLOR/MODEL IMPLIES A DIFFERENT GENERATION):
   
 GENERATION 17 SPECIAL CASE (PREVENT BAD “AIR → 17” FIXES)
 
-- “iPhone Air” is a DISTINCT model in the generation-17 lineup. In marketplace text it may appear as “iPhone 17 Air”.
-  Treat “iPhone 17 Air” as an alias of “iPhone Air”. Do NOT strip/remove “Air” just because it looks like a suffix.
+- “device Air” is a DISTINCT model in the generation-17 lineup. In marketplace text it may appear as “device 17 Air”.
+  Treat “device 17 Air” as an alias of “device Air”. Do NOT strip/remove “Air” just because it looks like a suffix.
 
 - Primary visual discriminator (use photos when needed):
-    • iPhone Air: SINGLE rear camera lens (Fusion Main system).
-    • iPhone 17 (base/Plus): TWO rear cameras (Dual Fusion system: Fusion Main + Fusion Ultra Wide).
-    • iPhone 17 Pro/Pro Max: THREE rear cameras.
+    • device Air: SINGLE rear camera lens (Fusion Main system).
+    • device 17 (base/Plus): TWO rear cameras (Dual Fusion system: Fusion Main + Fusion Ultra Wide).
+    • device 17 Pro/Pro Max: THREE rear cameras.
 
 - Official colors are DIFFERENT and must not trigger a bad model fix:
-    • iPhone Air colors: Sky Blue, Light Gold, Cloud White, Space Black.
-    • iPhone 17 colors: Lavender, Sage, Mist Blue, White, Black.
-  If the best-matching factory color is only valid for iPhone Air, that is evidence for iPhone Air — NOT a reason to “fix” the model by removing “Air”.
+    • device Air colors: Sky Blue, Light Gold, Cloud White, Space Black.
+    • device 17 colors: Lavender, Sage, Mist Blue, White, Black.
+  If the best-matching factory color is only valid for device Air, that is evidence for device Air — NOT a reason to “fix” the model by removing “Air”.
 
 - Guardrail for inferred_model:
-  Never change iPhone Air → iPhone 17 unless you have CLEAR evidence (explicit title/description naming iPhone 17 without “Air”, OR a clearly visible two-camera rear layout contradicting “Air”).
+  Never change device Air → device 17 unless you have CLEAR evidence (explicit title/description naming device 17 without “Air”, OR a clearly visible two-camera rear layout contradicting “Air”).
   If evidence is ambiguous (rear not shown, phone in case, blurry), inferred_model MUST be null.
 
   
   
 Example:
-- Provided generation=13 but device/text/color evidence indicates "iPhone 14 Pro" and color "Deep Purple":
-  set inferred_model="iPhone 14 Pro" (confidence >= 0.8) and use "Deep Purple" for body_color_name.
+- Provided generation=13 but device/text/color evidence indicates "device 14 Pro" and color "Deep Purple":
+  set inferred_model="device 14 Pro" (confidence >= 0.8) and use "Deep Purple" for body_color_name.
 
 
 
@@ -240,7 +240,7 @@ For each GENERATION + VARIANT, the ONLY allowed body_color_name values are:
 
 GENERATION 13:
 
-- BASE (iPhone 13, 13 mini):
+- BASE (device 13, 13 mini):
   • "PRODUCT(RED)"
   • "Starlight"
   • "Midnight"
@@ -248,7 +248,7 @@ GENERATION 13:
   • "Pink"
   • "Green"
 
-- PRO (iPhone 13 Pro, 13 Pro Max):
+- PRO (device 13 Pro, 13 Pro Max):
   • "Graphite"
   • "Gold"
   • "Silver"
@@ -257,7 +257,7 @@ GENERATION 13:
 
 GENERATION 14:
 
-- BASE (iPhone 14, 14 Plus):
+- BASE (device 14, 14 Plus):
   • "Midnight"
   • "Purple"
   • "Starlight"
@@ -265,7 +265,7 @@ GENERATION 14:
   • "Blue"
   • "Yellow"
 
-- PRO (iPhone 14 Pro, 14 Pro Max):
+- PRO (device 14 Pro, 14 Pro Max):
   • "Space Black"
   • "Silver"
   • "Gold"
@@ -273,14 +273,14 @@ GENERATION 14:
 
 GENERATION 15:
 
-- BASE (iPhone 15, 15 Plus):
+- BASE (device 15, 15 Plus):
   • "Black"
   • "Blue"
   • "Green"
   • "Yellow"
   • "Pink"
 
-- PRO (iPhone 15 Pro, 15 Pro Max):
+- PRO (device 15 Pro, 15 Pro Max):
   • "Black Titanium"
   • "White Titanium"
   • "Blue Titanium"
@@ -288,14 +288,14 @@ GENERATION 15:
 
 GENERATION 16:
 
-- BASE (iPhone 16, 16 Plus):
+- BASE (device 16, 16 Plus):
   • "Black"
   • "White"
   • "Pink"
   • "Teal"
   • "Ultramarine"
 
-- PRO (iPhone 16 Pro, 16 Pro Max):
+- PRO (device 16 Pro, 16 Pro Max):
   • "Black Titanium"
   • "White Titanium"
   • "Natural Titanium"
@@ -303,14 +303,14 @@ GENERATION 16:
 
 GENERATION 17:
 
-- BASE (iPhone 17, 17 Plus):
+- BASE (device 17, 17 Plus):
   • "Black"
   • "Lavender"
   • "Mist Blue"
   • "Sage"
   • "White"
 
-- PRO (iPhone 17 Pro, 17 Pro Max):
+- PRO (device 17 Pro, 17 Pro Max):
   • "Deep Blue"
   • "Cosmic Orange"
   • "Silver"
@@ -337,7 +337,7 @@ For each image, label:
       - If you clearly see the bare phone body (back or frame), choose the best matching official name.
       - If the body is not visible at all (inside a case OR only the screen is visible), use null.
       - If you are not confident enough to decide between multiple official colors, use null.
-      - If you conclude the device is NOT a generation 13–17 iPhone (e.g. it is an iPhone 11 or a Samsung),
+      - If you conclude the device is NOT a generation 13–17 device (e.g. it is an device 11 or a Samsung),
         you MUST set body_color_name = null and body_color_key = null. Do NOT guess a 13–17 color.
 
 - body_color_key: string or null
@@ -415,8 +415,8 @@ For each image, label:
               Treat this label text as strong evidence for color when the body color is obscured.
 
               IMPORTANT: Map label shorthand to the OFFICIAL allowed color strings for the inferred generation+variant:
-                - If inferred model is iPhone 14 Pro / 14 Pro Max and label says "Black" → output "Space Black".
-                - If inferred model is iPhone 15/16 Pro / Pro Max and label says "Black" → output "Black Titanium".
+                - If inferred model is device 14 Pro / 14 Pro Max and label says "Black" → output "Space Black".
+                - If inferred model is device 15/16 Pro / Pro Max and label says "Black" → output "Black Titanium".
                 - If label text exactly matches an official allowed color name for that generation+variant, use it as-is.
 
               Use confidence 0.70–0.95 when the label text is clearly readable; lower if partially readable.
@@ -430,7 +430,7 @@ For each image, label:
 
       - If only the case is visible and the phone body cannot be seen:
           • You may still guess the body color name IF the listing text clearly states the official color
-            (e.g. "iPhone 13 Midnight") and the visible case color is not misleading.
+            (e.g. "device 13 Midnight") and the visible case color is not misleading.
           • In that situation:
               body_color_from_case = true
               body_color_confidence should be low to medium (≤ 0.6).
@@ -465,36 +465,36 @@ High-level rules for conflicts:
 
 1) Wrong variant inside the same generation (13–17):
    Examples:
-   - MODEL = "iPhone 13" (base), TITLE contains "Pro Max", and photos show a triple-camera Pro module.
-   - MODEL = "iPhone 13 Pro" but TITLE says "iPhone 13" and images show a dual-camera base model.
+   - MODEL = "device 13" (base), TITLE contains "Pro Max", and photos show a triple-camera Pro module.
+   - MODEL = "device 13 Pro" but TITLE says "device 13" and images show a dual-camera base model.
 
    In these cases, you may infer a corrected MODEL like:
-   - "iPhone 13"
-   - "iPhone 13 Pro"
-   - "iPhone 13 Pro Max"
-   - "iPhone 14 Pro Max"
+   - "device 13"
+   - "device 13 Pro"
+   - "device 13 Pro Max"
+   - "device 14 Pro Max"
    etc., within the same generation.
 
 2) Device is clearly pre–13:
    - TITLE or DESCRIPTION explicitly mention older models, e.g.:
-       "iPhone 11", "11 Pro", "11 Pro Max",
-       "iPhone 12", "12 Pro", "12 Pro Max",
-       "iPhone XR", "iPhone XS", "iPhone X",
-       "iPhone SE", "iPhone 8", "iPhone 7", etc.
+       "device 11", "11 Pro", "11 Pro Max",
+       "device 12", "12 Pro", "12 Pro Max",
+       "device XR", "device XS", "device X",
+       "device SE", "device 8", "device 7", etc.
    - Camera layout and other details match those older devices.
    - This contradicts the provided generation (13–17) or the MODEL.
 
    In these cases:
-   - Set model_check.inferred_model to the best matching older model string, e.g. "iPhone 11 Pro Max".
+   - Set model_check.inferred_model to the best matching older model string, e.g. "device 11 Pro Max".
    - In model_check.reason, clearly state that this appears to be a pre–13 device.
    - For colors, you MUST NOT force a 13–17 color; prefer body_color_name = null and explain why in reason.
 
-3) Not an iPhone or unclear:
-   - TITLE / DESCRIPTION clearly describe a non-iPhone (e.g. Samsung, AirPods, MacBook), or
+3) Not an device or unclear:
+   - TITLE / DESCRIPTION clearly describe a non-device (e.g. Samsung, AirPods, MacBook), or
    - images clearly show a non-phone device, or completely unclear device type.
 
    In these cases:
-   - model_check.inferred_model may be something like "NOT_IPHONE" or a short description ("Samsung phone", "AirPods").
+   - model_check.inferred_model may be something like "NOT_DEVICE" or a short description ("Samsung phone", "AirPods").
    - Explain in model_check.reason.
    - For colors, you MUST set body_color_name = null and body_color_key = null.
 
@@ -506,48 +506,48 @@ Fields for model_check:
 - model_check.inferred_model: string or null
     Your best guess of the CORRECT model string if you believe db_model is wrong.
     This can be:
-      • a 13–17 model (e.g. "iPhone 13 Pro Max"),
-      • or a pre–13 model (e.g. "iPhone 11 Pro Max"),
-      • or "NOT_IPHONE".
+      • a 13–17 model (e.g. "device 13 Pro Max"),
+      • or a pre–13 model (e.g. "device 11 Pro Max"),
+      • or "NOT_DEVICE".
     If you do not see a clear mismatch, set this to null.
 
 - model_check.variant: string
     One of: "base", "pro", or "unknown".
-    This is your view of the device’s BASE vs PRO status based on text + images, when it is a 13–17 iPhone.
-    For pre–13 or non-iPhone, you should usually use "unknown".
+    This is your view of the device’s BASE vs PRO status based on text + images, when it is a 13–17 device.
+    For pre–13 or non-device, you should usually use "unknown".
 
 - model_check.confidence: float 0.0–1.0
     How confident you are that inferred_model is more correct than db_model.
-    - Only use ≥ 0.8 for very clear cases (e.g. title "iPhone 13 Pro Max", triple camera, Pro-only color Graphite, but db_model = "iPhone 13").
+    - Only use ≥ 0.8 for very clear cases (e.g. title "device 13 Pro Max", triple camera, Pro-only color Graphite, but db_model = "device 13").
     - If you set inferred_model to null, confidence should normally be 0.0 for the model change question.
 
 - model_check.reason: short string
     Short explanation, e.g.:
-    - "Title says 'iPhone 13 Pro Max', triple camera visible, Pro-only color Graphite, but db_model is 'iPhone 13'."
+    - "Title says 'device 13 Pro Max', triple camera visible, Pro-only color Graphite, but db_model is 'device 13'."
     - "Title says 'Strøken 11 pro Max 256 gb'; camera layout matches 11 Pro Max; gen/model suggest 13, so this appears pre–13."
     - "Title and images match db_model; no fix needed."
-    - "Title mentions Samsung S21 and images show a Samsung device, not an iPhone."
+    - "Title mentions Samsung S21 and images show a Samsung device, not an device."
 
 If there is NO clear mismatch:
 - Set model_check.inferred_model = null.
-- model_check.variant should reflect your best guess ("base"/"pro"/"unknown") for a 13–17 iPhone.
+- model_check.variant should reflect your best guess ("base"/"pro"/"unknown") for a 13–17 device.
 - model_check.confidence can be moderate for variant, but you are NOT changing the model.
 
 
 GENERATION 16 SPECIAL CASE (PREVENT BAD 16e ↔ 16 FIXES)
 
-- For generation=16, "iPhone 16e" is a valid variant label in our dataset. Do NOT change it just because it looks non-standard.
+- For generation=16, "device 16e" is a valid variant label in our dataset. Do NOT change it just because it looks non-standard.
 - Treat these title spellings as referring to 16e: "16e", "16 e", "16-e", "16E".
 
-Evidence rules for changing BETWEEN "iPhone 16e" and "iPhone 16/16 Plus":
+Evidence rules for changing BETWEEN "device 16e" and "device 16/16 Plus":
 - Camera count is the primary visual signal:
-  • 1 rear camera lens  → supports "iPhone 16e"
-  • 2 rear camera lenses → supports "iPhone 16" / "iPhone 16 Plus"
-  • 3 rear camera lenses → supports "iPhone 16 Pro" / "iPhone 16 Pro Max"
+  • 1 rear camera lens  → supports "device 16e"
+  • 2 rear camera lenses → supports "device 16" / "device 16 Plus"
+  • 3 rear camera lenses → supports "device 16 Pro" / "device 16 Pro Max"
 - You MAY propose inferred_model only if you have:
   (a) explicit title/description text that clearly names the variant, OR
   (b) a clearly visible rear camera count that contradicts db_model.
-- A generic box side that only says "iPhone" is NOT sufficient evidence for any model change.
+- A generic box side that only says "device" is NOT sufficient evidence for any model change.
   Only a readable label/sticker that explicitly states the model counts as box evidence.
 - If you cannot clearly see the rear camera count and text is ambiguous, inferred_model MUST be null.
 
@@ -562,7 +562,7 @@ FINAL RULES (VERY IMPORTANT)
 - For colors:
     • If you are not sure what color the phone is, lower body_color_confidence and prefer null for body_color_name/body_color_key.
     • You MUST NOT invent color names outside the official lists above.
-    • If you conclude the device is pre–13 or not an iPhone, set body_color_name = null and body_color_key = null and explain in model_check.reason.
+    • If you conclude the device is pre–13 or not an device, set body_color_name = null and body_color_key = null and explain in model_check.reason.
 - For model_check:
     • Only suggest inferred_model when the mismatch is CLEAR.
     • When in doubt, do NOT change the model; set inferred_model to null.
@@ -859,7 +859,7 @@ def get_candidate_listings(limit_listings: int) -> List[Tuple[int, int]]:
     """
     Return (generation, listing_id) pairs that:
     - are eligible listings,
-    - have at least 1 image in iphone_image_assets, and
+    - have at least 1 image in device_image_assets, and
     - have NOT yet had body_color_* processed (color_done = false).
 
     This prevents re-running the color analysis on listings
@@ -871,19 +871,19 @@ def get_candidate_listings(limit_listings: int) -> List[Tuple[int, int]]:
             """
             WITH eligible AS (
                 SELECT generation, listing_id
-                FROM "iPhone".iphone_listings
+                FROM "device".device_listings
                 WHERE COALESCE(status,'') IN ('live','sold','older21days')
                   AND spam IS NULL
                   AND url IS NOT NULL
             )
             SELECT e.generation, e.listing_id
             FROM eligible e
-            JOIN "iPhone".iphone_image_assets a
+            JOIN "device".device_image_assets a
               ON a.generation = e.generation
              AND a.listing_id    = e.listing_id
             WHERE NOT EXISTS (
                 SELECT 1
-                FROM ml.iphone_image_features_v1 f
+                FROM ml.device_image_features_v1 f
                 WHERE f.generation      = e.generation
                   AND f.listing_id         = e.listing_id
                   AND f.feature_version = %s
@@ -907,10 +907,10 @@ def get_listing_context(gen: int, listing_id: int) -> Dict[str, Any]:
 
     For SOLD rows:
       - Prefer PSA snapshots (title_snapshot, description_snapshot) when they
-        are longer / more informative than the main scraped title/description.
+        are longer / more informative than the main observed title/description.
 
     For LIVE / OLDER21DAYS:
-      - Use the main scraped title/description only.
+      - Use the main observed title/description only.
     """
 
     def _run(conn, cur):
@@ -924,12 +924,12 @@ def get_listing_context(gen: int, listing_id: int) -> Dict[str, Any]:
                 COALESCE(l.status, '')           AS status_main,
                 COALESCE(psa.title_snapshot, '') AS title_psa,
                 COALESCE(psa.description_snapshot, '') AS description_psa
-            FROM "iPhone".iphone_listings l
+            FROM "device".device_listings l
             LEFT JOIN LATERAL (
                 SELECT
                     title_snapshot,
                     description_snapshot
-                FROM "iPhone".post_sold_audit p
+                FROM "device".post_sold_audit p
                 WHERE p.listing_id = l.listing_id
                 ORDER BY p.snapshot_at DESC
                 LIMIT 1
@@ -961,7 +961,7 @@ def get_listing_context(gen: int, listing_id: int) -> Dict[str, Any]:
         description_psa,
     ) = row
 
-    # Start with main scraped values
+    # Start with main observed values
     title = title_main or ""
     description = description_main or ""
 
@@ -997,7 +997,7 @@ def get_images_for_listing(
         cur.execute(
             """
             SELECT image_index, storage_path, COALESCE(caption_text, '')
-            FROM "iPhone".iphone_image_assets
+            FROM "device".device_image_assets
             WHERE generation = %s AND listing_id = %s
             ORDER BY image_index
             LIMIT %s;
@@ -1048,7 +1048,7 @@ def encode_image_base64(path: str) -> str:
 
 
 # -------------------------------------------------------------------
-# BELOW-13 / NOT-IPHONe SPAM HANDLING (LLM-DRIVEN)
+# BELOW-13 / NOT-Device SPAM HANDLING (LLM-DRIVEN)
 # -------------------------------------------------------------------
 
 def mark_spam_below13(
@@ -1060,8 +1060,8 @@ def mark_spam_below13(
     extra: Optional[Dict[str, Any]] = None,
 ) -> bool:
     """
-    Mark spam='below13' in iphone_listings and record evidence
-    in ml.iphone_image_features_v1.model_fix_* for this listing.
+    Mark spam='below13' in device_listings and record evidence
+    in ml.device_image_features_v1.model_fix_* for this listing.
 
     Returns True if the spam mark succeeded (or was already below13).
     """
@@ -1073,7 +1073,7 @@ def mark_spam_below13(
         cur.execute(
             """
             SELECT model, spam
-            FROM "iPhone".iphone_listings
+            FROM "device".device_listings
             WHERE generation = %s
               AND listing_id    = %s
             FOR UPDATE;
@@ -1089,7 +1089,7 @@ def mark_spam_below13(
         # Update spam to 'below13'
         cur.execute(
             """
-            UPDATE "iPhone".iphone_listings
+            UPDATE "device".device_listings
             SET spam = 'below13'
             WHERE generation = %s
               AND listing_id    = %s;
@@ -1119,7 +1119,7 @@ def mark_spam_below13(
         # Record evidence on all feature rows for this listing.
         cur.execute(
             """
-            UPDATE ml.iphone_image_features_v1
+            UPDATE ml.device_image_features_v1
             SET model_fix_old_model = COALESCE(model_fix_old_model, %s),
                 model_fix_new_model = COALESCE(model_fix_new_model, %s),
                 model_fix_reason    = 'spam_below13',
@@ -1162,7 +1162,7 @@ def maybe_mark_below13_from_llm(
     confidence: float,
 ) -> bool:
     """
-    Below13 / non-iPhone mark based on LLM model_check.inferred_model.
+    Below13 / non-device mark based on LLM model_check.inferred_model.
     Does NOT change model; only spam + evidence.
     """
     ctx = data.get("_ctx") or {}
@@ -1240,7 +1240,7 @@ def maybe_apply_model_fix(
         # 1) Update the listings table (source of truth)
         cur.execute(
             """
-            UPDATE "iPhone".iphone_listings
+            UPDATE "device".device_listings
             SET model = %s
             WHERE generation = %s
               AND listing_id    = %s;
@@ -1251,7 +1251,7 @@ def maybe_apply_model_fix(
         # 2) Record the fix on all image rows for this listing / feature_version
         cur.execute(
             """
-            UPDATE ml.iphone_image_features_v1
+            UPDATE ml.device_image_features_v1
             SET model_fix_old_model = %s,
                 model_fix_new_model = %s,
                 model_fix_reason    = %s,
@@ -1346,9 +1346,9 @@ def maybe_apply_generation_fix(
     Apply a 13–17 generation correction when model_check.inferred_model implies a different generation.
 
     Updates (in one transaction):
-      - "iPhone".iphone_listings.generation + model
-      - "iPhone".iphone_image_assets.generation
-      - ml.iphone_image_features_v1.generation (moves any existing feature rows)
+      - "device".device_listings.generation + model
+      - "device".device_image_assets.generation
+      - ml.device_image_features_v1.generation (moves any existing feature rows)
 
     Also sets:
       - data["_effective_generation"] = new_gen
@@ -1365,7 +1365,7 @@ def maybe_apply_generation_fix(
     old_model = (ctx.get("model", "") or data.get("model_label", "") or "").strip()
 
     run_id = os.getenv("RUN_ID", None)
-    actor = "images_iphone_color.py"
+    actor = "images_device_color.py"
 
     evidence = {
         "type": "generation_fix",
@@ -1418,7 +1418,7 @@ def maybe_apply_generation_fix(
         cur.execute(
             """
             SELECT 1
-            FROM "iPhone".iphone_listings
+            FROM "device".device_listings
             WHERE generation = %s AND listing_id = %s
             FOR UPDATE;
             """,
@@ -1432,7 +1432,7 @@ def maybe_apply_generation_fix(
         cur.execute(
             """
             SELECT 1
-            FROM "iPhone".iphone_listings
+            FROM "device".device_listings
             WHERE generation = %s AND listing_id = %s;
             """,
             (new_gen, listing_id),
@@ -1444,7 +1444,7 @@ def maybe_apply_generation_fix(
         # 1) Move listing to new generation + update model
         cur.execute(
             """
-            UPDATE "iPhone".iphone_listings
+            UPDATE "device".device_listings
             SET generation = %s,
                 model      = %s
             WHERE generation = %s
@@ -1456,7 +1456,7 @@ def maybe_apply_generation_fix(
         # 2) Move image assets
         cur.execute(
             """
-            UPDATE "iPhone".iphone_image_assets
+            UPDATE "device".device_image_assets
             SET generation = %s
             WHERE generation = %s
               AND listing_id    = %s;
@@ -1467,7 +1467,7 @@ def maybe_apply_generation_fix(
         # 3) Move any existing feature rows
         cur.execute(
             """
-            UPDATE ml.iphone_image_features_v1
+            UPDATE ml.device_image_features_v1
             SET generation = %s
             WHERE generation = %s
               AND listing_id    = %s;
@@ -1478,7 +1478,7 @@ def maybe_apply_generation_fix(
         # 4) Record evidence on feature rows (if any exist now)
         cur.execute(
             """
-            UPDATE ml.iphone_image_features_v1
+            UPDATE ml.device_image_features_v1
             SET model_fix_old_model = %s,
                 model_fix_new_model = %s,
                 model_fix_reason    = %s,
@@ -1546,7 +1546,7 @@ def handle_model_check(gen: int, listing_id: int, data: Dict[str, Any]) -> None:
     """
     Use model_check to:
       - auto-fix 13–17 models, OR
-      - mark spam='below13' for pre–13 or non-iPhone devices.
+      - mark spam='below13' for pre–13 or non-device devices.
     """
     model_check = data.get("model_check") or {}
     if not model_check:
@@ -1817,7 +1817,7 @@ def insert_features_from_json(
     gen: int, listing_id: int, data: Dict[str, Any]
 ) -> int:
     """
-    Insert/update rows in ml.iphone_image_features_v1 from LLM JSON.
+    Insert/update rows in ml.device_image_features_v1 from LLM JSON.
 
     IMPORTANT:
     - This script ONLY writes body_color_* fields.
@@ -1878,7 +1878,7 @@ def insert_features_from_json(
         execute_batch(
             cur,
             """
-            INSERT INTO ml.iphone_image_features_v1 (
+            INSERT INTO ml.device_image_features_v1 (
                 generation,
                 listing_id,
                 image_index,
@@ -1897,7 +1897,7 @@ def insert_features_from_json(
                 body_color_key        = EXCLUDED.body_color_key,
                 body_color_confidence = EXCLUDED.body_color_confidence,
                 body_color_from_case  = EXCLUDED.body_color_from_case,
-                created_at            = LEAST(ml.iphone_image_features_v1.created_at, now())
+                created_at            = LEAST(ml.device_image_features_v1.created_at, now())
             ;
             """,
             rows,
@@ -1909,7 +1909,7 @@ def insert_features_from_json(
 
 def mark_color_done(gen: int, listing_id: int) -> None:
     """
-    Mark color_done/color_done_at in ml.iphone_image_features_v1
+    Mark color_done/color_done_at in ml.device_image_features_v1
     for this (generation, listing_id). This is the processed marker so we don't
     run the color script twice on the same listing.
     """
@@ -1917,7 +1917,7 @@ def mark_color_done(gen: int, listing_id: int) -> None:
     def _run(conn, cur):
         cur.execute(
             """
-            UPDATE ml.iphone_image_features_v1
+            UPDATE ml.device_image_features_v1
             SET color_done    = TRUE,
                 color_done_at = now()
             WHERE generation      = %s
@@ -1936,7 +1936,7 @@ def mark_color_done(gen: int, listing_id: int) -> None:
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Batch BODY COLOR + MODEL CHECK image analysis for iPhone listings using GPT-5 nano."
+        description="Batch BODY COLOR + MODEL CHECK image analysis for device listings using GPT-5 nano."
     )
     ap.add_argument(
         "--limit-listings",

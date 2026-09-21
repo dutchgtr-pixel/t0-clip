@@ -12,7 +12,7 @@ The key design choice is that population statistics (segment/color frequencies, 
 
 ## What is intentionally omitted
 
-- Any marketplace-specific connector logic, scraping logic, endpoints, HTML selectors, cookies, or request fingerprints.
+- Any marketplace-specific connector logic, collection logic, endpoints, HTML selectors, cookies, or request fingerprints.
 - Any real listing identifiers or example data derived from real listings.
 - Any secrets, credentials, tokens, DSNs, or private endpoints.
 

@@ -4,7 +4,7 @@
 """
 image_damage_analysis.py
 
-Image DAMAGE analysis for iPhone listings using GPT-5 (mini) via raw HTTP.
+Image DAMAGE analysis for device listings using GPT-5 (mini) via raw HTTP.
 
 The model is used ONLY for:
 - photo_quality_level (0–4)
@@ -18,7 +18,7 @@ The model is used ONLY for:
 CONTEXT:
 - It sees ONLY:
     • generation
-    • model (e.g. 'iPhone 16 Pro Max')
+    • model (e.g. 'device 16 Pro Max')
     • condition_score
     • title
     • description
@@ -33,7 +33,7 @@ IMPORTANT:
 
 CRITICAL:
 - This script NO LONGER touches any accessory fields or body_color_* fields.
-- It ONLY writes damage-related fields into ml.iphone_image_features_v1:
+- It ONLY writes damage-related fields into ml.device_image_features_v1:
     • photo_quality_level
     • background_clean_level
     • is_stock_photo
@@ -91,10 +91,10 @@ OPENAI_API_BASE = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 
 
 SYSTEM_PROMPT = """
-You are an assistant that labels iPhone listing photos for resale analytics, with a primary focus on DAMAGE SEVERITY.
+You are an assistant that labels device listing photos for resale analytics, with a primary focus on DAMAGE SEVERITY.
 
 You will get:
-- A generation number (iPhone model generation, e.g. 13, 14, 17)
+- A generation number (device model generation, e.g. 13, 14, 17)
 - A marketplace listing id (listing_id)
 - A title and description from the listing text
 - A CONDITION_SCORE (condition_score) for the listing (0.0, 0.5, 0.7, 0.9, 1.0, 0.2, or null)
@@ -697,7 +697,7 @@ FINAL STRUCTURAL DAMAGE ZONE (8–10):
           and you MUST choose 7 or lower instead.
 
 CRITICAL RULES ABOUT GLASS (BACK AND FRONT):
-    - iPhone front/back surfaces are GLASS. Glass does NOT "dent". It can scratch, chip, or crack, but it cannot
+    - device front/back surfaces are GLASS. Glass does NOT "dent". It can scratch, chip, or crack, but it cannot
       have a soft dent without cracks/chips.
     - A circular or fuzzy dark/light patch caused by lighting, reflection, smudge, or cloth texture
       is NOT a dent or severe scratch in the glass.
@@ -895,7 +895,7 @@ def get_candidate_listings(limit_listings: int) -> List[Tuple[int, int]]:
     """
     Return (generation, listing_id) pairs that:
     - are eligible listings,
-    - have at least 1 image in iphone_image_assets, and
+    - have at least 1 image in device_image_assets, and
     - have NOT yet had damage analysis processed (damage_done = false).
 
     This prevents re-running the damage analysis on listings
@@ -907,19 +907,19 @@ def get_candidate_listings(limit_listings: int) -> List[Tuple[int, int]]:
             """
             WITH eligible AS (
                 SELECT generation, listing_id
-                FROM "iPhone".iphone_listings
+                FROM "device".device_listings
                 WHERE COALESCE(status,'') IN ('live','sold','older21days')
                   AND spam IS NULL
                   AND url IS NOT NULL
             )
             SELECT e.generation, e.listing_id
             FROM eligible e
-            JOIN "iPhone".iphone_image_assets a
+            JOIN "device".device_image_assets a
               ON a.generation = e.generation
              AND a.listing_id    = e.listing_id
             WHERE NOT EXISTS (
                 SELECT 1
-                FROM ml.iphone_image_features_v1 f
+                FROM ml.device_image_features_v1 f
                 WHERE f.generation      = e.generation
                   AND f.listing_id         = e.listing_id
                   AND f.feature_version = %s
@@ -945,7 +945,7 @@ def get_listing_context(gen: int, listing_id: int) -> Dict[str, Any]:
     IMPORTANT:
     - For rows with status = 'sold', if a post_sold_audit snapshot exists,
       we prefer PSA title/description (title_snapshot, description_snapshot).
-    - Otherwise we fall back to iphone_listings.title / description.
+    - Otherwise we fall back to device_listings.title / description.
     - We DO NOT send any text-based damage decisions to the model.
     """
 
@@ -956,7 +956,7 @@ def get_listing_context(gen: int, listing_id: int) -> Dict[str, Any]:
                 SELECT
                     title_snapshot,
                     description_snapshot
-                FROM "iPhone".post_sold_audit
+                FROM "device".post_sold_audit
                 WHERE listing_id = %s
                   AND generation_ref = %s
                 ORDER BY snapshot_at DESC
@@ -975,7 +975,7 @@ def get_listing_context(gen: int, listing_id: int) -> Dict[str, Any]:
                 END AS description,
                 l.condition_score,
                 COALESCE(l.model,'') AS model
-            FROM "iPhone".iphone_listings AS l
+            FROM "device".device_listings AS l
             LEFT JOIN psa ON TRUE
             WHERE l.generation = %s
               AND l.listing_id    = %s;
@@ -1016,7 +1016,7 @@ def get_images_for_listing(
         cur.execute(
             """
             SELECT image_index, storage_path, COALESCE(caption_text, '')
-            FROM "iPhone".iphone_image_assets
+            FROM "device".device_image_assets
             WHERE generation = %s AND listing_id = %s
             ORDER BY image_index
             LIMIT %s;
@@ -1282,14 +1282,14 @@ def summarize_listing(
 
 
 # -------------------------------------------------------------------
-# INSERT INTO ml.iphone_image_features_v1 (DAMAGE-ONLY)
+# INSERT INTO ml.device_image_features_v1 (DAMAGE-ONLY)
 # -------------------------------------------------------------------
 
 def insert_features_from_json(
     gen: int, listing_id: int, data: Dict[str, Any]
 ) -> int:
     """
-    Insert rows into ml.iphone_image_features_v1 from LLM JSON.
+    Insert rows into ml.device_image_features_v1 from LLM JSON.
 
     DAMAGE-ONLY VERSION:
     - ONLY writes:
@@ -1339,7 +1339,7 @@ def insert_features_from_json(
         execute_batch(
             cur,
             """
-            INSERT INTO ml.iphone_image_features_v1 (
+            INSERT INTO ml.device_image_features_v1 (
                 generation,
                 listing_id,
                 image_index,
@@ -1370,7 +1370,7 @@ def insert_features_from_json(
                 has_screen_protector     = EXCLUDED.has_screen_protector,
                 damage_on_protector_only = EXCLUDED.damage_on_protector_only,
                 extra_json               = EXCLUDED.extra_json,
-                created_at               = LEAST(ml.iphone_image_features_v1.created_at, now())
+                created_at               = LEAST(ml.device_image_features_v1.created_at, now())
             ;
             """,
             rows,
@@ -1382,7 +1382,7 @@ def insert_features_from_json(
 
 def mark_damage_done(gen: int, listing_id: int) -> None:
     """
-    Mark damage_done / damage_done_at in ml.iphone_image_features_v1
+    Mark damage_done / damage_done_at in ml.device_image_features_v1
     for this (generation, listing_id). This is the processed marker so we don't
     run the damage script twice on the same listing.
     """
@@ -1390,7 +1390,7 @@ def mark_damage_done(gen: int, listing_id: int) -> None:
     def _run(conn, cur):
         cur.execute(
             """
-            UPDATE ml.iphone_image_features_v1
+            UPDATE ml.device_image_features_v1
             SET damage_done    = TRUE,
                 damage_done_at = now()
             WHERE generation      = %s
@@ -1409,7 +1409,7 @@ def mark_damage_done(gen: int, listing_id: int) -> None:
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Batch image DAMAGE analysis for iPhone listings using GPT-5 mini (damage 0–10 + protector flags)."
+        description="Batch image DAMAGE analysis for device listings using GPT-5 mini (damage 0–10 + protector flags)."
     )
     ap.add_argument(
         "--limit-listings",

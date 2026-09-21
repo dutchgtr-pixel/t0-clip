@@ -61,7 +61,7 @@ b0 AS (
     (u.listing_id IS NOT NULL)::int AS has_assets
 
   FROM ml.socio_market_feature_store_train_v f
-  LEFT JOIN ml.iphone_image_features_unified_v1_train_v u
+  LEFT JOIN ml.device_image_features_unified_v1_train_v u
     ON u.generation = f.generation
    AND u.listing_id    = f.listing_id
 ),

@@ -1,5 +1,44 @@
 ﻿# t0-clip
 
+## MarketNeural research release
+
+**MarketNeural** extends this repository with executable multimodal survival research,
+a preserved excerpt of the historical production network, and a full thesis-style
+[research manuscript](papers/marketneural/manuscript.md). The manuscript is a draft;
+the controlled real-data comparison remains pending.
+
+| Start here | Contents |
+|---|---|
+| [Reproduction guide](research/README.md) | Install, generate synthetic data, compare six model families, inspect results |
+| [Historical production reference](research/production_reference/README.md) | Exact selected model/loss definitions, source hashes, 17,145,736-parameter architecture metadata |
+| [Research protocol](docs/research/PROTOCOL.md) | Endpoints, temporal leakage controls, fair model comparisons and remaining experiments |
+| [Manuscript](papers/marketneural/manuscript.md) | Developed chapters, equations, historical evidence, limitations and references |
+| [Claim ledger](docs/research/CLAIM_LEDGER.md) | Supported claims and their evidential limits |
+| [Model card](docs/research/MODEL_CARD.md) / [Data card](docs/research/DATA_CARD.md) | Model scope, data contract, intended use and exclusions |
+
+The benchmark compares Kaplan-Meier, penalized Cox PH, random survival forest,
+gradient-boosted survival trees, a discrete-time MLP, and a compact Perceiver mixture
+of survival experts. All predictive models receive the same supplied feature
+information. Training-only preprocessing, entity-disjoint chronological splits,
+label cutoff censoring, SVAL-only selection, and a frozen final test protocol are
+implemented in the public harness.
+
+The included [synthetic results](research/examples/synthetic_smoke/summary.json)
+verify that the pipeline runs. They do **not** show marketplace effectiveness or
+establish that neural networks outperform Cox or trees. Historical production
+measurements and this newly written compact benchmark are explicitly distinguished.
+
+```sh
+python -m venv .venv
+# Activate the environment for your shell, then:
+python -m pip install -e ".[dev]"
+python -m marketneural synthetic --output data/synthetic --n 1200
+python -m marketneural benchmark --config configs/synthetic_smoke.json --output results/synthetic_smoke
+python -m pytest -q
+```
+
+## Original platform overview
+
 t0-clip is a production-shaped, closed-loop data + database governance + machine learning system.
 It is designed to turn continuously changing, real-world longitudinal data into leak-safe (T0-correct)
 certified feature-store surfaces that power high-accuracy predictive models.

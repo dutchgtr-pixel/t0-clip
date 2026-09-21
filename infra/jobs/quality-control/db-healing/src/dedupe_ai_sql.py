@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-AI de-duplicator for "iPhone".iphone_listings — with live title/desc verification and skip-processed gating.
+AI de-duplicator for "device".device_listings — with live title/desc verification and skip-processed gating.
 
 What it does per duplicated listing_id:
-  1) VERIFY: Scrape each row (skip 'removed' rows if desired) and parse title/desc (hydration → JSON-LD → og/h1/title/meta).
-     If ALL rows are removed or ALL scrapes return non-2xx: keep the NEWEST row; others spam='duplicate-junk' (no status merge).
+  1) VERIFY: Observe each row (skip 'removed' rows if desired) and parse title/desc (hydration → JSON-LD → og/h1/title/meta).
+     If ALL rows are removed or ALL observations return non-2xx: keep the NEWEST row; others spam='duplicate-junk' (no status merge).
   2) DECIDE: Feed VERIFIED title/desc to an LLM (strict JSON). Temporal override: newer consistent row wins if LLM disagrees.
      Bundle is VERY STRICT; mere co-mention is not enough.
   3) APPLY:
@@ -41,8 +41,8 @@ try:
 except Exception:
     OpenAI = None
 
-SCHEMA = '"iPhone"'
-TABLE  = f'{SCHEMA}.iphone_listings'
+SCHEMA = '"device"'
+TABLE  = f'{SCHEMA}.device_listings'
 
 # ───────────────────── CLI ─────────────────────
 ap = argparse.ArgumentParser()
@@ -65,13 +65,13 @@ ap.add_argument("--bundle-spam", default=os.getenv("BUNDLE_SPAM","bundled"))  # 
 ap.add_argument("--merge-status", dest="merge_status", action="store_true", default=True)
 ap.add_argument("--no-merge-status", dest="merge_status", action="store_false")
 
-# Scrape settings
-ap.add_argument("--scrape", dest="scrape", action="store_true", default=True)
-ap.add_argument("--no-scrape", dest="scrape", action="store_false")
-ap.add_argument("--scrape-timeout", type=float, default=12.0)
-ap.add_argument("--scrape-retries", type=int, default=2)
-ap.add_argument("--scrape-user-agent", default="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
-ap.add_argument("--skip-scrape-removed", action="store_true", default=True)
+# Observe settings
+ap.add_argument("--observe", dest="observe", action="store_true", default=True)
+ap.add_argument("--no-observe", dest="observe", action="store_false")
+ap.add_argument("--observe-timeout", type=float, default=12.0)
+ap.add_argument("--observe-retries", type=int, default=2)
+ap.add_argument("--observe-user-agent", default="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
+ap.add_argument("--skip-observe-removed", action="store_true", default=True)
 
 # Skip-processed gating (prevents re-LLM on same listings)
 ap.add_argument("--skip-processed", action="store_true", default=True)
@@ -81,7 +81,7 @@ args = ap.parse_args()
 
 # ───────────────────── LLM prompts ─────────────────────
 SYSTEM_PROMPT = r"""
-You are an expert at identifying the ACTUAL iPhone device(s) being SOLD in a marketplace listing.
+You are an expert at identifying the ACTUAL device device(s) being SOLD in a marketplace listing.
 
 You will be given multiple candidate rows for ONE listing_id. These rows are ALTERNATIVE parses of the SAME ad (NOT separate posts). Your job is to pick which row(s) represent the phone(s) actually for sale.
 
@@ -96,17 +96,17 @@ HARD CONSTRAINTS:
 - Single JSON object only; reason <= 200 chars.
 
 CANONICAL MODEL WHITELIST:
-Gen 13: "iPhone 13", "iPhone 13 Mini", "iPhone 13 Pro", "iPhone 13 Pro Max"
-Gen 14: "iPhone 14", "iPhone 14 Mini", "iPhone 14 Plus", "iPhone 14 Pro", "iPhone 14 Pro Max"
-Gen 15: "iPhone 15", "iPhone 15 Plus", "iPhone 15 Pro", "iPhone 15 Pro Max"
-Gen 16: "iPhone 16", "iPhone 16e", "iPhone 16 Plus", "iPhone 16 Pro", "iPhone 16 Pro Max"
-Gen 17: "iPhone 17", "iPhone 17 Air", "iPhone 17 Plus", "iPhone 17 Pro", "iPhone 17 Pro Max"
+Gen 13: "device 13", "device 13 Mini", "device 13 Pro", "device 13 Pro Max"
+Gen 14: "device 14", "device 14 Mini", "device 14 Plus", "device 14 Pro", "device 14 Pro Max"
+Gen 15: "device 15", "device 15 Plus", "device 15 Pro", "device 15 Pro Max"
+Gen 16: "device 16", "device 16e", "device 16 Plus", "device 16 Pro", "device 16 Pro Max"
+Gen 17: "device 17", "device 17 Air", "device 17 Plus", "device 17 Pro", "device 17 Pro Max"
 
 IGNORE buyer-intent/swap phrases ("skal kjøpe", "ønsker å kjøpe", "WTB", "byttes i", "oppgraderer til", etc.).
 
 SIGNAL PRIORITY:
 1) Structured “chip” blocks clearly naming a model
-2) TITLE tokens (e.g., “iPhone 16 Pro”, “17 Air”)
+2) TITLE tokens (e.g., “device 16 Pro”, “17 Air”)
 3) DESCRIPTION tokens after removing buyer-intent
 
 DISAMBIGUATION & TEMPORAL STABILIZATION:
@@ -118,7 +118,7 @@ DISAMBIGUATION & TEMPORAL STABILIZATION:
 
 BUNDLE (VERY STRICT):
 bundle:true ONLY if the ad explicitly sells multiple phones, via strong words:
-"pakke", "pakkepris", "selges samlet", "kun samlet", "samlet pris", "begge", "2 iPhoner", "to telefoner", "selger begge"
+"pakke", "pakkepris", "selges samlet", "kun samlet", "samlet pris", "begge", "2 devicer", "to telefoner", "selger begge"
 (or “both phones”, “as a package”) — mere co-mention is not enough.
 If bundle:true, keep >=2 indexes and briefly name both.
 
@@ -247,13 +247,13 @@ def call_llm(client: OpenAI, model: str, rows_for_llm: List[Dict[str, Any]]) -> 
         "_rows_min": rows_min,
     }
 
-# ───────────────────── Scraper (text-based; no bytes-patterns) ─────────────────────
-UA = args.scrape_user_agent
+# ───────────────────── Observer (text-based; no bytes-patterns) ─────────────────────
+UA = args.observe_user_agent
 _SESSION = requests.Session()
 _SESSION.headers.update({
     "User-Agent": UA,
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": os.getenv("SCRAPE_ACCEPT_LANGUAGE", "en-US,en;q=0.9"),
+    "Accept-Language": os.getenv("OBSERVE_ACCEPT_LANGUAGE", "en-US,en;q=0.9"),
     "Upgrade-Insecure-Requests": "1",
 })
 
@@ -397,10 +397,10 @@ def _http_get(url: str, timeout_s: float, retries: int) -> Tuple[int, Optional[s
 # ───────────────────── Local normalization & rules ─────────────────────
 _STRONG_BUNDLE = [
     r'\bpakkepris\b', r'\bselges\s+samlet\b', r'\bkun\s+samlet\b', r'\bbegge\b',
-    r'\b2\s+iphoner\b', r'\bto\s+telefoner\b', r'\bselger\s+begge\b', r'\bsamlet\s+pris\b',
+    r'\b2\s+devicer\b', r'\bto\s+telefoner\b', r'\bselger\s+begge\b', r'\bsamlet\s+pris\b',
     r'\bboth\s+phones?\b', r'\bas\s+a\s+package\b'
 ]
-_MULTI_PATTERNS = [r'iphone\s+\d{2}.*?(?:\+| og | and | & )\s*iphone\s+\d{2}']
+_MULTI_PATTERNS = [r'device\s+\d{2}.*?(?:\+| og | and | & )\s*device\s+\d{2}']
 _WTB_MARKERS = [
     r'\bskal\s+kjøpe\b', r'\bønsker\s+å\s+kjøpe\b', r'\bkjøpes\b', r'\bwtb\b',
     r'\blooking\s+to\s+buy\b', r'\bwant\s+to\s+buy\b', r'\bbyttes\s+i\b',
@@ -465,8 +465,8 @@ def ensure_audit_columns(cur):
     cur.execute("""
       SELECT column_name
       FROM information_schema.columns
-      WHERE table_schema = 'iPhone'
-        AND table_name   = 'iphone_listings'
+      WHERE table_schema = 'device'
+        AND table_name   = 'device_listings'
         AND column_name IN ('quality_ai_json','quality_ai_at','quality_ai_version')
     """)
     have = {r[0] for r in cur.fetchall()}
@@ -486,7 +486,7 @@ def _get_table_columns(cur) -> Set[str]:
     cur.execute("""
       SELECT column_name
       FROM information_schema.columns
-      WHERE table_schema = 'iPhone' AND table_name = 'iphone_listings'
+      WHERE table_schema = 'device' AND table_name = 'device_listings'
     """)
     return {r[0] for r in cur.fetchall()}
 
@@ -498,7 +498,7 @@ def fetch_dup_listings(cur, limit: int, only_listing_id: Optional[str],
             cur.execute("""
 WITH already AS (
   SELECT 1
-  FROM "iPhone".iphone_listings l
+  FROM "device".device_listings l
   WHERE l.listing_id = %s
     AND l.quality_ai_json IS NOT NULL
     AND EXISTS (
@@ -511,14 +511,14 @@ WITH already AS (
 ),
 is_dup AS (
   SELECT 1
-  FROM "iPhone".iphone_listings
+  FROM "device".device_listings
   WHERE listing_id = %s
   GROUP BY listing_id
   HAVING COUNT(*) > 1
 ),
 needs_work AS (
   SELECT 1
-  FROM "iPhone".iphone_listings
+  FROM "device".device_listings
   WHERE listing_id = %s
     AND COALESCE(spam,'') NOT IN ('duplicate-junk','bundled')
 )
@@ -534,7 +534,7 @@ SELECT CASE
         else:
             cur.execute("""
 SELECT listing_id
-FROM "iPhone".iphone_listings
+FROM "device".device_listings
 WHERE listing_id = %s
 GROUP BY listing_id
 HAVING COUNT(*) > 1
@@ -547,13 +547,13 @@ HAVING COUNT(*) > 1
         sql = f"""
 WITH dups AS (
   SELECT listing_id, MAX(last_seen) AS max_last_seen
-  FROM "iPhone".iphone_listings
+  FROM "device".device_listings
   GROUP BY listing_id
   HAVING COUNT(*) > 1
 ),
 already AS (
   SELECT DISTINCT listing_id
-  FROM "iPhone".iphone_listings l
+  FROM "device".device_listings l
   WHERE l.quality_ai_json IS NOT NULL
     AND EXISTS (
       SELECT 1
@@ -565,7 +565,7 @@ already AS (
 ),
 needs AS (
   SELECT DISTINCT listing_id
-  FROM "iPhone".iphone_listings
+  FROM "device".device_listings
   WHERE COALESCE(spam,'') NOT IN ('duplicate-junk','bundled')
 )
 SELECT d.listing_id
@@ -582,7 +582,7 @@ ORDER BY d.max_last_seen DESC
     else:
         sql = f"""
 SELECT listing_id
-FROM "iPhone".iphone_listings
+FROM "device".device_listings
 GROUP BY listing_id
 HAVING COUNT(*) > 1
 ORDER BY MAX(last_seen) DESC
@@ -774,11 +774,11 @@ def main():
     for fid in listing_ids:
         try:
             rows = load_group(cur, int(fid), cols)
-            conn.commit()  # release read locks before scrape/LLM
+            conn.commit()  # release read locks before observe/LLM
             if len(rows) < 2:
                 continue
 
-            # VERIFY via scrape (title/desc)
+            # VERIFY via observe (title/desc)
             all_removed = all((str(r.get("status") or "").lower() == "removed") for r in rows)
             all_404 = True
             verify_summary = []
@@ -791,14 +791,14 @@ def main():
                 url = (r.get("url") or "").strip()
                 status = str(r.get("status") or "").lower()
 
-                if args.skip_scrape_removed and status == "removed":
+                if args.skip_observe_removed and status == "removed":
                     verify_summary.append({"try": False, "status": status, "url": bool(url)})
                     continue
-                if not args.scrape or not url:
+                if not args.observe or not url:
                     verify_summary.append({"try": False, "status": status, "url": bool(url)})
                     continue
 
-                http_status, text = _http_get(url, timeout_s=args.scrape_timeout, retries=args.scrape_retries)
+                http_status, text = _http_get(url, timeout_s=args.observe_timeout, retries=args.observe_retries)
                 r["v_http"] = http_status
                 if text and 200 <= http_status < 300:
                     t, d, ev = _pick_title_desc_from_html_text(text)

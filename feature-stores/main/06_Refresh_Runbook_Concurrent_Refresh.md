@@ -24,9 +24,9 @@ BEGIN
   REFRESH MATERIALIZED VIEW ml.tom_features_v1_enriched_speed_t0_v1_mv;
   REFRESH MATERIALIZED VIEW ml.tom_features_v1_enriched_ai_clean_t0_v1_mv;
 
-  REFRESH MATERIALIZED VIEW ml.iphone_image_features_unified_t0_v1_mv;
+  REFRESH MATERIALIZED VIEW ml.device_image_features_unified_t0_v1_mv;
   REFRESH MATERIALIZED VIEW ml.v_damage_fusion_features_v2_scored_t0_v1_mv;
-  REFRESH MATERIALIZED VIEW ml.iphone_device_meta_encoded_t0_v1_mv;
+  REFRESH MATERIALIZED VIEW ml.device_device_meta_encoded_t0_v1_mv;
 
   -- Run certification assertions + write registry status
   CALL audit.run_t0_cert_survival_v1();
@@ -55,9 +55,9 @@ CALL audit.refresh_and_certify_survival_v1(true);
 - `ml.tom_speed_anchor_asof_v1_mv`: `(anchor_day, generation, sbucket, ptv_bucket)`
 - `ml.tom_features_v1_enriched_speed_t0_v1_mv`: `(listing_id)`
 - `ml.tom_features_v1_enriched_ai_clean_t0_v1_mv`: `(listing_id)`
-- `ml.iphone_image_features_unified_t0_v1_mv`: `(generation, listing_id)`
+- `ml.device_image_features_unified_t0_v1_mv`: `(generation, listing_id)`
 - `ml.v_damage_fusion_features_v2_scored_t0_v1_mv`: `(generation, listing_id)`
-- `ml.iphone_device_meta_encoded_t0_v1_mv`: `(generation, listing_id)`
+- `ml.device_device_meta_encoded_t0_v1_mv`: `(generation, listing_id)`
 
 ### 2.2 Suggested orchestration
 If you need concurrency, run these as individual statements (outside a transaction):
@@ -65,9 +65,9 @@ If you need concurrency, run these as individual statements (outside a transacti
 REFRESH MATERIALIZED VIEW CONCURRENTLY ml.tom_speed_anchor_asof_v1_mv;
 REFRESH MATERIALIZED VIEW CONCURRENTLY ml.tom_features_v1_enriched_speed_t0_v1_mv;
 REFRESH MATERIALIZED VIEW CONCURRENTLY ml.tom_features_v1_enriched_ai_clean_t0_v1_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY ml.iphone_image_features_unified_t0_v1_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY ml.device_image_features_unified_t0_v1_mv;
 REFRESH MATERIALIZED VIEW CONCURRENTLY ml.v_damage_fusion_features_v2_scored_t0_v1_mv;
-REFRESH MATERIALIZED VIEW CONCURRENTLY ml.iphone_device_meta_encoded_t0_v1_mv;
+REFRESH MATERIALIZED VIEW CONCURRENTLY ml.device_device_meta_encoded_t0_v1_mv;
 
 CALL audit.run_t0_cert_survival_v1();
 SELECT audit.require_certified_strict('ml.survival_feature_store_t0_v1_v', interval '24 hours');

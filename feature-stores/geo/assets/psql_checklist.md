@@ -5,7 +5,7 @@ This is a copy/paste checklist.
 ## 1) Connect to Postgres inside Docker
 
 ```powershell
-docker exec -it postgres psql -U postgres -d scrapes
+docker exec -it postgres psql -U postgres -d observations
 ```
 
 ## 2) Apply SQL scripts

@@ -46,7 +46,7 @@ What it does:
 
 Public release notes
 --------------------
-This public template intentionally omits any target-site-specific scraping logic. All fetch + parsing is
+This public template intentionally omits any target-site-specific collection logic. All fetch + parsing is
 abstracted behind a MarketplaceAdapter interface. The default adapter expects JSON responses from
 a configurable base URL and parses only generic fields (status/price/sold_at/etc).
 
