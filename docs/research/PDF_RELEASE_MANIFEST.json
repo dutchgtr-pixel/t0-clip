@@ -129,7 +129,7 @@
     },
     {
       "path": "papers/marketneural/marketneural-thesis.pdf",
-      "sha256": "b6377260d358167f18227f1ab5897927e6179516e4e06e9a398568296d402d96",
+      "sha256": "eda6f34e88242a7a361d5ed79b59b628629714311354182fa9233192b5003401",
       "pages": 99,
       "changed_pages": [
         1,
@@ -234,7 +234,7 @@
       ],
       "review_status": "visually_reviewed",
       "process": "Newly typeset research monograph from published chapters, figures, aggregate evidence and references.",
-      "visual_review": "All pages 1\u201399 inspected in final rendered edition by two reviewers; cover, equations, tables, architecture figures and bibliography checked at full size.",
+      "visual_review": "All99 pages reviewed in the prior typography edition. Final author and operating-total revision: pages1,2,3,9,10,72,81 visually rechecked; all other92 pages are pixel-identical to the reviewed edition at72DPI. Comparison recorded in build manifest.",
       "build_manifest": "docs/research/THESIS_BUILD_MANIFEST.json"
     }
   ],

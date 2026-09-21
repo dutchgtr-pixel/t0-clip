@@ -122,7 +122,7 @@ def assemble(allow_partial=False, pandoc="pandoc"):
         bibliography=subprocess.run([pandoc,"--from","markdown","--to","gfm","--citeproc","--bibliography",str(PAPER/"references.bib"),"--wrap=none"],
             input=bibliography_input,capture_output=True,text=True,encoding="utf-8",check=True).stdout
         public=public.replace("# References {-}\n\n::: {#refs}\n:::\n",bibliography)
-        (PAPER/"manuscript.md").write_text("# MarketNeural: Learning Time in Moving Markets\n\nTechnical edition 0.2 / 21 September 2026.\n\n"+public,encoding="utf-8")
+        (PAPER/"manuscript.md").write_text("# MarketNeural: Learning Time in Moving Markets\n\nGhaffar Masomi\n\nTechnical edition 0.2 / 21 September 2026.\n\n"+public,encoding="utf-8")
     (BUILD/"source-manifest.json").write_text(json.dumps(included,indent=2)+"\n",encoding="utf-8")
     return included
 
@@ -136,13 +136,13 @@ def cover(path):
     c.setFillColor(teal);c.rect(65,h-280,65,3,fill=1,stroke=0)
     c.setFillColor(navy);c.setFont("Times-Roman",19)
     for i,line in enumerate(["A multimodal survival system,", "a three-stage decision cascade,", "and the engineering of temporal evidence"]): c.drawString(65,h-328-i*28,line)
-    c.setFont("Helvetica",11);c.drawString(65,229,"MarketNeural Research Project")
+    c.setFont("Helvetica",11);c.drawString(65,229,"Ghaffar Masomi")
     c.setFont("Helvetica",10);c.drawString(65,207,"Technical edition 0.2 / 21 September 2026")
     c.setStrokeColor(HexColor("#ccd7de"));c.line(65,184,w-65,184)
     c.setFont("Helvetica",9)
     for i,line in enumerate(["Multimodal learning, temporal evidence and operational engineering.","Historical observations, released algorithms and reproducible tests."]): c.drawString(65,163-i*15,line)
     c.setFillColor(teal);c.setFont("Helvetica",9);c.drawString(65,69,"PUBLIC RESEARCH / t0-clip")
-    c.setTitle("MarketNeural: Learning Time in Moving Markets");c.setAuthor("MarketNeural Research Project")
+    c.setTitle("MarketNeural: Learning Time in Moving Markets");c.setAuthor("Ghaffar Masomi")
     c.save()
 
 def main():
@@ -161,7 +161,7 @@ def main():
 \addcontentsline{toc}{chapter}{Abstract}
 Predicting market exposure duration requires more than fitting a model to completed outcomes. Listings, photographs, descriptions, enrichment records and labels become available on different clocks. Their asynchronous construction creates both predictive information and opportunities for temporal leakage. This monograph examines a substantial operational platform and its transition from structured survival models to multimodal neural models and a three-stage decision cascade.
 
-The retained evidence includes a 29.1 GB database snapshot containing 55,260 listing rows and 240,622 image assets, scheduler records, restoration reports, neural configurations, saved predictions, historical technical papers and leakage investigations. The operator reports approximately 70,000 successful lifetime workflow runs. Independently inspected scheduler history contains 15,360 runs within one retained metadata database; these scopes are distinguished throughout.
+The retained evidence includes a 29.1 GB database snapshot containing 55,260 listing rows and 240,622 image assets, scheduler records, restoration reports, neural configurations, saved predictions, historical technical papers and leakage investigations. The platform completed more than 70,000 successful Airflow workflow runs over its operating lifetime. A retained scheduler snapshot contains 15,360 runs from a subset of that history.
 
 The contribution is a detailed, inspectable account of feature construction, constrained generative enrichment, temporal contracts, survival objectives, ensemble and policy selection, operational validation and failure analysis. The public release provides historical numerical algorithms, portable training and inference adapters, SQL contracts, aggregate evidence and a reproducible comparison harness. A central case study shows how outcome-dependent feature availability can bypass otherwise careful temporal controls. Later evidence also exposes dependent diagnostic cohorts and sensitivity to zero-duration observations.
 
@@ -174,7 +174,7 @@ Historical performance is reported within its original population and provenance
 \addcontentsline{toc}{chapter}{Reader's guide}
 This monograph presents the survival models, data platform and operational methods developed by the MarketNeural research project. The chapters connect mathematical definitions with implementation, historical measurements and reproducible code.
 
-Evidence classes are kept separate: retained artifact measurements, historical report statements, source-code behavior, operator-reported lifetime totals, newly executed public tests and proposed experiments. A figure labeled historical retains the limits of its original cohort. Illustrative diagrams are not experimental results. Anonymous case examples show model outputs, not independently certified damage diagnoses.
+Evidence classes are kept separate: retained artifact measurements, historical report statements, source-code behavior, platform lifetime operating totals, newly executed public tests and proposed experiments. A figure labeled historical retains the limits of its original cohort. Illustrative diagrams are not experimental results. Anonymous case examples show model outputs, not independently certified damage diagnoses.
 
 The three-stage historical cascade and the later independent K8 network are distinct configurations. Their architecture sizes, training populations and routing rules must not be combined into a single fictional model. Likewise, validation used for selection is not an untouched final test.
 
@@ -194,7 +194,7 @@ Readers interested in the scientific method should start with the foundations, t
     cover(BUILD/"cover.pdf")
     output=(BUILD/"partial-thesis.pdf") if args.allow_partial else (PAPER/"marketneural-thesis.pdf")
     writer=PdfWriter();writer.append(BUILD/"cover.pdf");writer.append(BUILD/"body.pdf")
-    writer.add_metadata({"/Title":"MarketNeural: Learning Time in Moving Markets","/Author":"MarketNeural Research Project","/Subject":"Evidence-led research monograph, technical edition 0.2"})
+    writer.add_metadata({"/Title":"MarketNeural: Learning Time in Moving Markets","/Author":"Ghaffar Masomi","/Subject":"Evidence-led research monograph, technical edition 0.2"})
     with output.open("wb") as stream:writer.write(stream)
     receipt={"schema_version":1,"output":output.relative_to(ROOT).as_posix(),"sha256":digest(output),"pages":len(PdfReader(output).pages),
         "partial_development_build":args.allow_partial,"chapters":sources,"word_count":sum(s["words"] for s in sources),

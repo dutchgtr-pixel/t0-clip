@@ -6,7 +6,17 @@ license: "Apache-2.0"
 repository-code: "https://github.com/dutchgtr-pixel/t0-clip"
 url: "https://github.com/dutchgtr-pixel/t0-clip"
 authors:
-  - name: "t0-clip contributors"
+  - family-names: "Masomi"
+    given-names: "Ghaffar"
+preferred-citation:
+  type: report
+  title: "MarketNeural: Learning Time in Moving Markets"
+  authors:
+    - family-names: "Masomi"
+      given-names: "Ghaffar"
+  year: 2026
+  version: "0.2"
+  url: "https://github.com/dutchgtr-pixel/t0-clip/blob/main/papers/marketneural/marketneural-thesis.pdf"
 keywords:
   - "mlops"
   - "feature-store"

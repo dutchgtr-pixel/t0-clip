@@ -10,6 +10,8 @@ the operational platform, image and text enrichment, neural tuning, leakage,
 market adaptation, agentic decisions, and fraud/spam extensions. The controlled
 real-data model comparison remains pending.
 
+The monograph is authored by **Ghaffar Masomi**.
+
 **The datasets are proprietary.** No Parquet datasets or raw listing records are
 published here. Researchers can [request controlled access](DATA_ACCESS.md),
 subject to maintainer approval and separately agreed terms.
@@ -19,6 +21,7 @@ subject to maintainer approval and separately agreed terms.
 | [Reproduction guide](research/README.md) | Install, generate synthetic data, compare six model families, inspect results |
 | [Historical production reference](research/production_reference/README.md) | Exact selected model/loss definitions, source hashes, 17,145,736-parameter architecture metadata |
 | [Three-stage cascade](research/cascade/README.md) | 122 preserved numerical definitions; portable training, ensembles, calibration, routing and persistence |
+| [Stage 0 implementation map](research/cascade/STAGE0_IMPLEMENTATION.md) | Original neural model, training objectives, public module mapping and runnable example |
 | [Feature-store SQL](research/feature_store_ddl/README.md) | 79-file inventory, dependency/rebuild plan, historical SQL and executed portable contracts |
 | [Leakage case study](research/leakage/LEAKAGE_STUDY.md) | Lifecycle-dependent missingness, overlap diagnostics, interventions and remaining proof boundaries |
 | [Research coverage](papers/marketneural/RESEARCH_COVERAGE.md) | Nine historical reports, private evidence families and claim limitations |

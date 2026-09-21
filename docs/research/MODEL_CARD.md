@@ -1,10 +1,10 @@
 # MarketNeural model card
 
-Version 0.1 — 2026-09-21. **Research software; controlled real-data comparison pending.**
+Version 0.2 — 2026-09-21. **Research software; controlled real-data comparison pending.**
 
 ## Model identity and scope
 
-This release contains three distinct objects. The compact `marketneural` package is a new, runnable comparison implementation. `research/production_reference/` preserves selected numerical definitions from an earlier architecture with source hashes and a new generic tensor training adapter. The manuscript proposes a broader controlled research program. These objects must not share an undifferentiated claim of reproducing historical production results.
+This release contains three distinct model resources. The compact `marketneural` package is a runnable comparison implementation. `research/cascade/` preserves the historical Stage 0/1/2 numerical definitions and supplies portable fitting, ensemble selection, routing and persistence. `research/production_reference/` preserves the later slot-based multimodal architecture with source hashes and a generic tensor training adapter. The manuscript documents their mathematical and operational context. Each resource has its own configuration and execution scope.
 
 The compact benchmark consumes precomputed structured and vector inputs. It downloads no pretrained image or text model and includes no private model checkpoint. It is intended for research, debugging temporal evaluation, and comparing survival estimators on explicitly provided data. It is not a turnkey collection service, a live marketplace recommendation product, a causal pricing model, or a profit estimator.
 
@@ -46,6 +46,12 @@ Paired intervals in the example resample test entities with fitted models and ce
 ## Preserved architecture excerpt
 
 The separate [production-reference provenance manifest](../../research/production_reference/provenance.json) records full source hashes, selected symbol ranges, and transformations. It excludes original data loaders, database access, private configuration, weights, fitted private vocabularies, orchestration, and row-level data. Its generic training adapter is new code. Numerical architecture preservation does not reproduce an earlier training run, checkpoint, or deployed policy.
+
+## Preserved three-stage cascade
+
+The [cascade package](../../research/cascade/README.md) includes 122 preserved numerical definitions across eight archived modules, with source and syntax-tree hashes. The ordered routing policy tests the 504-hour tail first, then the 168-hour gate, then the 72-hour gate. Historical training objectives, gates and cohort eligibility are detailed in its [methods](../../research/cascade/METHODS.md); the gates are separate fitted decisions, not a conditional factorization of one calibrated duration distribution.
+
+The portable adapters accept caller-supplied feature matrices, fit training-only preprocessing, perform neural optimizer steps, select ensembles and thresholds on development data, and save/load fitted bundles. The synthetic smoke executes all three stages. The release excludes private trained weights, fitted vocabularies, production connections and observation tables. Its numerical implementations are executable PyTorch code; the portable controllers replace environment-specific integration.
 
 ## Limitations and intended safeguards
 

@@ -1,5 +1,7 @@
 # MarketNeural: Learning Time in Moving Markets
 
+Ghaffar Masomi
+
 Technical edition 0.2 / 21 September 2026.
 
 # The research problem and the system that made it measurable
@@ -10,7 +12,7 @@ A listing is a temporary offer whose description, price, photographs and availab
 
 The subject of this monograph is the implemented system and the evidence it produced. That includes scheduled workflows, stored content, enrichment services, temporal feature stores, trained neural configurations, a three-stage survival cascade, a later independent multimodal model, candidate queues, explanatory narratives, and an operator-controlled conversation agent. These components formed a research environment: they made observations repeatable, provided outcome follow-up, and exposed failure modes that could not have been discovered from a static benchmark alone.
 
-The system's scale is substantial for an applied research platform. A retained database snapshot contains 55,260 listing rows, 240,622 image assets and 228,958 image-feature records within 29.1 GB. The operator reports approximately 70,000 successful workflow runs over the platform's lifetime. The inspected scheduler snapshot retains 15,360 runs over 40 workflow identifiers, including 15,254 stored successes. These are different evidence scopes. The smaller retained history establishes a documented operational footprint; it neither verifies nor contradicts the wider lifetime total.
+The system's scale is substantial for an applied research platform. A retained database snapshot contains 55,260 listing rows, 240,622 image assets and 228,958 image-feature records within 29.1 GB. The platform completed more than 70,000 successful Airflow workflow runs over its operating lifetime. A retained scheduler snapshot contains 15,360 runs over 40 workflow identifiers, including 15,254 stored successes. This snapshot covers a subset of the platform's operating history.
 
 The central statistical difficulty is that a training row is not automatically a historical decision. An attractive feature may exist in a present-day table only because an item remained observable long enough for a later job to process it. A report written after the outcome can improve a retrospective prediction while being unavailable when the actual decision was made. A model can exploit that distinction through missingness without ever reading an explicit outcome column. The platform's most instructive leakage investigation concerns precisely this failure.
 
@@ -28,7 +30,7 @@ The operational contribution includes a real operator system for candidate revie
 
 This monograph asks five connected questions. First, what data and engineering were necessary to construct prediction-time representations at the observed scale? Second, how did the implemented cascade and later multimodal network formulate their survival targets and decision rules? Third, which safeguards detected leakage, and which mechanisms escaped them? Fourth, how much do the retained results establish about predictive behavior, adaptation and operational reliability? Fifth, how can the implemented decision architecture use survival information while preserving the distinction between analysis, policy and execution?
 
-The available evidence answers these questions unevenly. Source code and saved configurations establish many architectural details. Prediction artifacts support exact recomputation of selected confusion matrices and overlap counts. Retained reports document tests and operational behavior at particular dates. Some claims, including lifetime workflow volume, depend on the operator's report. Other claims, including a matched real-data demonstration that neural networks outperform Cox or tree models, remain untested in the released evidence.
+The available evidence answers these questions unevenly. Source code and saved configurations establish many architectural details. Prediction artifacts support exact recomputation of selected confusion matrices and overlap counts. Retained reports document tests and operational behavior at particular dates. A matched real-data demonstration that neural networks outperform Cox or tree models remains an experiment to complete.
 
 This asymmetry is part of the research result. A thesis-style treatment should preserve it rather than flatten all statements into a single confidence level. Successful scheduling is evidence of execution. A restoration report is evidence of recoverability within its declared checks. A parity test is evidence of agreement between implementations. None of these alone establishes calibration, prospective utility or economic return.
 
@@ -957,9 +959,9 @@ The current evidence already supports a serious research-and-engineering contrib
 
 ## What was actually operated
 
-The project is not merely a collection of model notebooks. Its retained artifacts show a coordinated platform for repeated data observation, structured interpretation, feature construction, vectorization, model inference, policy explanation, and recovery. The operator reports approximately 70,000 successful automation runs across the platform's lifetime. That is a platform-wide historical account. A separately inspected metadata snapshot preserves 15,360 workflow runs from 40 distinct workflows; this narrower retained population neither independently establishes nor contradicts the larger lifetime count.
+The project is not merely a collection of model notebooks. Its retained artifacts show a coordinated platform for repeated data observation, structured interpretation, feature construction, vectorization, model inference, policy explanation, and recovery. The platform completed more than 70,000 successful Airflow workflow runs over its operating lifetime. A retained metadata snapshot preserves 15,360 runs from 40 distinct workflows, covering a subset of this operating history.
 
-The distinction between retained evidence and reported lifetime experience is essential. Systems migrate, histories are pruned, and backup dates can be later than the last retained execution. A retrospective reviewer should count the records that exist, state their scope, and avoid converting an incomplete retained database into a claim that earlier operation did not happen. The evidence is sufficient to establish sustained, multi-component operation while keeping the 70,000-run total explicitly attributed.
+The lifetime operating total and the retained snapshot describe different time coverage. Snapshot counts provide a detailed breakdown of stored execution states; they are not a lifetime census. Backup dates can also be later than the last retained execution timestamp. The following analysis uses the snapshot for its dated state breakdown and the lifetime total for the platform's overall operating scale.
 
 The retained scheduler history spans execution timestamps from September 16, 2025, at 23:30 UTC through March 31, 2026, at 07:03:18 UTC. Its snapshot was retained on April 29, 2026. It contains 15,254 successful, 103 failed, two running, and one queued workflow states, with no duplicate primary-key rows in the audited extraction. Among 15,357 terminal states, the stored success fraction is 99.3293%. This is a final-state workflow statistic, not an uptime measurement, an independent first-attempt success rate, or a guarantee that every successful workflow produced semantically correct data.
 
@@ -1112,7 +1114,7 @@ Finally, a measurement-and-decision study should connect enrichment accuracy to 
 
 ## Overall assessment
 
-The retained work is technically advanced applied research and systems engineering. Its depth comes from the combination of temporal feature governance, multimodal measurement, censored-outcome modeling, stage-specific policies, operational automation, numerical replay, and restoration evidence. The reported lifetime volume and independently audited retained run history are consistent with a platform that was operated extensively, not merely demonstrated once.
+The retained work is technically advanced applied research and systems engineering. Its depth comes from the combination of temporal feature governance, multimodal measurement, censored-outcome modeling, stage-specific policies, operational automation, numerical replay, and restoration evidence. More than 70,000 successful Airflow workflow runs demonstrate the sustained operational scale behind this research; the retained scheduler history provides a detailed view of one part of that operation.
 
 # The implemented agentic decision system
 

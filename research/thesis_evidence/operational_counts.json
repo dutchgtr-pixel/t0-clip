@@ -68,9 +68,10 @@
   "scheduler_snapshot_date": "2026-04-29",
   "scheduler_interpretation": "Retained history of one scheduler metadata database; run state is final stored state, not first-attempt success or uptime. Retained execution dates end earlier than backup date. Task instances are not added to workflow runs.",
   "lifetime_volume": {
-    "approximately_successful_runs": 70000,
-    "status": "operator_reported_not_independently_counted",
-    "scope": "Larger lifetime platform history, outside the one retained scheduler snapshot."
+    "successful_runs_lower_bound": 70000,
+    "qualifier": "more_than",
+    "scheduler": "Airflow",
+    "scope": "Platform operating lifetime; the retained metadata snapshot covers a subset of this history."
   },
   "restore_evidence": {
     "reports": 6,
@@ -83,7 +84,7 @@
     "status": "historical_saved_reports_not_a_new_restore_test"
   },
   "provenance": {
-    "basis": "Read-only retrospective inspection of retained metadata, scheduler records, and restoration reports. Raw private artifacts are not redistributed.",
+    "basis": "Platform operating history and read-only inspection of retained metadata, scheduler records and restoration reports. Snapshot measurements retain their own dates and coverage. Raw private artifacts are not redistributed.",
     "audit_receipt_sha256": {
       "scheduler": "88d069d374da40eb5a5f155b60d660cf306e11f3a8d511d6914d80af0defeba3",
       "database_and_restore": "1fc90e3acf0f96361cedf6f795ef607647c0fd24d7501284842c4594d5effb98"

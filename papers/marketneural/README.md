@@ -1,5 +1,7 @@
 # MarketNeural research monograph
 
+**Author: Ghaffar Masomi**
+
 Read [Learning Time in Moving Markets](marketneural-thesis.pdf), the thesis-style
 PDF, or its [assembled Markdown manuscript](manuscript.md). Fifteen chapters and
 roughly 33,000 words combine the mathematical method with the implemented system,
