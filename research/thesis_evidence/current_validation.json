@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "executed_at_utc": "2026-09-21T21:35:49.352589+00:00",
+  "executed_at_utc": "2026-09-21T23:06:57.131986+00:00",
   "scope": "Current software validation on synthetic fixtures; not historical predictive accuracy or prospective deployment certification.",
   "full_suite": {
     "command": "python -m pytest -q",
-    "tests": 101,
+    "tests": 107,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "seconds": 22.81,
+    "seconds": 34.27,
     "warnings": 2,
     "warning_description": "Preserved historical logistic-regression penalty argument is deprecated by the installed library.",
     "result_source": "completed local process output",
@@ -141,12 +141,16 @@
       ]
     },
     "tests": {
-      "canonical_sha256": "982b6b0c5b3ef30adaf07eab4b96dcbb39a62282e091a114cbde63dc1eb3ac1b",
-      "file_count": 6,
+      "canonical_sha256": "8404b3780906914a4f9f33a1a287a548943b51b23ca0a99407ad16959ffd36a9",
+      "file_count": 7,
       "files": [
         {
           "path": "tests/test_cascade.py",
           "sha256": "125c0e20e7bdecdb6b91644f6260aeadf6fc2f8d2c8d9d341a06b0715a3f5430"
+        },
+        {
+          "path": "tests/test_cohort_reconciliation.py",
+          "sha256": "0be80c02e775544bea0ace7e07246b63ae5a53e7a038d1ff1c72e988d437357c"
         },
         {
           "path": "tests/test_data_metrics.py",
@@ -172,8 +176,8 @@
     },
     "pyproject_sha256": "384bdff82def7d8301c4ba460b0d8bf3b780842f83e384633e30834f54ef0f5b",
     "release_tooling": {
-      "canonical_sha256": "3c8de3dd9695fffca666f3ae0ee30028d2e8f4feb31c96b360acbc6e58c0bfee",
-      "file_count": 4,
+      "canonical_sha256": "ebd84a680117acff59ef665c3e7898e08fbf7d982f44202b37acd7176bbdbdcc",
+      "file_count": 6,
       "files": [
         {
           "path": "scripts/audit_public_release.py",
@@ -181,7 +185,7 @@
         },
         {
           "path": "scripts/build_thesis.py",
-          "sha256": "5d196c11575e39fbdd3d410efd7eb374280b50d02b2a2cb951ffb2b1796da2c7"
+          "sha256": "a9ebd1a4965ba32075abac03d37a9fe8ecb780d3035442854d41c8c63c44a775"
         },
         {
           "path": "scripts/plot_benchmark.py",
@@ -189,7 +193,15 @@
         },
         {
           "path": "scripts/plot_thesis.py",
-          "sha256": "f321f6ce49ce2d5af68b31e151dede172e7ce8f8b6ab3e985056dd9376e279bf"
+          "sha256": "9eb68da4d16ed6ef8e1732d4deeeeb539052c4667e417741072ab3f254523d0a"
+        },
+        {
+          "path": "scripts/audit_shared_cohort.py",
+          "sha256": "25996028d0b48d0e770ff439cac0e9b41762b3a64a54bb8b6feb05b3361d3f90"
+        },
+        {
+          "path": "scripts/analyze_cohort_sensitivity.py",
+          "sha256": "e32a7e9ec800c887a1ec04e02b69bf12deaee5991881a634dba28b5ba906214e"
         }
       ]
     },
@@ -332,5 +344,108 @@
         "parent integration review"
       ]
     }
+  },
+  "prior_full_suite": {
+    "executed_at_utc": "2026-09-21T21:35:49.352589+00:00",
+    "full_suite": {
+      "command": "python -m pytest -q",
+      "tests": 107,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 34.27,
+      "warnings": 2,
+      "warning_description": "Preserved historical logistic-regression penalty argument is deprecated by the installed library.",
+      "result_source": "completed local process output",
+      "exit_code": 0
+    }
+  },
+  "cohort_reconciliation_checks": {
+    "public_synthetic_regression_tests": 6,
+    "additional_shared_cohort_synthetic_cli_checks": 29,
+    "additional_sensitivity_small_cases": 1536,
+    "private_prediction_audit": {
+      "common_rows": 964,
+      "exact_duration_matches": 964,
+      "aft_common_f1": 0.8559670781893004
+    },
+    "scope": "Retrospective artifact audit and executable aggregate validation; no new model fit, threshold tuning or prospective collection."
+  },
+  "cohort_reconciliation_revision_visual_review": {
+    "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
+    "pages": 109,
+    "reviewed_on": "2026-09-22",
+    "reference_full_review": {
+      "sha256": "e4339ab006b5e9009104aed7de87d8ad882bf8954cbc1bbdc7a37468797bfbe2",
+      "pages": 110,
+      "reviewed_ranges": [
+        [
+          1,
+          50
+        ],
+        [
+          51,
+          80
+        ],
+        [
+          81,
+          110
+        ]
+      ]
+    },
+    "final_body_identical_page_count": 70,
+    "final_visually_rechecked_pages": [
+      5,
+      6,
+      7,
+      9,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      83,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+    ],
+    "rendering": "Poppler90DPI all-page renders; exact72DPI body-pixel comparison to fully reviewed110-page edition, then visual recheck of all39 changed final pages and shifted page furniture.",
+    "blocking_findings": 0,
+    "minor_observations": [
+      "Some original chapter endings remain sparse.",
+      "The72-hour prevalence-table caption ends physical page73 and its readable table continues on74."
+    ],
+    "reviewers": [
+      "operations_review",
+      "ml_review",
+      "application_review",
+      "parent integration review"
+    ]
   }
 }

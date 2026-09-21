@@ -34,6 +34,7 @@ CHAPTERS = [
     "research/leakage/LEAKAGE_STUDY.md",
     "papers/marketneural/chapters/06_empirical_evidence.md",
     "papers/marketneural/chapters/07_operations.md",
+    "papers/marketneural/chapters/12_original_contributions.md",
     "papers/marketneural/chapters/08_discussion.md",
     "papers/marketneural/chapters/10_agentic_decisions.md",
     "papers/marketneural/chapters/11_fraud_and_spam.md",
@@ -126,7 +127,7 @@ def assemble(allow_partial=False, pandoc="pandoc"):
         bibliography=subprocess.run([pandoc,"--from","markdown","--to","gfm","--citeproc","--bibliography",str(PAPER/"references.bib"),"--wrap=none"],
             input=bibliography_input,capture_output=True,text=True,encoding="utf-8",check=True).stdout
         public=public.replace("# References {-}\n\n::: {#refs}\n:::\n",bibliography)
-        (PAPER/"manuscript.md").write_text("# MarketNeural: Learning Time in Moving Markets\n\nGhaffar Masomi\n\nTechnical edition 0.3 / 22 September 2026.\n\n"+public,encoding="utf-8")
+        (PAPER/"manuscript.md").write_text("# MarketNeural: Learning Time in Moving Markets\n\nGhaffar Masomi\n\nTechnical edition 0.4 / 22 September 2026.\n\n"+public,encoding="utf-8")
     (BUILD/"source-manifest.json").write_text(json.dumps(included,indent=2)+"\n",encoding="utf-8")
     return included
 
@@ -141,7 +142,7 @@ def cover(path):
     c.setFillColor(navy);c.setFont("Times-Roman",19)
     for i,line in enumerate(["A multimodal survival system,", "a three-stage decision cascade,", "and the engineering of temporal evidence"]): c.drawString(65,h-328-i*28,line)
     c.setFont("Helvetica",11);c.drawString(65,229,"Ghaffar Masomi")
-    c.setFont("Helvetica",10);c.drawString(65,207,"Technical edition 0.3 / 22 September 2026")
+    c.setFont("Helvetica",10);c.drawString(65,207,"Technical edition 0.4 / 22 September 2026")
     c.setStrokeColor(HexColor("#ccd7de"));c.line(65,184,w-65,184)
     c.setFont("Helvetica",9)
     for i,line in enumerate(["Multimodal learning, temporal evidence and operational engineering.","Historical observations, released algorithms and reproducible tests."]): c.drawString(65,163-i*15,line)
@@ -169,7 +170,7 @@ The retained evidence includes a 29.1 GB database snapshot containing 55,260 lis
 
 The contribution is a detailed, inspectable account of feature construction, constrained generative enrichment, temporal contracts, survival objectives, ensemble and policy selection, operational validation and failure analysis. The public release provides historical numerical algorithms, portable training and inference adapters, SQL contracts, aggregate evidence and a reproducible comparison harness. A central case study shows how outcome-dependent feature availability can bypass otherwise careful temporal controls. Later evidence also exposes dependent diagnostic cohorts and sensitivity to zero-duration observations.
 
-Historical tail-screening results improve from F1 0.8462 for the earlier XGBoost AFT model to 0.9209 for a neural meta-ensemble, with precision increasing from 0.8314 to 0.9802. These results retain their respective 941-row and 964-row evaluation cohorts. The archive also preserves hundreds of neural trial outputs and thousands of ensemble candidates. The manuscript presents this completed experimental development alongside a protocol for reconstructing matched comparisons and testing how the recorded advantage transfers to later market conditions. Public synthetic experiments separately verify the comparison software.
+Retained predictions verify 964 shared evaluation records with exactly matching entity keys, time origins and duration labels. On that common population, recomputed XGBoost AFT F1 is 0.8560 and the associated historical neural meta-ensemble result is 0.9209. Precision improves from 0.8062 to 0.9802 with a recall tradeoff, an approximately 6.5-point F1 gain. The earlier 941-row AFT result is separated by its dated outcome window. The archive preserves hundreds of neural trial outputs and thousands of ensemble candidates. The manuscript develops a precise contribution argument and distinguishes completed retrospective experiments from the additional prospective validity that a sealed future evaluation would establish. Public synthetic experiments separately verify the comparison software.
 
 \bigskip
 \noindent\textbf{Keywords:} survival analysis; multimodal learning; feature stores; temporal leakage; generative enrichment; marketplace dynamics; reproducibility.
@@ -198,7 +199,7 @@ Readers interested in the scientific method should start with the foundations, t
     cover(BUILD/"cover.pdf")
     output=(BUILD/"partial-thesis.pdf") if args.allow_partial else (PAPER/"marketneural-thesis.pdf")
     writer=PdfWriter();writer.append(BUILD/"cover.pdf");writer.append(BUILD/"body.pdf")
-    writer.add_metadata({"/Title":"MarketNeural: Learning Time in Moving Markets","/Author":"Ghaffar Masomi","/Subject":"Evidence-led research monograph, technical edition 0.3"})
+    writer.add_metadata({"/Title":"MarketNeural: Learning Time in Moving Markets","/Author":"Ghaffar Masomi","/Subject":"Evidence-led research monograph, technical edition 0.4"})
     with output.open("wb") as stream:writer.write(stream)
     receipt={"schema_version":1,"output":output.relative_to(ROOT).as_posix(),"sha256":digest(output),"pages":len(PdfReader(output).pages),
         "partial_development_build":args.allow_partial,"chapters":sources,"word_count":sum(s["words"] for s in sources),

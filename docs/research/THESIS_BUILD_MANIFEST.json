@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
   "output": "papers/marketneural/marketneural-thesis.pdf",
-  "sha256": "a938e2eca511e3c7ce7a8904df30478de2d33da3b15bd45a436e96cb917c398e",
-  "pages": 102,
+  "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
+  "pages": 109,
   "partial_development_build": false,
   "chapters": [
     {
       "path": "papers/marketneural/chapters/00_orientation.md",
-      "sha256": "23aed067a2b0941ca7f484b7d44c99ce796b050b4920f145d56a489d446f60d0",
-      "words": 1054,
-      "sha256_lf": "eb7765d9b159dd8767883d44beffac2c334b54e582594ea03a97cfad6cf1a921"
+      "sha256": "4ad93fbc79c28f9d46a670f7d76c927a329597f6055148010c02f01d5bc20519",
+      "words": 1076,
+      "sha256_lf": "97cd2627133b5c66a2550700c2c7a4be345610c7f5198ec14beb2f40f5e2a583"
     },
     {
       "path": "papers/marketneural/chapters/01_foundations.md",
@@ -49,9 +49,9 @@
     },
     {
       "path": "papers/marketneural/chapters/05_multimodal_comparison.md",
-      "sha256": "7f07053b95f483f6f2fb09308edf599c8831c4bc2763f5f1f3490b9079ceca87",
-      "words": 2089,
-      "sha256_lf": "7f07053b95f483f6f2fb09308edf599c8831c4bc2763f5f1f3490b9079ceca87"
+      "sha256": "7e5743effa8b31f817a667c0f1c73af19f25bebb6d91e0bed6b08fa69ddf1e0e",
+      "words": 2092,
+      "sha256_lf": "3b719be13c0582bf7d87431625e1de052ab8f9cbc1ae7641e6bfea189764b2c5"
     },
     {
       "path": "research/leakage/LEAKAGE_STUDY.md",
@@ -61,9 +61,9 @@
     },
     {
       "path": "papers/marketneural/chapters/06_empirical_evidence.md",
-      "sha256": "5cbd8e6ede73c1d4ac176aaa7c5eeac8f49bfddb991dabfe679f53aca9c954c5",
-      "words": 2514,
-      "sha256_lf": "5cbd8e6ede73c1d4ac176aaa7c5eeac8f49bfddb991dabfe679f53aca9c954c5"
+      "sha256": "af07d686ce5832d73fecc39ece1318c6817fdc0111e8098fb237a61c50aaec0b",
+      "words": 3266,
+      "sha256_lf": "f8b8b046d5be4529287829c5ebfe9d167762d3c818095c34ac61b50267297273"
     },
     {
       "path": "papers/marketneural/chapters/07_operations.md",
@@ -72,10 +72,16 @@
       "sha256_lf": "52fef90af02273b3642269644e8d71459a95e23a9f52e271572f8953d7e6319f"
     },
     {
+      "path": "papers/marketneural/chapters/12_original_contributions.md",
+      "sha256": "79917a297548c45867cf6e2319a7461e0a2b72b7b773fa6e2c2922e8c9cda953",
+      "words": 1136,
+      "sha256_lf": "abcfa49a2aefbcd11669e78e24fe6382ff9df1c5f0f1658e86fb4577cf1111d9"
+    },
+    {
       "path": "papers/marketneural/chapters/08_discussion.md",
-      "sha256": "2ab2e9367597720bd26e2ff8f5998e6c18a8584b9e7ba1108a2e7356c0faaa05",
-      "words": 1776,
-      "sha256_lf": "6cef9e559524e95c41dc8dd6e94f47928f784a6e5772550f2b702370e93cc09d"
+      "sha256": "c2da389c6f0ad36d11f13e245d6878c4e868886daf23da06f5462db834854d85",
+      "words": 1815,
+      "sha256_lf": "9c7a33f36d919780b36cf23c59460051fb55bbda3595cefca6a215dd5a5da61c"
     },
     {
       "path": "papers/marketneural/chapters/10_agentic_decisions.md",
@@ -91,12 +97,12 @@
     },
     {
       "path": "papers/marketneural/chapters/09_reproduction.md",
-      "sha256": "5ec8413dc463e731e86905a2783dfc5d7b5c168a941bb69b5c7e63ba341c5be3",
-      "words": 1347,
-      "sha256_lf": "a6c33f818aa8ae923f7d996b0ab32530e836a154182b24264351c27550b3cbd2"
+      "sha256": "e0f2318385de157af8773341e6463c2ff03566185f4b1d3b8e7b4a5cc32908d8",
+      "words": 2036,
+      "sha256_lf": "6d8ff4565accca9b98a3edcb94011481253bb9749cdc0f650a1c2d646f1cd87a"
     }
   ],
-  "word_count": 33504,
+  "word_count": 36145,
   "build_tools": {
     "pandoc": "pandoc 3.11",
     "tectonic": "Tectonic 0.17.0"
@@ -104,55 +110,421 @@
   "scope": "Public inputs only; historical images and aggregates are not new model experiments.",
   "source_hash_rule": "sha256 records the bytes used for this build; sha256_lf normalizes CRLF to LF for cross-platform source comparison.",
   "figure_count": 23,
-  "bibliography_entries": 16,
+  "bibliography_entries": 17,
   "author": "Ghaffar Masomi",
   "builder": {
     "path": "scripts/build_thesis.py",
-    "sha256_lf": "34a028eaee6d3188ac3bb6b00731935ed9bcd58bbc31f1f6320775701fec42d3"
-  },
-  "historical_comparison": {
-    "path": "research/thesis_evidence/historical_neural_comparison.json",
-    "sha256": "d4d0778a131fdcd9a49d27866aff7ea708e626ffaa615872d699efe0a32f1248",
-    "figure": "papers/marketneural/figures/r14_historical_neural_advantage.svg",
-    "figure_sha256_lf": "0495b860425e807d55d197f5afb24469340f09b631bb588866b54c66f65bbc02"
+    "sha256_lf": "a9ebd1a4965ba32075abac03d37a9fe8ecb780d3035442854d41c8c63c44a775"
   },
   "visual_review": {
-    "sha256": "a938e2eca511e3c7ce7a8904df30478de2d33da3b15bd45a436e96cb917c398e",
-    "pages": 102,
+    "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
+    "pages": 109,
     "reviewed_on": "2026-09-22",
-    "rendering": "Poppler at 90 DPI, complete contact sheets and enlarged table, chart, equation and architecture checks",
-    "reviewed_physical_page_ranges": [
-      [
-        1,
-        50
-      ],
-      [
-        51,
-        102
+    "reference_full_review": {
+      "sha256": "e4339ab006b5e9009104aed7de87d8ad882bf8954cbc1bbdc7a37468797bfbe2",
+      "pages": 110,
+      "reviewed_ranges": [
+        [
+          1,
+          50
+        ],
+        [
+          51,
+          80
+        ],
+        [
+          81,
+          110
+        ]
       ]
-    ],
-    "enlarged_pages": [
-      2,
-      23,
-      42,
-      48,
-      50,
-      66,
-      67,
+    },
+    "final_body_identical_page_count": 70,
+    "final_visually_rechecked_pages": [
+      5,
+      6,
+      7,
+      9,
       68,
+      69,
+      70,
+      71,
       72,
+      73,
+      74,
       75,
+      76,
+      83,
+      85,
+      86,
+      87,
+      88,
+      89,
       90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
       98,
+      99,
+      100,
       101,
-      102
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
     ],
+    "rendering": "Poppler90DPI all-page renders; exact72DPI body-pixel comparison to fully reviewed110-page edition, then visual recheck of all39 changed final pages and shifted page furniture.",
     "blocking_findings": 0,
-    "minor_observations": "Physical pages 84 and 96 retain sparse continuation text; no missing content or clipping.",
+    "minor_observations": [
+      "Some original chapter endings remain sparse.",
+      "The72-hour prevalence-table caption ends physical page73 and its readable table continues on74."
+    ],
     "reviewers": [
-      "application_review",
       "operations_review",
+      "ml_review",
+      "application_review",
       "parent integration review"
     ]
+  },
+  "final_layout_comparison": {
+    "reference_sha256": "e4339ab006b5e9009104aed7de87d8ad882bf8954cbc1bbdc7a37468797bfbe2",
+    "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
+    "reference_pages": 110,
+    "pages": 109,
+    "comparison": "Exact72DPI RGB body-pixel equality, excluding top43pt and bottom45pt page furniture; matching pages may shift after the shortened chapter.",
+    "body_identical_pages": [
+      {
+        "final_page": 1,
+        "reviewed_reference_page": 1
+      },
+      {
+        "final_page": 2,
+        "reviewed_reference_page": 2
+      },
+      {
+        "final_page": 3,
+        "reviewed_reference_page": 3
+      },
+      {
+        "final_page": 4,
+        "reviewed_reference_page": 4
+      },
+      {
+        "final_page": 8,
+        "reviewed_reference_page": 8
+      },
+      {
+        "final_page": 10,
+        "reviewed_reference_page": 10
+      },
+      {
+        "final_page": 11,
+        "reviewed_reference_page": 11
+      },
+      {
+        "final_page": 12,
+        "reviewed_reference_page": 12
+      },
+      {
+        "final_page": 13,
+        "reviewed_reference_page": 13
+      },
+      {
+        "final_page": 14,
+        "reviewed_reference_page": 14
+      },
+      {
+        "final_page": 15,
+        "reviewed_reference_page": 15
+      },
+      {
+        "final_page": 16,
+        "reviewed_reference_page": 16
+      },
+      {
+        "final_page": 17,
+        "reviewed_reference_page": 17
+      },
+      {
+        "final_page": 18,
+        "reviewed_reference_page": 18
+      },
+      {
+        "final_page": 19,
+        "reviewed_reference_page": 19
+      },
+      {
+        "final_page": 20,
+        "reviewed_reference_page": 20
+      },
+      {
+        "final_page": 21,
+        "reviewed_reference_page": 21
+      },
+      {
+        "final_page": 22,
+        "reviewed_reference_page": 22
+      },
+      {
+        "final_page": 23,
+        "reviewed_reference_page": 23
+      },
+      {
+        "final_page": 24,
+        "reviewed_reference_page": 24
+      },
+      {
+        "final_page": 25,
+        "reviewed_reference_page": 25
+      },
+      {
+        "final_page": 26,
+        "reviewed_reference_page": 26
+      },
+      {
+        "final_page": 27,
+        "reviewed_reference_page": 27
+      },
+      {
+        "final_page": 28,
+        "reviewed_reference_page": 28
+      },
+      {
+        "final_page": 29,
+        "reviewed_reference_page": 29
+      },
+      {
+        "final_page": 30,
+        "reviewed_reference_page": 30
+      },
+      {
+        "final_page": 31,
+        "reviewed_reference_page": 31
+      },
+      {
+        "final_page": 32,
+        "reviewed_reference_page": 32
+      },
+      {
+        "final_page": 33,
+        "reviewed_reference_page": 33
+      },
+      {
+        "final_page": 34,
+        "reviewed_reference_page": 34
+      },
+      {
+        "final_page": 35,
+        "reviewed_reference_page": 35
+      },
+      {
+        "final_page": 36,
+        "reviewed_reference_page": 36
+      },
+      {
+        "final_page": 37,
+        "reviewed_reference_page": 37
+      },
+      {
+        "final_page": 38,
+        "reviewed_reference_page": 38
+      },
+      {
+        "final_page": 39,
+        "reviewed_reference_page": 39
+      },
+      {
+        "final_page": 40,
+        "reviewed_reference_page": 40
+      },
+      {
+        "final_page": 41,
+        "reviewed_reference_page": 41
+      },
+      {
+        "final_page": 42,
+        "reviewed_reference_page": 42
+      },
+      {
+        "final_page": 43,
+        "reviewed_reference_page": 43
+      },
+      {
+        "final_page": 44,
+        "reviewed_reference_page": 44
+      },
+      {
+        "final_page": 45,
+        "reviewed_reference_page": 45
+      },
+      {
+        "final_page": 46,
+        "reviewed_reference_page": 46
+      },
+      {
+        "final_page": 47,
+        "reviewed_reference_page": 47
+      },
+      {
+        "final_page": 48,
+        "reviewed_reference_page": 48
+      },
+      {
+        "final_page": 49,
+        "reviewed_reference_page": 49
+      },
+      {
+        "final_page": 50,
+        "reviewed_reference_page": 50
+      },
+      {
+        "final_page": 51,
+        "reviewed_reference_page": 51
+      },
+      {
+        "final_page": 52,
+        "reviewed_reference_page": 52
+      },
+      {
+        "final_page": 53,
+        "reviewed_reference_page": 53
+      },
+      {
+        "final_page": 54,
+        "reviewed_reference_page": 54
+      },
+      {
+        "final_page": 55,
+        "reviewed_reference_page": 55
+      },
+      {
+        "final_page": 56,
+        "reviewed_reference_page": 56
+      },
+      {
+        "final_page": 57,
+        "reviewed_reference_page": 57
+      },
+      {
+        "final_page": 58,
+        "reviewed_reference_page": 58
+      },
+      {
+        "final_page": 59,
+        "reviewed_reference_page": 59
+      },
+      {
+        "final_page": 60,
+        "reviewed_reference_page": 60
+      },
+      {
+        "final_page": 61,
+        "reviewed_reference_page": 61
+      },
+      {
+        "final_page": 62,
+        "reviewed_reference_page": 62
+      },
+      {
+        "final_page": 63,
+        "reviewed_reference_page": 63
+      },
+      {
+        "final_page": 64,
+        "reviewed_reference_page": 64
+      },
+      {
+        "final_page": 65,
+        "reviewed_reference_page": 65
+      },
+      {
+        "final_page": 66,
+        "reviewed_reference_page": 66
+      },
+      {
+        "final_page": 67,
+        "reviewed_reference_page": 67
+      },
+      {
+        "final_page": 77,
+        "reviewed_reference_page": 77
+      },
+      {
+        "final_page": 78,
+        "reviewed_reference_page": 78
+      },
+      {
+        "final_page": 79,
+        "reviewed_reference_page": 79
+      },
+      {
+        "final_page": 80,
+        "reviewed_reference_page": 80
+      },
+      {
+        "final_page": 81,
+        "reviewed_reference_page": 81
+      },
+      {
+        "final_page": 82,
+        "reviewed_reference_page": 82
+      },
+      {
+        "final_page": 84,
+        "reviewed_reference_page": 84
+      }
+    ],
+    "body_changed_pages": [
+      5,
+      6,
+      7,
+      9,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      83,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109
+    ]
+  },
+  "cohort_reconciliation": {
+    "path": "research/thesis_evidence/cohort_reconciliation.json",
+    "sha256_lf": "684694a75074c0b150058a330fbe432d6cf65bef901bf9b19275418a2cc3f738"
   }
 }

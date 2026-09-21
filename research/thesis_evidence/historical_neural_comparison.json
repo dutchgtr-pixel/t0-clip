@@ -6,7 +6,7 @@
   "privacy": "Contains model settings, aggregate counts, metrics and source hashes only. Private source locations, row identifiers, raw data, feature vocabularies and trained weights are not redistributed.",
   "historical_comparison": {
     "supported_statement": "The Stage0 neural ensembles outperformed the earlier XGBoost AFT result on reported historical F1; the strongest retained neural meta result also had higher reported precision and recall.",
-    "comparison_type": "Historical results on different reported evaluation cohorts; not a reconstructed paired benchmark.",
+    "comparison_type": "Earlier941-row AFT evaluation window versus later964-row neural holdout; exact dated-window distinction is resolved by cohort_reconciliation.json.",
     "target_horizon_hours": 504,
     "results": [
       {
@@ -105,7 +105,7 @@
       "earlier_aft": "The earlier report and public implementation are retained. A matched reconstruction of its selection budget, features and evaluation cohort against the neural run has not been completed."
     },
     "interpretation_limits": [
-      "The earlier tree report evaluates 941 records with 166 positives; the neural holdout stream evaluates 964 records with 114 positives. Identity, time-window and feature equivalence have not been established for a paired comparison.",
+      "The earlier941/166 AFT report covers6\u201313January; the later964/114 neural holdout covers13\u201320January. A later971-row AFT export contains every964 neural key and exactly matching labels. See the reconstructed common-row AFT metrics in cohort_reconciliation.json.",
       "The reported tree positive boundary is duration >= 504 hours; the saved neural analysis uses duration > 504 hours. Boundary cases are not harmonized here.",
       "The difference is a historical reported-performance advantage, not a statistical significance estimate or an architecture-only treatment effect.",
       "This evidence concerns the earlier XGBoost AFT result. It does not establish superiority over every tree method, Cox models, all datasets or every operating point.",
@@ -425,5 +425,10 @@
         "search_seed": 51
       }
     ]
+  },
+  "reconciliation_update": {
+    "date": "2026-09-22",
+    "path": "research/thesis_evidence/cohort_reconciliation.json",
+    "summary": "Shared evaluation rows are independently verified for the later971-to964 pair. Earlier941/.8462 remains a prior-week result; the common964 AFT F1 is.855967, compared with logged neural meta.9209."
   }
 }

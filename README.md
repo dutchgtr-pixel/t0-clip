@@ -5,13 +5,16 @@
 **MarketNeural** extends this repository with a thesis-style
 [PDF monograph](papers/marketneural/marketneural-thesis.pdf), its editable
 [manuscript](papers/marketneural/manuscript.md), an executable three-stage survival
-cascade, feature-store SQL, and audited historical evidence. Fifteen chapters cover
+cascade, feature-store SQL, and audited historical evidence. Sixteen chapters cover
 the operational platform, image and text enrichment, neural tuning, leakage,
-market adaptation, agentic decisions, and fraud/spam extensions. The recorded
-neural meta-ensemble improves historical tail-screening F1 from **0.8462 for
-XGBoost AFT to 0.9209**, with precision increasing from **0.8314 to 0.9802**.
+market adaptation, agentic decisions, and fraud/spam extensions. Retained exports
+verify **964 shared evaluation records**. XGBoost AFT F1 recomputed on those rows
+is **0.8560**, compared with the associated neural meta-ensemble's recorded
+**0.9209**; precision increases from **0.8062 to 0.9802**, with a recall tradeoff.
 The [empirical chapter](papers/marketneural/chapters/06_empirical_evidence.md)
-shows the results, experiment counts and the respective evaluation cohorts.
+reconciles the dated experiments, and the
+[contribution chapter](papers/marketneural/chapters/12_original_contributions.md)
+states the novelty argument and its supporting evidence.
 
 The monograph is authored by **Ghaffar Masomi**.
 
