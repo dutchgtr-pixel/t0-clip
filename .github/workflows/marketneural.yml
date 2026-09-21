@@ -33,3 +33,9 @@ jobs:
         run: |
           python -m marketneural synthetic --output data/synthetic --n 600
           python -m marketneural benchmark --config configs/synthetic_smoke.json --output results/ci_smoke
+      - name: Exercise three-stage training and routing
+        run: python -m research.cascade --smoke
+      - name: Execute isolated feature-store contracts
+        run: |
+          npm install --prefix results/sql-smoke --ignore-scripts --no-audit --no-fund @electric-sql/pglite@0.5.8
+          NODE_PATH="$PWD/results/sql-smoke/node_modules" node research/feature_store_ddl/smoke_pglite.cjs

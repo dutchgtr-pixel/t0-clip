@@ -63,7 +63,8 @@ PG_DSN="..." ./status_sanity_audit --mode init --schema marketplace
 PG_DSN="..." MARKETPLACE_ADAPTER=mock ./status_sanity_audit --mode run --scope all
 
 # 3) Force-run audit on a specific set of listing IDs (ignore cadence)
-./status_sanity_audit --mode run --only-ids 123456789,123456790 --force
+Synthetic identifiers in this documentation example:
+./status_sanity_audit --mode run --only-ids 1001,1002 --force
 
 # 4) Apply SAFE fixes (never "unsell" sold rows; never resurrect removed rows)
 ./status_sanity_audit --mode run --scope all --apply safe

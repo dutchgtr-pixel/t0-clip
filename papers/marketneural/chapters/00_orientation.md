@@ -1,0 +1,37 @@
+# The research problem and the system that made it measurable
+
+## A decision under a moving information boundary
+
+A listing is a temporary offer whose description, price, photographs and availability may change before an analyst finishes examining it. A useful intelligence system must do more than recognize an attractive item. It must identify what is known now, estimate how long the opportunity may remain available, and preserve enough evidence to explain the decision later. This project built an operational data platform around that problem and developed survival models over its structured and multimodal representations.
+
+The subject of this monograph is the implemented system and the evidence it produced. That includes scheduled workflows, stored content, enrichment services, temporal feature stores, trained neural configurations, a three-stage survival cascade, a later independent multimodal model, candidate queues, explanatory narratives, and an operator-controlled conversation agent. These components formed a research environment: they made observations repeatable, provided outcome follow-up, and exposed failure modes that could not have been discovered from a static benchmark alone.
+
+The system's scale is substantial for an applied research platform. A retained database snapshot contains 55,260 listing rows, 240,622 image assets and 228,958 image-feature records within 29.1 GB. The platform completed more than 70,000 successful Airflow workflow runs over its operating lifetime. A retained scheduler snapshot contains 15,360 runs over 40 workflow identifiers, including 15,254 stored successes. This snapshot covers a subset of the platform's operating history.
+
+The central statistical difficulty is that a training row is not automatically a historical decision. An attractive feature may exist in a present-day table only because an item remained observable long enough for a later job to process it. A report written after the outcome can improve a retrospective prediction while being unavailable when the actual decision was made. A model can exploit that distinction through missingness without ever reading an explicit outcome column. The platform's most instructive leakage investigation concerns precisely this failure.
+
+## What the work contributes
+
+The engineering contribution is the connection among content processing, temporal contracts, model evaluation and operational evidence. The implementation does not invent all of its mathematical ingredients. Survival likelihoods, proportional hazards, boosted trees, pretrained embeddings, attention, mixture distributions and exponential recency weighting have established precedents. The contribution under examination is how those ingredients were assembled and constrained in a fast-changing market, and what the resulting evidence says about their usefulness and limitations.
+
+The methodological contribution is a concrete account of information boundaries. It distinguishes event time, first observation, content availability, feature computation and decision time. It examines how those clocks interact with feature-store refreshes, train-only transformations, label maturity and model selection. It also documents why declared temporal checks can fail when the observation process itself depends on the outcome.
+
+The modeling contribution includes recoverable historical numerical algorithms and portable implementations for the three-stage cascade. The later selected multimodal model contains 17,145,736 unique parameters and combines structured attributes, listing text, image vectors and image-report vectors. Its complexity is technically meaningful, but parameter count is not evidence of superiority. The controlled comparison must determine whether useful gains arise from richer information, nonlinear representations, better handling of censoring, a different decision policy, or merely a larger tuning budget.
+
+The operational contribution includes a real operator system for candidate review, explanation, message drafting, approval and conversation-state reconciliation. The narrative layer and the large-language-model service are separate from the survival network. They use its outputs and other evidence to support decisions; they do not convert an uncertain forecast into an independently verified fact. Their implementation is described later alongside the parts of autonomous operation that remain a prospective research extension.
+
+## Questions that the evidence can answer
+
+This monograph asks five connected questions. First, what data and engineering were necessary to construct prediction-time representations at the observed scale? Second, how did the implemented cascade and later multimodal network formulate their survival targets and decision rules? Third, which safeguards detected leakage, and which mechanisms escaped them? Fourth, how much do the retained results establish about predictive behavior, adaptation and operational reliability? Fifth, how can the implemented decision architecture use survival information while preserving the distinction between analysis, policy and execution?
+
+The available evidence answers these questions unevenly. Source code and saved configurations establish many architectural details. Prediction artifacts support exact recomputation of selected confusion matrices and overlap counts. Retained reports document tests and operational behavior at particular dates. A matched real-data demonstration that neural networks outperform Cox or tree models remains an experiment to complete.
+
+This asymmetry is part of the research result. A thesis-style treatment should preserve it rather than flatten all statements into a single confidence level. Successful scheduling is evidence of execution. A restoration report is evidence of recoverability within its declared checks. A parity test is evidence of agreement between implementations. None of these alone establishes calibration, prospective utility or economic return.
+
+## Reading the empirical record
+
+Historical cohorts are kept separate. An earlier sold-only Slow21 tree-model evaluation does not share the target population of a later FAST72 neural policy. The more recent slice of the locked policy is nested inside its holdout and cannot serve as a second independent test. A later rebuilt training table supplies evidence of overlap in that reconstruction, but cannot be silently substituted for a missing original fit matrix. Each distinction changes which comparisons are valid.
+
+The public synthetic benchmark is a reproducibility exercise. It checks that temporal splitting, censoring, preprocessing, model fitting, selection and reporting can run coherently. Its results are reported even where a conventional baseline performs best. They do not measure effectiveness in the original market. A future real-data comparison must preserve the same discipline and permit a negative result for the proposed neural architecture.
+
+The remainder of the monograph develops the statistical foundations, the actual data and enrichment mechanisms, the released model and SQL implementations, the leakage case study, the retained empirical record, and the operational decision architecture. It ends with a reproduction contract and a research agenda whose success criteria are observable rather than promotional.

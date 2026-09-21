@@ -1,0 +1,52 @@
+{
+  "purpose": "synthetic software execution; not historical model accuracy",
+  "seed": 42,
+  "training_rows": 32,
+  "development_rows": 8,
+  "test_rows": 8,
+  "thresholds": "prespecified routing exercise; not selected for accuracy",
+  "stage_audit": {
+    "0": {
+      "train_rows": 32,
+      "train_events": 20,
+      "development_rows": 8,
+      "development_events": 5,
+      "neural_member_fits": 1,
+      "policy": {
+        "threshold": 0.999,
+        "selection": "caller_prespecified"
+      }
+    },
+    "1": {
+      "train_rows": 28,
+      "train_events": 20,
+      "development_rows": 8,
+      "development_events": 5,
+      "neural_member_fits": 1,
+      "policy": {
+        "threshold": 0.0,
+        "selection": "caller_prespecified"
+      }
+    },
+    "2": {
+      "train_rows": 28,
+      "train_events": 20,
+      "development_rows": 8,
+      "development_events": 5,
+      "neural_member_fits": 1,
+      "policy": {
+        "threshold": 0.5,
+        "selection": "caller_prespecified"
+      }
+    }
+  },
+  "bucket_counts": {
+    "FAST_72H": 8
+  },
+  "stage_parameters": {
+    "0": 53859,
+    "1": 53859,
+    "2": 53859
+  },
+  "finite_required_scores": true
+}

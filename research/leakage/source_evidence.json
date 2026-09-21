@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "source_id": "population_postmortem",
+      "sha256": "8bed4ebbe18f38e2ede462255cbb7fbcc117f8b31c8f3139245805b1351c0e93",
+      "source_lines": 257,
+      "visibility": "private original; hash provides identity, not public independent reproducibility"
+    },
+    {
+      "source_id": "split_builder",
+      "sha256": "49356156493f9222e9f012bc953f86bd4cc98beda8010043b50ebd6e5864f9f5",
+      "source_lines": 319,
+      "visibility": "private original; hash provides identity, not public independent reproducibility"
+    },
+    {
+      "source_id": "missingness_audit",
+      "sha256": "73cc7d1634bc5c689321ae1a2cba409c8b08a4469d3d86037e28648a52091bc7",
+      "source_lines": 349,
+      "visibility": "private original; hash provides identity, not public independent reproducibility"
+    },
+    {
+      "source_id": "full_prep_audit",
+      "sha256": "37719c1b432e7d5beaa5fdf76d0d6c1705a248695d7a08b4c54685de19a17738",
+      "source_lines": 532,
+      "visibility": "private original; hash provides identity, not public independent reproducibility"
+    },
+    {
+      "source_id": "shortcut_audit",
+      "sha256": "3992670ab8b9d79bd0d8c37ee4835cd321d4ad268dee5ebc698b63ae8d2ead3b",
+      "source_lines": 197,
+      "visibility": "private original; hash provides identity, not public independent reproducibility"
+    },
+    {
+      "source_id": "base_feature_selection",
+      "sha256": "79afb89aba09ab3889db96f51135cc4235bb920e56fba270c6906b9a91fe4439",
+      "source_lines": 3676,
+      "visibility": "private original; hash provides identity, not public independent reproducibility"
+    }
+  ],
+  "related_public_sql_provenance": "../feature_store_ddl/provenance.json",
+  "independent_aggregate_record": "aggregate_evidence.json"
+}

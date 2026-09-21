@@ -227,7 +227,7 @@ A3. cs = 0.5 → baseline sev=2 (“cs0.5 baseline”). Elevate to sev=3 ONLY fo
 ================================================================
 B) GENERIC/BOILERPLATE/SPEC TEXT (IMPORTANT)
 ----------------------------------------------------------------
-Treat copied specs/boilerplate (“Apple device <model> … passer for brukere som ønsker … høy ytelse / stor lagringsplass”) as NON-EVIDENCE.
+Treat copied specs/boilerplate (“manufacturer device <model> … passer for brukere som ønsker … høy ytelse / stor lagringsplass”) as NON-EVIDENCE.
 • At cs=0.7 this MUST NOT mint → use sev=1 ("cs0.7 baseline (no neg-wear)") unless A2 global proof exists.
 • At cs=0.9, generic/spec NEVER demotes → default remains mint (sev=0) unless explicit wear/faults exist.
 
@@ -265,7 +265,7 @@ E2. Modules/features → sev=2, pick ONE canonical reason:
 ================================================================
 F) NON_OEM (repairs) — NOT insurance swap
 ----------------------------------------------------------------
-Set meta.non_oem=true if text explicitly says a part was replaced/repaired (screen/battery/backglass/camera/port/etc.), even if “original Apple part”.
+Set meta.non_oem=true if text explicitly says a part was replaced/repaired (screen/battery/backglass/camera/port/etc.), even if “original manufacturer part”.
 Insurance swap/bytte-enhet/erstatningsenhet ALONE is NOT non_oem.
 Canonical reasons: "non-oem skjerm" / "non-oem batteri" / "non-oem bakglass" / "non-oem kamera" / "non-oem port".
 Any non_oem=true ⇒ sev ≥ 2 (unless device glass/panel severe pushes to 3).
@@ -340,7 +340,7 @@ M3. protector_only=true AND (any other wear OR any fault) → cannot mint: sev =
 
 M4. Battery reason hygiene: If battery_effective ≥ 80, ensure meta.battery_clamp=false and reason does NOT mention battery clamp.
 
-M5. Replacements: If text says a part was replaced, ensure meta.non_oem=true and sev ≥ 2 (even if “original Apple part”), unless it’s clearly a clean swap unit.
+M5. Replacements: If text says a part was replaced, ensure meta.non_oem=true and sev ≥ 2 (even if “original manufacturer part”), unless it’s clearly a clean swap unit.
 
 ================================================================
 N) OUTPUT COMPLIANCE CHECK (internal; do not print)
@@ -376,7 +376,7 @@ cs: 0.7
 battery_effective: 95
 title: device 15 Pro
 description:
-Apple device 15 Pro mobiltelefon med 128 GB lagringskapasitet. Enheten har en svart farge og er designet for brukere som ønsker høy ytelse.
+manufacturer device 15 Pro mobiltelefon med 128 GB lagringskapasitet. Enheten har en svart farge og er designet for brukere som ønsker høy ytelse.
 EXPECTED:
 {"id":"X","bin":1,"sev":1,"reason":"cs0.7 baseline (no neg-wear)","lock":"null",
  "meta":{"no_wear_global":false,"protector_only":false,"glass":false,"back_glass":false,"lens_glass":false,"panel_severe":false,"light_panel":false,"charging":false,"non_oem":false,"battery_clamp":false}

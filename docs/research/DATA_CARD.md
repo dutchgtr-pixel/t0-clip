@@ -1,6 +1,15 @@
 # MarketNeural data card
 
-Version 0.1 — 2026-09-21. The distributable benchmark data are **synthetic**. Historical private marketplace rows, images, text, identifiers, and fitted vocabularies are not included.
+Version 0.2 — 2026-09-21. The distributable benchmark data are **synthetic**.
+The working datasets are **proprietary** and remain private, including Parquet
+tables, original identifiers, source links, seller details, training exports and
+fitted vocabularies. See [controlled research access](../../DATA_ACCESS.md).
+
+The monograph includes two expressly approved anonymous photographs and their
+limited saved judgments. They are illustrative media with reviewed filenames,
+metadata and outputs, not a public image dataset. Their original record IDs and
+source URLs are excluded. The [case provenance](../../research/thesis_evidence/image_case_studies.json)
+describes pairing and interpretation limits without publishing the private keys.
 
 ## Synthetic dataset
 

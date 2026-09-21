@@ -1045,10 +1045,10 @@ SELECT
         THEN 1 ELSE 0 END)::int                                           AS ai_ship_unspecified,
 
   -- repair_provider one-hots
-  (CASE WHEN lower(ai.repair_provider) = 'apple'       THEN 1 ELSE 0 END)::int AS ai_rep_apple,
+  (CASE WHEN lower(ai.repair_provider) = 'manufacturer'       THEN 1 ELSE 0 END)::int AS ai_rep_manufacturer,
   (CASE WHEN lower(ai.repair_provider) = 'authorized'  THEN 1 ELSE 0 END)::int AS ai_rep_authorized,
   (CASE WHEN lower(ai.repair_provider) = 'independent' THEN 1 ELSE 0 END)::int AS ai_rep_independent,
-  (CASE WHEN ai.repair_provider IS NULL OR lower(ai.repair_provider) NOT IN ('apple','authorized','independent')
+  (CASE WHEN ai.repair_provider IS NULL OR lower(ai.repair_provider) NOT IN ('manufacturer','authorized','independent')
         THEN 1 ELSE 0 END)::int                                                AS ai_rep_unknown,
 
   -- booleans → ints
@@ -1116,7 +1116,7 @@ Feature	Type	Source	Semantics
 ai_sale_mode_obo / firm / bids / unspecified	int4	ai.sale_mode	1 for that sale mode; unspecified=1 when not in {obo, firm, bids}.
 ai_owner_private / work / unknown	int4	ai.owner_type	1 for that owner type; unknown=1 when not in {private, work_phone} or NULL.
 ai_ship_can / pickup / unspecified	int4	ai.can_ship / pickup_only	Mutually exclusive 0/1 flags derived from the two booleans.
-ai_rep_apple / authorized / independent / unknown	int4	ai.repair_provider	1 for that provider; unknown=1 for NULL / anything else.
+ai_rep_manufacturer / authorized / independent / unknown	int4	ai.repair_provider	1 for that provider; unknown=1 for NULL / anything else.
 ai_can_ship_bin	int4	ai.can_ship	Boolean → int (0/1).
 ai_pickup_only_bin	int4	ai.pickup_only	Boolean → int (0/1).
 ai_vat_invoice_bin	int4	ai.vat_invoice	Boolean → int (0/1).
@@ -1176,7 +1176,7 @@ to_add (feature_name, dtype, expr_sql, is_nullable, description) AS (
   ('ai_ship_unspecified','int4','ai_ship_unspecified',TRUE,'AI: shipping unspecified'),
 
   -- repair provider one-hots
-  ('ai_rep_apple','int4','ai_rep_apple',TRUE,'AI: repair Apple'),
+  ('ai_rep_manufacturer','int4','ai_rep_manufacturer',TRUE,'AI: repair manufacturer'),
   ('ai_rep_authorized','int4','ai_rep_authorized',TRUE,'AI: repair authorized'),
   ('ai_rep_independent','int4','ai_rep_independent',TRUE,'AI: repair independent'),
   ('ai_rep_unknown','int4','ai_rep_unknown',TRUE,'AI: repair unknown'),
@@ -1375,7 +1375,8 @@ SELECT e.listing_id,
        ai.storage_gb_fixed_ai, ai.updated_at
 FROM ml.tom_features_v1_enriched_ai_clean_mv e
 JOIN "device".device_ai_enrich ai USING (listing_id)
-WHERE e.listing_id IN (432361614, 432364948, 432099498);
+-- Synthetic fixture identifiers; substitute your own authorized records.
+WHERE e.listing_id IN (1001, 1002, 1003);
 
 
 (If experimenting with a time guard) distribution check:
@@ -1546,10 +1547,10 @@ SELECT
         THEN 1 ELSE 0 END)::int                                           AS ai_ship_unspecified,
 
   -- repair_provider one-hots
-  (CASE WHEN lower(ai.repair_provider) = 'apple'       THEN 1 ELSE 0 END)::int AS ai_rep_apple,
+  (CASE WHEN lower(ai.repair_provider) = 'manufacturer'       THEN 1 ELSE 0 END)::int AS ai_rep_manufacturer,
   (CASE WHEN lower(ai.repair_provider) = 'authorized'  THEN 1 ELSE 0 END)::int AS ai_rep_authorized,
   (CASE WHEN lower(ai.repair_provider) = 'independent' THEN 1 ELSE 0 END)::int AS ai_rep_independent,
-  (CASE WHEN ai.repair_provider IS NULL OR lower(ai.repair_provider) NOT IN ('apple','authorized','independent')
+  (CASE WHEN ai.repair_provider IS NULL OR lower(ai.repair_provider) NOT IN ('manufacturer','authorized','independent')
         THEN 1 ELSE 0 END)::int                                                AS ai_rep_unknown,
 
   -- booleans → ints

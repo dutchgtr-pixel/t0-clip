@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "output": "papers/marketneural/marketneural-thesis.pdf",
+  "sha256": "eda6f34e88242a7a361d5ed79b59b628629714311354182fa9233192b5003401",
+  "pages": 99,
+  "partial_development_build": false,
+  "chapters": [
+    {
+      "path": "papers/marketneural/chapters/00_orientation.md",
+      "sha256": "150faaea2295c12571765771d508d42ab040d5231bc3ad46845dd6865596b59a",
+      "words": 1026,
+      "sha256_lf": "a684b4fb23591a10750af1d67c071e4f5935b372a8432417cc50bd2329734f0e"
+    },
+    {
+      "path": "papers/marketneural/chapters/01_foundations.md",
+      "sha256": "34ac725254f76637e0a6c952cd816a077d09582337d171f8eb3938f0e07a2915",
+      "words": 1546,
+      "sha256_lf": "e7a851623f21c74c4eefda7ae7d39be569ac5a0ba19fb0e4c8b3e232c3cf180e"
+    },
+    {
+      "path": "papers/marketneural/chapters/02_temporal_platform.md",
+      "sha256": "9f642022f29315085f7352b60f5eb228470e681b8ffa983e76093551384a15cf",
+      "words": 1693,
+      "sha256_lf": "9f642022f29315085f7352b60f5eb228470e681b8ffa983e76093551384a15cf"
+    },
+    {
+      "path": "research/feature_store_ddl/METHODS.md",
+      "sha256": "7f5c51e7f4b27d5ef0d427423f5ee8026d290e90bc0f537505380e967274c106",
+      "words": 2420,
+      "sha256_lf": "7f5c51e7f4b27d5ef0d427423f5ee8026d290e90bc0f537505380e967274c106"
+    },
+    {
+      "path": "papers/marketneural/chapters/03_generative_enrichment.md",
+      "sha256": "b9cf0723c67eb45e91721406ab4cecd67b412b38bf5164c32282d3e22d100553",
+      "words": 2831,
+      "sha256_lf": "b9cf0723c67eb45e91721406ab4cecd67b412b38bf5164c32282d3e22d100553"
+    },
+    {
+      "path": "papers/marketneural/chapters/04_image_case_studies.md",
+      "sha256": "c362a283a95f2426fafbdd00ccbb10358e1fdd795cf18f7e8208bc1c7f49acc9",
+      "words": 1144,
+      "sha256_lf": "91c4abdf95d6c3795d94a933b17da6c4e079494ce70da0654c10657c817a451d"
+    },
+    {
+      "path": "research/cascade/METHODS.md",
+      "sha256": "af6d2cd7c322f7db50178550ee0dca89f1e668a7be6d5e1ba85ebcc259b79453",
+      "words": 3747,
+      "sha256_lf": "af6d2cd7c322f7db50178550ee0dca89f1e668a7be6d5e1ba85ebcc259b79453"
+    },
+    {
+      "path": "papers/marketneural/chapters/05_multimodal_comparison.md",
+      "sha256": "b2c28a1bc8c975b4c57d6952fc16b6b29449e71cd20beab4c789d208e15c54b1",
+      "words": 2005,
+      "sha256_lf": "b2c28a1bc8c975b4c57d6952fc16b6b29449e71cd20beab4c789d208e15c54b1"
+    },
+    {
+      "path": "research/leakage/LEAKAGE_STUDY.md",
+      "sha256": "039e39d9b8b08d0a271b42a9e421de4e4ca81c47f03cd6304651fe72f470c783",
+      "words": 4452,
+      "sha256_lf": "039e39d9b8b08d0a271b42a9e421de4e4ca81c47f03cd6304651fe72f470c783"
+    },
+    {
+      "path": "papers/marketneural/chapters/06_empirical_evidence.md",
+      "sha256": "28dae3cc74e7aef9efd76573706397a743823bce202592e4835d8235454db8a8",
+      "words": 1935,
+      "sha256_lf": "28dae3cc74e7aef9efd76573706397a743823bce202592e4835d8235454db8a8"
+    },
+    {
+      "path": "papers/marketneural/chapters/07_operations.md",
+      "sha256": "98cb43682b4d3905c9f7ca6570e08726ef0e23a6afdd67f380e8d3275191af2c",
+      "words": 2180,
+      "sha256_lf": "52fef90af02273b3642269644e8d71459a95e23a9f52e271572f8953d7e6319f"
+    },
+    {
+      "path": "papers/marketneural/chapters/08_discussion.md",
+      "sha256": "6d4de40f19cd904b3ee7e042e3ff60fe07e467b3224cd32e4e3d44f3d0afb675",
+      "words": 1701,
+      "sha256_lf": "11082fc8f3fa0535c8821cbdf6bb6dc66b3ed1da5e6dc5491b89a705356f6fe4"
+    },
+    {
+      "path": "papers/marketneural/chapters/10_agentic_decisions.md",
+      "sha256": "50563382eda2e0eb217a3263a6f98b3e5eb89d4216088c6516d23c4b8e47d69e",
+      "words": 2364,
+      "sha256_lf": "69115a86fcdb3df03ec047620249c62ef8353b9e54c15c7f4dd31f477d7c5a9f"
+    },
+    {
+      "path": "papers/marketneural/chapters/11_fraud_and_spam.md",
+      "sha256": "b830b97a8581529f69cd623dd25dce73135697e1cf09ccb4fa099f941c4f61f5",
+      "words": 2347,
+      "sha256_lf": "b830b97a8581529f69cd623dd25dce73135697e1cf09ccb4fa099f941c4f61f5"
+    },
+    {
+      "path": "papers/marketneural/chapters/09_reproduction.md",
+      "sha256": "ab46cdc0057825d3b7ba6584a2240f6b47285f8dec147b5d77960c5a0a1040b1",
+      "words": 1313,
+      "sha256_lf": "ab46cdc0057825d3b7ba6584a2240f6b47285f8dec147b5d77960c5a0a1040b1"
+    }
+  ],
+  "word_count": 32704,
+  "build_tools": {
+    "pandoc": "pandoc 3.11",
+    "tectonic": "Tectonic 0.17.0"
+  },
+  "scope": "Public inputs only; historical images and aggregates are not new model experiments.",
+  "source_hash_rule": "sha256 records the bytes used for this build; sha256_lf normalizes CRLF to LF for cross-platform source comparison.",
+  "figure_count": 22,
+  "bibliography_entries": 16,
+  "author": "Ghaffar Masomi",
+  "final_layout_comparison": {
+    "reference_sha256": "b6377260d358167f18227f1ab5897927e6179516e4e06e9a398568296d402d96",
+    "sha256": "eda6f34e88242a7a361d5ed79b59b628629714311354182fa9233192b5003401",
+    "reference_pages": 99,
+    "pages": 99,
+    "pixel_changed_pages": [
+      1,
+      2,
+      3,
+      9,
+      10,
+      72,
+      81
+    ],
+    "comparison": "PyMuPDF at72DPI RGB exact pixel equality per page",
+    "author": "Ghaffar Masomi"
+  },
+  "builder": {
+    "path": "scripts/build_thesis.py",
+    "sha256_lf": "ff2cad5f5707ece526996a435b3a9946514250cc527027c16ff0b0d4b5395185"
+  }
+}

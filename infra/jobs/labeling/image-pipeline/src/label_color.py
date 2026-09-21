@@ -31,7 +31,7 @@ IMPORTANT:
     • model_fix_reason
     • model_fix_evidence (jsonb)
     • model_fix_at (timestamp)
-- It ENFORCES that body_color_name must be one of the official Apple colors
+- It ENFORCES that body_color_name must be one of the official manufacturer colors
   for the given generation + variant (base vs pro). Anything else is nulled.
 - It uses color_done/color_done_at in ml.device_image_features_v1 to avoid
   re-processing listings and wasting tokens.
@@ -102,7 +102,7 @@ Your SECONDARY job:
 - This includes three kinds of mistakes:
     • wrong variant inside the same generation (e.g. "device 13" vs "device 13 Pro Max"),
     • wrong generation (e.g. listing is actually pre–13: device 11 / 12 / XR / XS / SE / 8 / 7),
-    • not an device at all.
+    • outside the configured device family.
 - If there is a CLEAR mismatch, suggest a corrected model label in a top-level model_check object.
 - If you are NOT clearly sure, you MUST NOT suggest any change (leave inferred_model = null).
 
@@ -126,14 +126,14 @@ Then, only when there is a possible conflict, use the photos (camera layout, phy
 When TITLE + DESCRIPTION and MODEL + GENERATION look consistent and nothing contradicts them,
 you SHOULD assume they are correct and keep your model_check analysis minimal (short reason, no change).
 
-However, your MAIN focus remains: body color classification from the official Apple color sets.
+However, your MAIN focus remains: body color classification from the official manufacturer color sets.
 
 ======================================================================
-PART 1 – OFFICIAL APPLE BODY COLORS (PRIMARY TASK)
+PART 1 – OFFICIAL MANUFACTURER BODY COLORS (PRIMARY TASK)
 ======================================================================
 
 Your job in this part:
-- For EACH IMAGE, label ONLY the Apple factory BODY COLOR of the device (back glass / frame).
+- For EACH IMAGE, label ONLY the manufacturer factory BODY COLOR of the device (back glass / frame).
 - You MUST NOT label accessories, boxes, chargers, damage, or anything else.
 - Focus solely on the phone body color signal as shipped from the factory.
 
@@ -152,13 +152,13 @@ Use the listing title, description, and per-image captions as SOFT hints, but AL
 
 IMPORTANT:
 - The color sets below apply ONLY to device generations 13–17.
-- If you conclude from text/images that the device is pre–13 or not an device, you MUST NOT force it into these color sets.
+- If you conclude from text/images that the device is pre–13 or outside the configured device family, you MUST NOT force it into these color sets.
   In that situation, set body_color_name = null and body_color_key = null for that image, and explain why in model_check.reason.
 
 Generation (13–17) and MODEL string are hints about which official color set is valid. You must obey the official color sets below.
 
 ----------------------------------------------------------------------
-OFFICIAL APPLE COLOR SETS (YOU MUST CHOOSE ONLY FROM THESE)
+OFFICIAL MANUFACTURER COLOR SETS (YOU MUST CHOOSE ONLY FROM THESE)
 ----------------------------------------------------------------------
 
 First, determine if the phone is a BASE model or PRO model (for generations 13–17):
@@ -184,7 +184,7 @@ Heuristic for BASE vs PRO:
 
 IMPORTANT (MODEL-CHECK TRIGGER WHEN COLOR CONTRADICTS VARIANT):
 
-- If the best matching official Apple color you would output is NOT in the allowed list for the current
+- If the best matching official manufacturer color you would output is NOT in the allowed list for the current
   generation + BASE/PRO variant implied by the MODEL string, you MUST treat that as a CLEAR mismatch
   and perform the full model_check.
 
@@ -201,7 +201,7 @@ IMPORTANT (MODEL-CHECK TRIGGER WHEN COLOR CONTRADICTS VARIANT):
 
 IMPORTANT (MODEL-CHECK TRIGGER WHEN COLOR/MODEL IMPLIES A DIFFERENT GENERATION):
 
-- If the MODEL string, TITLE/DESCRIPTION, or the best-matching official Apple color you would output
+- If the MODEL string, TITLE/DESCRIPTION, or the best-matching official manufacturer color you would output
   implies a DIFFERENT generation (13–17) than the provided generation number, you MUST treat that as a CLEAR mismatch
   and set model_check.inferred_model to the correct generation+variant with confidence >= 0.8.
 
@@ -330,14 +330,14 @@ BODY COLOR FIELDS (PER IMAGE)
 For each image, label:
 
 - body_color_name: string or null
-    EXACT Apple-style factory color name for THIS image, chosen from the allowed list above
+    EXACT manufacturer-style factory color name for THIS image, chosen from the allowed list above
     according to generation and BASE/PRO classification.
 
     Rules:
       - If you clearly see the bare phone body (back or frame), choose the best matching official name.
       - If the body is not visible at all (inside a case OR only the screen is visible), use null.
       - If you are not confident enough to decide between multiple official colors, use null.
-      - If you conclude the device is NOT a generation 13–17 device (e.g. it is an device 11 or a Samsung),
+      - If you conclude the device is NOT a generation 13–17 device (e.g. it is a device from an earlier generation or a different device family),
         you MUST set body_color_name = null and body_color_key = null. Do NOT guess a 13–17 color.
 
 - body_color_key: string or null
@@ -406,11 +406,11 @@ For each image, label:
               This includes using the color of the camera plate/frame/lens rings as a proxy when appropriate.
 
           (3) Text evidence (title/description/captions):
-              If the listing text clearly states an official Apple color (or a clear synonym),
+              If the listing text clearly states an official manufacturer color (or a clear synonym),
               you MAY label that color even if the body is not visible, with confidence ≤ 0.60.
 
           (4) Box/label text evidence (REQUIRED when body is not visible):
-              If any image contains a readable product label/sticker on a box (Apple box or third-party trade-in box),
+              If any image contains a readable product label/sticker on a box (manufacturer box or third-party trade-in box),
               you MUST try to read it and extract model + color words.
               Treat this label text as strong evidence for color when the body color is obscured.
 
@@ -489,12 +489,12 @@ High-level rules for conflicts:
    - In model_check.reason, clearly state that this appears to be a pre–13 device.
    - For colors, you MUST NOT force a 13–17 color; prefer body_color_name = null and explain why in reason.
 
-3) Not an device or unclear:
-   - TITLE / DESCRIPTION clearly describe a non-device (e.g. Samsung, AirPods, MacBook), or
+3) Outside the configured device family or unclear:
+   - TITLE / DESCRIPTION clearly describe a non-device (e.g. another device family, wireless earbuds, a laptop), or
    - images clearly show a non-phone device, or completely unclear device type.
 
    In these cases:
-   - model_check.inferred_model may be something like "NOT_DEVICE" or a short description ("Samsung phone", "AirPods").
+   - model_check.inferred_model may be something like "NOT_DEVICE" or a short description ("another-family phone", "wireless earbuds").
    - Explain in model_check.reason.
    - For colors, you MUST set body_color_name = null and body_color_key = null.
 
@@ -526,7 +526,7 @@ Fields for model_check:
     - "Title says 'device 13 Pro Max', triple camera visible, Pro-only color Graphite, but db_model is 'device 13'."
     - "Title says 'Strøken 11 pro Max 256 gb'; camera layout matches 11 Pro Max; gen/model suggest 13, so this appears pre–13."
     - "Title and images match db_model; no fix needed."
-    - "Title mentions Samsung S21 and images show a Samsung device, not an device."
+    - "Title and images indicate a device outside the configured family."
 
 If there is NO clear mismatch:
 - Set model_check.inferred_model = null.
@@ -562,7 +562,7 @@ FINAL RULES (VERY IMPORTANT)
 - For colors:
     • If you are not sure what color the phone is, lower body_color_confidence and prefer null for body_color_name/body_color_key.
     • You MUST NOT invent color names outside the official lists above.
-    • If you conclude the device is pre–13 or not an device, set body_color_name = null and body_color_key = null and explain in model_check.reason.
+    • If you conclude the device is pre–13 or outside the configured device family, set body_color_name = null and body_color_key = null and explain in model_check.reason.
 - For model_check:
     • Only suggest inferred_model when the mismatch is CLEAR.
     • When in doubt, do NOT change the model; set inferred_model to null.
@@ -702,7 +702,7 @@ def close_db_conn():
 
 
 # -------------------------------------------------------------------
-# OFFICIAL APPLE COLOR MAP (ENFORCEMENT)
+# OFFICIAL MANUFACTURER COLOR MAP (ENFORCEMENT)
 # -------------------------------------------------------------------
 
 # Canonical official colors per generation + variant (base/pro)
@@ -789,7 +789,7 @@ ALLOWED_COLORS: Dict[int, Dict[str, List[str]]] = {
 
 def canonical_key(name: str) -> str:
     """
-    Normalize Apple-style color names to a grouping key:
+    Normalize manufacturer-style color names to a grouping key:
     - lowercase
     - spaces → underscores
     - remove parentheses
@@ -821,7 +821,7 @@ def validate_and_normalize_color(
     body_color_name: Optional[str],
 ) -> Tuple[Optional[str], Optional[str]]:
     """
-    Enforce that body_color_name is one of the official Apple colors
+    Enforce that body_color_name is one of the official manufacturer colors
     for the given generation + variant (base/pro).
 
     - If name is not in the allowed set, return (None, None).
@@ -1822,7 +1822,7 @@ def insert_features_from_json(
     IMPORTANT:
     - This script ONLY writes body_color_* fields.
     - It NEVER touches damage, accessories, battery, etc.
-    - It enforces Apple-official colors by generation + model.
+    - It enforces manufacturer-official colors by generation + model.
     """
     images = data.get("images") or []
     if not images:
@@ -1840,7 +1840,7 @@ def insert_features_from_json(
         if body_color_name is not None and not isinstance(body_color_name, str):
             body_color_name = str(body_color_name)
 
-        # Enforce allowed Apple colors and recompute key
+        # Enforce allowed manufacturer colors and recompute key
         body_color_name, body_color_key = validate_and_normalize_color(
             generation=gen,
             model_label=model_label,

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-09-21",
+  "scope": {
+    "current_public_tree_files_in_initial_broad_scan": 406,
+    "origin_main_files_scanned": 307,
+    "origin_main_commit": "71631e5127d3d41a3f5cc3f698d6fb2a3a7a23ff",
+    "read_methods": [
+      "tracked and nonignored UTF-8 text",
+      "PDF extracted page text and metadata",
+      "ZIP member content",
+      "cached embedded-image OCR text"
+    ],
+    "no_remote_write_or_history_rewrite": true
+  },
+  "remediation": [
+    {
+      "path": "feature-stores/main/07_Appendix_Original_Documentation_Part1.md",
+      "pre_remediation_line": 1378,
+      "change": "Three long numeric example identifiers replaced by explicitly synthetic small fixture identifiers."
+    },
+    {
+      "path": "infra/jobs/auditors/status-sanity-audit/docs/STATUS_SANITY_AUDIT_PUBLIC.md",
+      "pre_remediation_line": 301,
+      "change": "Command-line record example replaced by an explicitly synthetic identifier."
+    },
+    {
+      "path": "infra/jobs/auditors/status-sanity-audit/src/status_sanity_audit.go",
+      "pre_remediation_line": 66,
+      "change": "Comment-only command example identifiers replaced by explicitly synthetic identifiers."
+    },
+    {
+      "path": "feature-stores/trainer-derived/trainer_derived_store_public",
+      "change": "Five already-documented synthetic fixture identifiers normalized to 1001\u00e2\u20ac\u201c1005; validation and documentation use matching small identifiers."
+    }
+  ],
+  "interpretation": "The earlier public branch contained numeric record examples whose original provenance was not established by this scan. The current release removes that ambiguity. This is not a claim that all earlier examples were private records.",
+  "post_remediation": {
+    "strict_current_tree_files_checked_before_receipt": 407,
+    "contextual_record_identifier_findings": 0,
+    "row_bearing_source_url_findings": 0,
+    "seller_or_account_name_literal_candidates": 0,
+    "cached_embedded_image_long_integer_candidates": 0,
+    "remaining_document_gate": "Final 99-page thesis visually reviewed and registered by exact hash in PDF_RELEASE_MANIFEST.json.",
+    "sql_files_parsed": 79,
+    "sql_parser_rejections": 0,
+    "go_format_matches_ignoring_existing_line_endings": true
+  },
+  "preserved_numeric_evidence": [
+    "aggregate database and record counts",
+    "model parameter counts",
+    "dates and scientific publication identifiers",
+    "dashboard memory thresholds",
+    "price and lock constants",
+    "UUID fallback representation"
+  ],
+  "new_automated_rules": [
+    "contextual numeric record assignments and SQL ID lists",
+    "record-selection command-line literals",
+    "record URLs containing long numeric IDs"
+  ],
+  "limitations": [
+    "Heuristic matching is not a proof of absence of all possible identifiers or personal data.",
+    "Current-tree fixes do not remove earlier public Git history.",
+    "PDF text extraction is not OCR; pixels also require visual or OCR review.",
+    "No raw dataset, checkpoint, record-level export or source URL is authorized by this review.",
+    "The two authorized anonymous example images retain a separate exact-hash visual review; image permission does not authorize original identifiers or seller data."
+  ]
+}

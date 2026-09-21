@@ -184,8 +184,8 @@ For EACH IMAGE, produce a compact JSON object with:
     2 = clean / neutral (plain surface, no clutter)
 
 - is_stock_photo: true/false
-    true if this looks like a polished marketing/Apple stock photo
-    (studio lighting, perfect gradient, no real-world clutter, looks like Apple product shots).
+    true if this looks like a polished marketing/manufacturer stock photo
+    (studio lighting, perfect gradient, no real-world clutter, looks like manufacturer product shots).
     false if it looks like a real-world photo of a specific used device.
 
 DAMAGE (PER IMAGE) — 0–10 SCALE, BASED ONLY ON PHOTOS:

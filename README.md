@@ -2,15 +2,30 @@
 
 ## MarketNeural research release
 
-**MarketNeural** extends this repository with executable multimodal survival research,
-a preserved excerpt of the historical production network, and a full thesis-style
-[research manuscript](papers/marketneural/manuscript.md). The manuscript is a draft;
-the controlled real-data comparison remains pending.
+**MarketNeural** extends this repository with a thesis-style
+[PDF monograph](papers/marketneural/marketneural-thesis.pdf), its editable
+[manuscript](papers/marketneural/manuscript.md), an executable three-stage survival
+cascade, feature-store SQL, and audited historical evidence. Fifteen chapters cover
+the operational platform, image and text enrichment, neural tuning, leakage,
+market adaptation, agentic decisions, and fraud/spam extensions. The controlled
+real-data model comparison remains pending.
+
+The monograph is authored by **Ghaffar Masomi**.
+
+**The datasets are proprietary.** No Parquet datasets or raw listing records are
+published here. Researchers can [request controlled access](DATA_ACCESS.md),
+subject to maintainer approval and separately agreed terms.
 
 | Start here | Contents |
 |---|---|
 | [Reproduction guide](research/README.md) | Install, generate synthetic data, compare six model families, inspect results |
 | [Historical production reference](research/production_reference/README.md) | Exact selected model/loss definitions, source hashes, 17,145,736-parameter architecture metadata |
+| [Three-stage cascade](research/cascade/README.md) | 122 preserved numerical definitions; portable training, ensembles, calibration, routing and persistence |
+| [Stage 0 implementation map](research/cascade/STAGE0_IMPLEMENTATION.md) | Original neural model, training objectives, public module mapping and runnable example |
+| [Feature-store SQL](research/feature_store_ddl/README.md) | 79-file inventory, dependency/rebuild plan, historical SQL and executed portable contracts |
+| [Leakage case study](research/leakage/LEAKAGE_STUDY.md) | Lifecycle-dependent missingness, overlap diagnostics, interventions and remaining proof boundaries |
+| [Research coverage](papers/marketneural/RESEARCH_COVERAGE.md) | Nine historical reports, private evidence families and claim limitations |
+| [Release review](docs/research/THESIS_REVIEW.md) | Technical review, executed checks and evidence provenance |
 | [Research protocol](docs/research/PROTOCOL.md) | Endpoints, temporal leakage controls, fair model comparisons and remaining experiments |
 | [Manuscript](papers/marketneural/manuscript.md) | Developed chapters, equations, historical evidence, limitations and references |
 | [Claim ledger](docs/research/CLAIM_LEDGER.md) | Supported claims and their evidential limits |
@@ -39,9 +54,10 @@ python -m pytest -q
 
 ## Original platform overview
 
-t0-clip is a production-shaped, closed-loop data + database governance + machine learning system.
-It is designed to turn continuously changing, real-world longitudinal data into leak-safe (T0-correct)
-certified feature-store surfaces that power high-accuracy predictive models.
+t0-clip publishes source-neutral components of an operational data, database-governance
+and machine-learning platform. Its temporal contracts and certified feature-store
+surfaces are designed to constrain information use. The research chapters document
+both their implemented checks and leakage mechanisms that escaped earlier controls.
 
 This repository is a public, platform-agnostic release. It demonstrates the system architecture, governance
 primitives, and modeling stack. Users must adapt the acquisition/connectors to their own data sources.
@@ -63,7 +79,9 @@ This is not "a model". This is a full closed-loop pipeline:
 ## Core ideas
 ### 1) T0 correctness (time-leakage prevention)
 All feature computation and model consumption is anchored to a decision time T0. No future information is allowed.
-The system treats leakage as a systems problem: contracts, certified entrypoints, and guardrails prevent it.
+The system treats leakage as a systems problem: contracts, certified entrypoints,
+and guardrails enforce declared boundaries. Their guarantees depend on complete
+availability provenance and are tested against the documented failure cases.
 
 ### 2) Certified feature stores (fail-closed governance)
 Models do not query raw tables directly. They consume certified entrypoint views only.
