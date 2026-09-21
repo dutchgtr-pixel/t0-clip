@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "claim_boundary": {
+    "implemented": [
+      "type and scope eligibility rules",
+      "same-entity alternative-parse resolution",
+      "structured enrichment normalization",
+      "multimodal condition evidence fusion",
+      "retrospective bundle contamination checks"
+    ],
+    "proposed": [
+      "dedicated supervised fraud labels",
+      "fraud-specific calibrated prediction head",
+      "prospective adversarial robustness benchmark",
+      "review-budget-aware fraud operating policy"
+    ],
+    "confirmed_operational_supervised_fraud_classifier": false,
+    "fraud_performance_metrics_available": false,
+    "no_person_or_account_examples_included": true
+  },
+  "sources": [
+    {
+      "source_id": "duplicate_resolution",
+      "public_path": "infra/jobs/quality-control/db-healing/src/dedupe_ai_sql.py",
+      "sha256_lf": "2142c17331d2f5ee7b1d7d21816f64c92a71b003e80c1198935e3b2e124e925f",
+      "evidence_class": "implementation inspected; no task-specific runtime success metric inferred",
+      "finding": "Implemented record reconciliation for alternative parses of the same entity; strict bundle wording and temporal consistency rules; not confirmed-fraud labels."
+    },
+    {
+      "source_id": "evidence_enrichment",
+      "public_path": "infra/jobs/quality-control/db-healing/src/listing_ai_enrich_upserter.py",
+      "sha256_lf": "964e22ed2c19a0faa92609349f569e8cc973c6a39fc68df63e8f6bb16a598fc1",
+      "evidence_class": "implementation inspected; no task-specific runtime success metric inferred",
+      "finding": "Implemented structured code normalization, confidence thresholds, evidence-span existence and offset bounds; no proof of calibrated fraud probabilities."
+    },
+    {
+      "source_id": "image_text_fusion",
+      "public_path": "feature-stores/damage-fusion/sql/01_create_fusion_views_v2.sql",
+      "sha256_lf": "37589e723fe6abd8162ef17c2a18574cd0a803b982723df3f641430ea1504d96",
+      "evidence_class": "implementation inspected; no task-specific runtime success metric inferred",
+      "finding": "Implemented stock-photo/quality support, battery-source disagreement inputs and fused condition tiers; not an intent classifier."
+    },
+    {
+      "source_id": "type_quality_control",
+      "public_path": "infra/jobs/quality-control/db-healing/src/quality_control_ai.py",
+      "sha256_lf": "ff0d92977e7a5cf02a3736c2a0171a01a5c356551afc9bdf2e2c6b8245351208",
+      "evidence_class": "implementation inspected; no task-specific runtime success metric inferred",
+      "finding": "Public quality-control implementation; eligibility categories must not be relabeled as misconduct."
+    },
+    {
+      "source_id": "current_quality_policy",
+      "sha256": "a794bda7574b92057a699adf6876f8ffbd50f2bf29fafc52e8d0ec9cc5abf7dd",
+      "evidence_class": "private implementation inspected; source identity only, not a public dataset",
+      "finding": "Current private path has explicit PASS/BLOCK/REVIEW policy decisions; blocked/review changes are logged without automatic application."
+    },
+    {
+      "source_id": "bundle_replay_audit",
+      "sha256": "a83a15179c735dc57c0ee404d9f0185e7c46c4b2c2ed8f481c9e21db7716e34c",
+      "evidence_class": "private implementation inspected; source identity only, not a public dataset",
+      "finding": "Retrospective contamination audit uses identity conflicts, bundle language and realized outcomes; post-outcome fields cannot enter an early fraud feature set."
+    },
+    {
+      "source_id": "survival_selection_contamination",
+      "sha256": "3aadbdea437a1fe55a035696690879e7186675d9fff05d5aedbc1237a520bb0a",
+      "evidence_class": "private implementation inspected; source identity only, not a public dataset",
+      "finding": "Contamination is implemented as one minus precision for the survival endpoint; it is not the fraction of fraudulent entities."
+    }
+  ],
+  "label_schema_proposal": [
+    "in_scope_legitimate",
+    "out_of_scope",
+    "buy_request",
+    "alternative_parse_duplicate",
+    "multi_item_bundle",
+    "content_inconsistency_unresolved",
+    "adjudicated_fraud",
+    "review_pending"
+  ],
+  "required_evaluation": [
+    "entity and campaign grouped chronological split",
+    "label availability cutoff",
+    "precision recall and review capacity at natural prevalence",
+    "calibration on mature adjudicated outcomes",
+    "missed cases and false-positive review",
+    "coverage and missingness by workflow version"
+  ]
+}

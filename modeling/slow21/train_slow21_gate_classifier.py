@@ -2383,7 +2383,7 @@ def load_rows_with_strict_anchor(conn, limit: Optional[int], features_view: str 
         f.battery_pct_effective::double precision AS battery_pct_effective,
         COALESCE(f.damage_severity_ai,0)::int AS sev,
         LOWER(REGEXP_REPLACE(f.model,'\\s+',' ','g')) AS model_norm,
-        -- storage bucket for strict/speed joins (Apple SKUs only)
+        -- storage bucket for strict/speed joins (configured device catalog only)
         CASE
           WHEN f.storage_gb >= 900 THEN 1024
           WHEN f.storage_gb >= 500 THEN 512
@@ -2420,7 +2420,7 @@ def load_rows_with_strict_anchor(conn, limit: Optional[int], features_view: str 
       eai.ai_sale_mode_obo, eai.ai_sale_mode_firm, eai.ai_sale_mode_bids, eai.ai_sale_mode_unspecified,
       eai.ai_owner_private, eai.ai_owner_work, eai.ai_owner_unknown,
       eai.ai_ship_can, eai.ai_ship_pickup, eai.ai_ship_unspecified,
-      eai.ai_rep_apple, eai.ai_rep_authorized, eai.ai_rep_independent, eai.ai_rep_unknown,
+      eai.ai_rep_manufacturer, eai.ai_rep_authorized, eai.ai_rep_independent, eai.ai_rep_unknown,
       eai.ai_can_ship_bin, eai.ai_pickup_only_bin, eai.ai_vat_invoice_bin, eai.ai_first_owner_bin, eai.ai_used_with_case_bin,
       eai.ai_negotiability_f, eai.ai_urgency_f, eai.ai_lqs_textonly_f,
       eai.ai_opening_offer_nok_f, eai.ai_opening_offer_ratio,

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "kind": "documented_historical_image_slot_build",
+  "source_evidence_id": "per-image-evidence-contract",
+  "source_sha256": "44d4d53440220d54b251eaafa1b70920505f13bf7742a836ed225a482c51724f",
+  "build_date": null,
+  "date_note": "No snapshot date assigned: counts come from an inspected architecture document, not the April metadata bundle.",
+  "build_counts": {
+    "image_reports": 224237,
+    "slot_rows": 359512,
+    "manifests": 44939,
+    "ready_manifests": 42487,
+    "weak_or_additional": 2452
+  },
+  "slot_roles": {
+    "padding": 146735,
+    "extra": 92417,
+    "front": 41450,
+    "rear": 40747,
+    "side": 15332,
+    "damage": 10386,
+    "accessory": 9409,
+    "battery": 3036
+  },
+  "event_selected_interval": {
+    "first_date": "2026-03-21",
+    "last_date": "2026-04-10",
+    "selection_basis": "recorded event date",
+    "listings": 2458,
+    "manifests": 2450,
+    "ready_manifests": 2313,
+    "weak_manifests": 137,
+    "average_real_slots": 4.853,
+    "all_eight_real_slots": 455
+  },
+  "scope": "Historical documented build populations; not independent labels, current live coverage, or final-evaluation denominators."
+}

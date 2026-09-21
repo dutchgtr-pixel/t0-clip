@@ -18,14 +18,14 @@ FROM base b
 LEFT JOIN store s
   ON s.generation=b.generation AND s.listing_id=b.listing_id AND s.t0=b.t0;
 
--- Fast single-key lookup plan should use the MV PK:
+-- Fast single-key lookup plan uses synthetic fixture 1001 (generation 1):
 EXPLAIN (ANALYZE, BUFFERS)
 SELECT d.generation, d.listing_id, d.t0
 FROM ml.trainer_derived_features_train_v d
 JOIN (
   SELECT * FROM unnest(
-    ARRAY[13]::int[],
-    ARRAY[123456789]::bigint[],
+    ARRAY[1]::int[],
+    ARRAY[1001]::bigint[],
     ARRAY[timestamptz '2026-01-01 00:00:00+00']::timestamptz[]
   ) AS t(generation, listing_id, t0)
 ) k

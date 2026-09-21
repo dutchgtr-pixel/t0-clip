@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "portable_execution_order": [
+    "00_source_contracts.sql",
+    "10_point_in_time_views.sql",
+    "20_history_and_anchors.sql",
+    "30_certification.sql",
+    "90_synthetic_fixture.sql"
+  ],
+  "historical_review_waves": [
+    {
+      "wave": 0,
+      "family": "source adapters and release registries",
+      "requirement": "Create domain-owned records, image labels, embeddings, geo reference releases and lifecycle history; never derive them from final outcomes."
+    },
+    {
+      "wave": 1,
+      "family": "main and device metadata",
+      "paths": [
+        "feature-stores/main",
+        "feature-stores/device-meta"
+      ],
+      "requirement": "Review dynamic relation lookup and event-time origin; select one compatible schema revision."
+    },
+    {
+      "wave": 2,
+      "family": "image and fusion",
+      "paths": [
+        "feature-stores/image-features",
+        "feature-stores/damage-fusion",
+        "research/feature_store_ddl/archived/10_image_roles.sql",
+        "research/feature_store_ddl/archived/20_image_reports_slots.sql"
+      ],
+      "requirement": "Pin role/report/slot/encoder versions and supply required upstream raw-label tables."
+    },
+    {
+      "wave": 3,
+      "family": "geography and context",
+      "paths": [
+        "feature-stores/geo",
+        "feature-stores/socio-economic"
+      ],
+      "requirement": "Pin publication-time releases; build base history and context materializations."
+    },
+    {
+      "wave": 4,
+      "family": "historical and learned anchors",
+      "paths": [
+        "feature-stores/anchor-priors",
+        "feature-stores/woe-anchor",
+        "research/feature_store_ddl/archived/30_price_anchor.sql",
+        "research/feature_store_ddl/archived/40_channel_base.sql",
+        "research/feature_store_ddl/archived/50_channel_priors.sql"
+      ],
+      "requirement": "Historical cutoffs, label availability and fit membership are separate prerequisites; seller seed table remains empty."
+    },
+    {
+      "wave": 5,
+      "family": "trainer derived, certification and export",
+      "paths": [
+        "feature-stores/trainer-derived"
+      ],
+      "requirement": "Assemble keyed blocks, inspect forbidden fields, baseline reviewed definitions/content, require current certificates, freeze export and preprocessing identity."
+    }
+  ],
+  "not_an_automatic_migration_plan": "Historical modules include alternative revisions, source assumptions and destructive rebuilds. Do not concatenate all inventory files and execute."
+}

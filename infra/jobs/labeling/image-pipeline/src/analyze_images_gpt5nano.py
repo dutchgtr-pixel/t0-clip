@@ -106,7 +106,7 @@ Apply the following rules and output format EXACTLY:
 ACCESSORIES & EXTRAS (PER IMAGE):
 
 - has_box: true/false
-    true if a retail device box is visible (3D cardboard package that can close around a phone, with artwork/Apple logo and real depth).
+    true if a retail device box is visible (3D cardboard package that can close around a phone, with artwork/manufacturer logo and real depth).
     Rules:
       - Thin shell-shaped objects with camera cut-out are CASES, not boxes.
       - A flat slab under/next to the phone with camera cut-out is almost always a CASE, not a box.
@@ -139,10 +139,10 @@ ACCESSORIES & EXTRAS (PER IMAGE):
 - has_earbuds: true/false
     true if any earphones (wired or wireless) are visible.
     Includes:
-      - loose earbuds, AirPods / AirPods Pro-style cases,
-      - a clear retail earphone box (e.g. "EarPods with Lightning Connector" showing earphones).
+      - loose earbuds, wireless earbud charging cases,
+      - a clear retail earphone box (e.g. "Wired earbuds with device connector" showing earphones).
     Rules:
-      - Set has_earbuds = true if you see an AirPods-style case, wired EarPods, Beats-style earbuds, or a box that clearly shows earphones.
+      - Set has_earbuds = true if you see a wireless earbud charging case, wired earbuds, wireless earbuds, or a box that clearly shows earphones.
       - Do NOT set has_earbuds = true for random objects that are not clearly earphones.
 
 - has_case: true/false

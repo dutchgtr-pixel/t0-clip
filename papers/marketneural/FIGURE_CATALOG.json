@@ -1,0 +1,562 @@
+{
+  "schema_version": 1,
+  "title": "Verified historical research figure catalogue",
+  "source_scope": "Nine source-neutral public PDF editions. Selected figures are tightly cropped, not whole-page substitutes.",
+  "figure_numbering": "H identifiers are stable source identifiers; thesis typesetting assigns final sequential figure numbers.",
+  "figures": [
+    {
+      "id": "H01",
+      "source_pdf": "papers/part-3-modeling/ch03-tail-gating-and-anchors.pdf",
+      "source_pdf_sha256": "46b5c15f196e0cf3a44d5c8d7187a2a957159cbe4185c675b78306599f98394b",
+      "page": 4,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        90,
+        190.8,
+        522,
+        435.6
+      ],
+      "image_path": "research/thesis_evidence/figures/h01_aft_error_families.png",
+      "image_sha256": "61260c7d0c2283e8c43ee8ba086ed53dcc682c0087f9beb0c5ff1235f93b2396",
+      "caption": "Standardized error distributions used in the historical AFT formulation.",
+      "evidence_class": "illustrative_method",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "The curves illustrate distributional assumptions; they are not fitted empirical duration densities.",
+      "include_in_thesis": true
+    },
+    {
+      "id": "H02",
+      "source_pdf": "papers/part-3-modeling/ch04-hierarchical-bayesian-anchors.pdf",
+      "source_pdf_sha256": "7c2a5c5132b200e6ae337fc0de1837f2be58ff69d756de3fe44488540c04c8c9",
+      "page": 3,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        72,
+        70.8,
+        540,
+        330
+      ],
+      "image_path": "research/thesis_evidence/figures/h02_support_shrinkage.png",
+      "image_sha256": "adbb336e2bdcf569bc12cf9328f21514066cc5311d99d616aaec5d8c46ec228c",
+      "caption": "Illustrative support-dependent shrinkage toward a broader cohort prior.",
+      "evidence_class": "illustrative_method",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "The plotted weights explain a statistical analogy. The implemented robust median/backoff rule is not a fitted conjugate posterior.",
+      "include_in_thesis": true
+    },
+    {
+      "id": "H03",
+      "source_pdf": "papers/part-3-modeling/ch04-hierarchical-bayesian-anchors.pdf",
+      "source_pdf_sha256": "7c2a5c5132b200e6ae337fc0de1837f2be58ff69d756de3fe44488540c04c8c9",
+      "page": 4,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        61.2,
+        70.8,
+        550.8,
+        308.4
+      ],
+      "image_path": "research/thesis_evidence/figures/h03_anchor_backoff.png",
+      "image_sha256": "76f1f33809bb239cb01b6d8fb63783c8f5b5d54cdc123a701e2c52d75cfa8fd5",
+      "caption": "Historical anchor backoff hierarchy, retaining product-family and capacity constraints while pooling less essential strata.",
+      "evidence_class": "documented_architecture",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "This is a declared feature-construction hierarchy, not evidence that every historical input met availability requirements.",
+      "include_in_thesis": true
+    },
+    {
+      "id": "H04",
+      "source_pdf": "papers/part-3-modeling/ch05-empirical-results-sacrifice.pdf",
+      "source_pdf_sha256": "dff51da65bb1eade4efd984edeaccc4b082b229c3f60e2121a0ecfbeb2a2e3b3",
+      "page": 3,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        84,
+        81,
+        523.3,
+        267.7
+      ],
+      "image_path": "research/thesis_evidence/figures/h04_slow21_confusion.png",
+      "image_sha256": "87bc14985a4e7d814433a113309ad17472a558dcdc19d56fc9dad15164a97772",
+      "caption": "Historical Slow21 evaluation and calibration confusion matrices.",
+      "evidence_class": "historical_empirical",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "Evaluation N=941 and calibration N=853 concern sold-only cohorts. Calibration is in-sample; selection terminology in the source leaves test independence uncertain.",
+      "include_in_thesis": true
+    },
+    {
+      "id": "H05",
+      "source_pdf": "papers/part-3-modeling/ch05-empirical-results-sacrifice.pdf",
+      "source_pdf_sha256": "dff51da65bb1eade4efd984edeaccc4b082b229c3f60e2121a0ecfbeb2a2e3b3",
+      "page": 3,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        83.3,
+        297.7,
+        512,
+        533.5
+      ],
+      "image_path": "research/thesis_evidence/figures/h05_slow21_sacrifice.png",
+      "image_sha256": "f0ce89c514f5eb945b121c6e43f128856417f1e42a044fdd5ee38d13b1f8003c",
+      "caption": "False-positive slow classifications within two observed duration bands.",
+      "evidence_class": "historical_empirical",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "Duration-stratified suppression rates do not measure profit or causal opportunity cost. Evaluation and calibration are different cohorts.",
+      "include_in_thesis": true
+    },
+    {
+      "id": "H06",
+      "source_pdf": "papers/part-3-modeling/ch05-empirical-results-sacrifice.pdf",
+      "source_pdf_sha256": "dff51da65bb1eade4efd984edeaccc4b082b229c3f60e2121a0ecfbeb2a2e3b3",
+      "page": 5,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        83.3,
+        78,
+        512,
+        378.1
+      ],
+      "image_path": "research/thesis_evidence/figures/h06_anchor_gain.png",
+      "image_sha256": "f1112dff0b2d940e75e711bba76fd013f967dd63575b8b224a97aca24799e46d",
+      "caption": "Historical gain importance of the leading structured features.",
+      "evidence_class": "historical_descriptive",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "Gain allocation describes this fitted tree model, not a causal effect or the accuracy loss from feature removal.",
+      "include_in_thesis": true
+    },
+    {
+      "id": "H07",
+      "source_pdf": "papers/part-2-t0-certified-feature-stores.pdf",
+      "source_pdf_sha256": "bf4bc1dba765b3330806c80599104aa3753207c40b9ad82a7e71cc158c2fce69",
+      "page": 13,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        57.6,
+        70.8,
+        554.4,
+        301.2
+      ],
+      "image_path": "research/thesis_evidence/figures/h07_stock_conditional_lift.png",
+      "image_sha256": "b0d287e7ebdd9bbeba2096bb70ac34d4268ac43a6d4e6700a4ded10b0573d3b6",
+      "caption": "Exploratory conditional separation in long-duration outcome rates across inventory strata.",
+      "evidence_class": "historical_descriptive",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "The analysis is observational and stratified; raw support and uncertainty are not recoverable from the graphic alone. It is not a controlled incremental model ablation.",
+      "include_in_thesis": true
+    },
+    {
+      "id": "H08",
+      "source_pdf": "papers/part-4-generative-ai-self-healing.pdf",
+      "source_pdf_sha256": "996daefcc9fa82201dfed35acfdf2a075da7efa7b87ac8afa38d1c5a97bab313",
+      "page": 8,
+      "page_numbering": "one-based PDF page",
+      "crop_bbox_points": [
+        79.2,
+        262,
+        532.8,
+        534.16
+      ],
+      "image_path": "research/thesis_evidence/figures/h08_enrichment_architecture.png",
+      "image_sha256": "65c2f8d06ffa1cbe174faf0f8f004f3498d76919e698951e3c98a7fa054c3054",
+      "caption": "Historical text and vision enrichment nodes coordinated by deterministic field and evidence rules.",
+      "evidence_class": "documented_architecture",
+      "data_provenance": "Published historical project report; see source PDF at verified page. No row-level records reconstructed.",
+      "claim_limits": "A documented architecture for proposed labels and validated merges; it does not establish zero hallucination or historical availability of every enriched field.",
+      "include_in_thesis": true
+    }
+  ],
+  "source_inventory": [
+    {
+      "path": "papers/part-1-infra-resilient-data-observation.pdf",
+      "pages": 33,
+      "sha256": "a72615678c501e890a4beba3a9547428f1fd19452370c70e4d0d881106c8aa9c",
+      "caption_inventory": [
+        {
+          "page": 6,
+          "label_and_caption": "Figure 3: Where observation infrastructure fits in an end-to-end leakage-aware modeling stack."
+        },
+        {
+          "page": 10,
+          "label_and_caption": "Figure 1: High-level architecture. Airflow launches ephemeral job containers via the local Docker socket. Jobs"
+        },
+        {
+          "page": 13,
+          "label_and_caption": "Figure 2: Example daily schedule envelope in UTC. High-frequency jobs run in bounded windows with"
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-2-t0-certified-feature-stores.pdf",
+      "pages": 15,
+      "sha256": "bf4bc1dba765b3330806c80599104aa3753207c40b9ad82a7e71cc158c2fce69",
+      "caption_inventory": [
+        {
+          "page": 3,
+          "label_and_caption": "Figure 1. A leakage boundary is defined at t0 (edited_date). Features must not depend on information after t0; labels may"
+        },
+        {
+          "page": 3,
+          "label_and_caption": "Equation 1. AFT modeling assumption for log time-to-sale."
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Equation 2. Formal leakage constraint: feature values at t0 must be measurable with respect to information available up to"
+        },
+        {
+          "page": 5,
+          "label_and_caption": "Figure 2. Feature-store DAG. Each store is certified independently; the training matrix is formed by joining on the shared"
+        },
+        {
+          "page": 6,
+          "label_and_caption": "Table 1. Store inventory (approximate feature counts)."
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Figure 3. Certification workflow: baselines are recorded; drift is detected; the guard enforces freshness at query time."
+        },
+        {
+          "page": 8,
+          "label_and_caption": "Equation 3. A canonical WOE transform for a bin b relative to base rate p0 (\u00ce\u00b5 is a small smoothing constant)."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Equation 4. Likelihood contribution for a sold (\u00ce\u00b4=1) or censored (\u00ce\u00b4=0) observation under an AFT model."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Figure 4. Confusion matrices for the Slow21 classifier on evaluation and calibration slices (example run)."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Table 2. Representative evaluation metrics."
+        },
+        {
+          "page": 10,
+          "label_and_caption": "Figure 5. Example feature-block SHAP share (mean absolute). Anchors and trainer-derived features dominate in this run."
+        },
+        {
+          "page": 12,
+          "label_and_caption": "Figure 6. Slow21 rate vs stock deciles. Unconditional trends are present but not strictly monotonic."
+        },
+        {
+          "page": 13,
+          "label_and_caption": "Figure 7. Absolute Slow21 lift (max-min across stock quintiles) increases with relative overpricing (delta_q)."
+        },
+        {
+          "page": 13,
+          "label_and_caption": "Table 3. Information gain (bits) from stock stratification within segments."
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-4-generative-ai-self-healing.pdf",
+      "pages": 25,
+      "sha256": "b66cda9848716d12916481221782b4a25ae77511ad477c07e21496f23c17653e",
+      "caption_inventory": [
+        {
+          "page": 8,
+          "label_and_caption": "Figure 1. Two-node Generative AI pipeline with deterministic governance."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Figure 2. Truth hierarchy and conflict resolution. Higher layers override lower layers when validated."
+        },
+        {
+          "page": 10,
+          "label_and_caption": "Figure 4. Generalized data model: operational tables and feature store."
+        },
+        {
+          "page": 17,
+          "label_and_caption": "Figure 3. Convergent labeling state machine (idempotent steps)."
+        },
+        {
+          "page": 21,
+          "label_and_caption": "Table 1. Deterministic governance controls for safe database mutation."
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-3-modeling/ch01-time-leakage.pdf",
+      "pages": 8,
+      "sha256": "5af1f57a321aa9bd49ec018ea66a59b55c1f6094aaef5e1b3c5b7eee75397c51",
+      "caption_inventory": [
+        {
+          "page": 3,
+          "label_and_caption": "Figure 1.1: Listing lifecycle timestamps and the admissible information boundary at time\u00e2\u20ac\u2018zero."
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Figure 1.2: A taxonomy of leakage pathways and their operational consequences."
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Figure 1.4: Correct as\u00e2\u20ac\u2018of joins require restricting to observations with timestamp \u00e2\u2030\u00a4 t0."
+        },
+        {
+          "page": 6,
+          "label_and_caption": "Figure 1.3: Illustrative simulation\u00e2\u20ac\u201dpost\u00e2\u20ac\u2018t0 leakage produces unrealistically high backtest scores."
+        },
+        {
+          "page": 6,
+          "label_and_caption": "Figure 1.5: Label availability\u00e2\u20ac\u201dnear the dataset end, Slow21 cannot be observed without peeking into"
+        },
+        {
+          "page": 8,
+          "label_and_caption": "Table 1.1: Deterministic leakage diagnostics suitable for automated pipeline checks."
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-3-modeling/ch02-governance-layer.pdf",
+      "pages": 11,
+      "sha256": "9491c70b44e34b1b667af78d6103259c33aba98620e790a9ab50cc5e7b1b3213",
+      "caption_inventory": [
+        {
+          "page": 2,
+          "label_and_caption": "Equation 2.1 - T0 compliance as measurability with respect to the information filtration."
+        },
+        {
+          "page": 3,
+          "label_and_caption": "Figure 2.1 - End-to-end feature architecture with an explicit governance layer."
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Equation 2.2 - Contract hashes bind the declared feature interface to an immutable digest."
+        },
+        {
+          "page": 5,
+          "label_and_caption": "Table 2.1 - Governance kernel tables for certification and drift baselining."
+        },
+        {
+          "page": 5,
+          "label_and_caption": "Figure 2.2 - Certification lifecycle and enforcement points."
+        },
+        {
+          "page": 6,
+          "label_and_caption": "Figure 2.3 - Certification pipeline from refresh to enforced consumption."
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Figure 2.4 - Training preflight sequence: certification and contract checks before data load."
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Equation 2.3 - Dataset hash baseline for drift detection (per-day hashed samples)."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Table 2.2 - Examples of certified entrypoints and corresponding certification procedures."
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-3-modeling/ch03-tail-gating-and-anchors.pdf",
+      "pages": 17,
+      "sha256": "46b5c15f196e0cf3a44d5c8d7187a2a957159cbe4185c675b78306599f98394b",
+      "caption_inventory": [
+        {
+          "page": 3,
+          "label_and_caption": "Figure 3.1: Three\u00e2\u20ac\u2018model architecture for time\u00e2\u20ac\u2018to\u00e2\u20ac\u2018sale: Fast\u00e2\u20ac\u201872, core survival, and Slow\u00e2\u20ac\u201821."
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Figure 3.2: Noise distributions supported by the AFT objective (standardized forms)."
+        },
+        {
+          "page": 5,
+          "label_and_caption": "Figure 3.3: Backoff hierarchy for anchor estimation. Each level shrinks toward its parent using"
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Figure 3.4: Illustrative survival curves and the operational boundaries at 72h and 504h."
+        },
+        {
+          "page": 8,
+          "label_and_caption": "Figure 3.5: Recency weighting with a 25\u00e2\u20ac\u2018day half\u00e2\u20ac\u2018life (normalized)."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Figure 3.6: Tail emphasis schedule (illustrative parameters from the best trial)."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Figure 3.7: Boundary focus weights around \u00cf\u201e=504h. Smaller \u00cf\u0192 concentrates learning near the"
+        },
+        {
+          "page": 12,
+          "label_and_caption": "Figure 3.8: Confusion matrix for the Slow\u00e2\u20ac\u201821 gate on the evaluation slice."
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-3-modeling/ch04-hierarchical-bayesian-anchors.pdf",
+      "pages": 8,
+      "sha256": "7c2a5c5132b200e6ae337fc0de1837f2be58ff69d756de3fe44488540c04c8c9",
+      "caption_inventory": [
+        {
+          "page": 2,
+          "label_and_caption": "Figure 4.1 \u00e2\u20ac\u201d Price-to-value (PTV) as a log ratio between the ask price at t0 and an anchor (fair\u00e2\u20ac\u2018value)"
+        },
+        {
+          "page": 2,
+          "label_and_caption": "Figure 4.2 \u00e2\u20ac\u201d A canonical empirical\u00e2\u20ac\u2018Bayes shrinkage rule. Our production anchors implement the same"
+        },
+        {
+          "page": 3,
+          "label_and_caption": "Figure 4.3 \u00e2\u20ac\u201d Shrinkage weight as a function of cohort support n. The system behaves like a Bayesian"
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Figure 4.4 \u00e2\u20ac\u201d Backoff cascade used by the smart anchor. The anchor_level_k feature records how much"
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Figure 4.5 \u00e2\u20ac\u201d Strict anchor time windows. The embargo ensures leak\u00e2\u20ac\u2018proofness even under ingestion lag"
+        },
+        {
+          "page": 5,
+          "label_and_caption": "Table 4.1 \u00e2\u20ac\u201d Anchor\u00e2\u20ac\u2018prior features (core subset) exposed to downstream models."
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Figure 4.6 \u00e2\u20ac\u201d Anchor features propagate into the tail\u00e2\u20ac\u2018gate classifiers and the downstream AFT survival"
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-3-modeling/ch05-empirical-results-sacrifice.pdf",
+      "pages": 6,
+      "sha256": "dff51da65bb1eade4efd984edeaccc4b082b229c3f60e2121a0ecfbeb2a2e3b3",
+      "caption_inventory": [
+        {
+          "page": 1,
+          "label_and_caption": "Figure 5.1 - Temporal protocol used for train / calibration / evaluation (UTC)."
+        },
+        {
+          "page": 2,
+          "label_and_caption": "Table 5.1 - Slow-21 gate metrics (slow class = duration >= 504h)."
+        },
+        {
+          "page": 3,
+          "label_and_caption": "Figure 5.2 - Confusion matrices for evaluation and calibration slices (slow >= 504h)."
+        },
+        {
+          "page": 3,
+          "label_and_caption": "Figure 5.3 - SAC metrics quantify collateral suppression by speed band."
+        },
+        {
+          "page": 4,
+          "label_and_caption": "Table 5.2 - Best hyperparameters from Optuna (slow-class F1 objective)."
+        },
+        {
+          "page": 5,
+          "label_and_caption": "Figure 5.4 - Top features by gain importance (evaluation scope)."
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    },
+    {
+      "path": "papers/part-3-modeling/supplement-slow21-aft-stock-augmented.pdf",
+      "pages": 27,
+      "sha256": "6bc23ea6e7f9c9529677c1d57ace47c2e962f4c1fe22f3444a217078c753c3d3",
+      "caption_inventory": [
+        {
+          "page": 5,
+          "label_and_caption": "Equation 1. Slow21 classification target as a survival probability."
+        },
+        {
+          "page": 5,
+          "label_and_caption": "Figure 1. End-to-end training pipeline (feature assembly, AFT training, calibration, explainability)."
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Figure 2. Sold and censored examples under a 21-day censoring rule."
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Equation 2. Survival function under the AFT model; Slow21 probability is S(504h | x)."
+        },
+        {
+          "page": 7,
+          "label_and_caption": "Equation 3. Likelihood contribution for interval-censored labels; right-censoring is the special case U=\u00e2\u02c6\u017e."
+        },
+        {
+          "page": 9,
+          "label_and_caption": "Figure 3. How the three stock features are computed from live intervals at t0."
+        },
+        {
+          "page": 12,
+          "label_and_caption": "Equation 4. Core AFT model: a location-scale model for log time-to-sell."
+        },
+        {
+          "page": 12,
+          "label_and_caption": "Figure 4. Illustrative survival curves for the supported AFT error distributions."
+        },
+        {
+          "page": 13,
+          "label_and_caption": "Figure 5. A single decision tree; in practice the model uses hundreds to thousands of trees."
+        },
+        {
+          "page": 14,
+          "label_and_caption": "Figure 6. The additive nature of gradient boosting (\u00ce\u00b7 is the learning rate)."
+        },
+        {
+          "page": 14,
+          "label_and_caption": "Equation 5. Canonical split gain formula in second-order gradient boosting."
+        },
+        {
+          "page": 14,
+          "label_and_caption": "Equation 6. Optimal leaf weight under L2 regularization."
+        },
+        {
+          "page": 15,
+          "label_and_caption": "Figure 7. Depth-wise vs. leaf-wise growth. The training script uses leaf-wise growth (lossguide)."
+        },
+        {
+          "page": 16,
+          "label_and_caption": "Equation 7. Time-decay weighting used throughout training."
+        },
+        {
+          "page": 16,
+          "label_and_caption": "Figure 8. Example time-decay curve for half_life_days=25."
+        },
+        {
+          "page": 17,
+          "label_and_caption": "Figure 9. Boundary-focus multiplier (k=0.85, sigma_days=7)."
+        },
+        {
+          "page": 18,
+          "label_and_caption": "Figure 10. Illustrative isotonic mapping from raw to calibrated predictions."
+        },
+        {
+          "page": 20,
+          "label_and_caption": "Figure 11. Example feature-block attribution from an evaluation slice (percent of total SHAP mean(|value|))."
+        },
+        {
+          "page": 21,
+          "label_and_caption": "Figure 12. Observed Slow21 rate by decile of stock features (univariate view)."
+        },
+        {
+          "page": 22,
+          "label_and_caption": "Figure 13. Conditional separation in Slow21 rate across stock quintiles within price-delta quintiles."
+        },
+        {
+          "page": 23,
+          "label_and_caption": "Figure 14. Conditional lift heatmap: stock is most informative in specific (delta_q, flow_q) regions."
+        },
+        {
+          "page": 24,
+          "label_and_caption": "Figure 15. Information gain from stock quintiles, by (delta_q, flow_q) segment."
+        }
+      ],
+      "interpretation": "Historical source; selected figures have individual interpretation limits. Captions are inventory metadata, not newly endorsed claims."
+    }
+  ]
+}
