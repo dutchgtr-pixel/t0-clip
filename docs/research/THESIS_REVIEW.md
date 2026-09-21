@@ -169,7 +169,7 @@ The review does not establish prospective superiority, calibrated decision value
 fraud-detection accuracy or complete historical reproducibility. Those claims
 require the separate, governed real-data studies described in the manuscript.
 
-## Visual review receipt: PDF pages 67ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“83
+## Visual review receipt: PDF pages 67-83
 
 The operations reviewer inspected all 17 pages in this physical PDF range using
 the completed 100-dpi Poppler renders. The reviewed PDF had 99 pages and SHA-256
@@ -208,7 +208,7 @@ record-identity findings. Current-tree corrections do not rewrite earlier public
 Git history. Permission to retain anonymous example images does not authorize
 original record identifiers, source URLs, seller details or raw datasets.
 
-## Final integrated release checks
+## Prior integrated release checks: edition 0.2
 
 The final software suite passed **101 tests** with two known deprecation warnings
 from a preserved historical estimator. The [validation receipt](../../research/thesis_evidence/current_validation.json)
@@ -259,3 +259,41 @@ covers the current files, reviewed PDFs, archive members and approved images.
 
 Final publication audits passed for all 249 additions/changes since the original
 public baseline and all 410 current public files, with zero findings.
+
+## Historical neural comparison revision: edition 0.3
+
+The results now state the recorded neural meta-ensemble improvement directly:
+F1 0.9209 versus 0.8462 for the earlier XGBoost AFT system (+7.47 points),
+precision 0.9802 versus 0.8314, and recall 0.8684 versus 0.8614. The four-row
+comparison table and new vector chart retain the respective historical cohorts
+of 964 and 941 records. The abstract, orientation, comparison and discussion
+chapters, model card and claim ledger carry the same bounded result.
+
+The [comparison evidence](../../research/thesis_evidence/historical_neural_comparison.json)
+records sixteen hashed sources, 233 neural trial prediction pairs plus three
+best snapshots, and 8,000 ensemble candidate evaluations. Mathematical review
+verified confusion-matrix arithmetic, denominators and reported improvements.
+Source review distinguishes actual execution output from surrounding generated
+prose and preserves the recovered threshold-selection scope. The evidence does
+not silently equate the two historical cohorts or every model-family comparison.
+
+The rebuilt monograph by **Ghaffar Masomi** contains **102 pages, 15 chapters,
+33,504 chapter words, 23 figures and 16 bibliography entries**. Two reviewers
+visually inspected all physical pages using the final 90-DPI Poppler renders;
+the integration review also enlarged the new table and chart on pages 66-67.
+No blocking clipping, overlap, missing content or unreadable figures was found.
+Physical pages 84 and 96 retain sparse continuation text, an optional pagination
+refinement. The cover, metadata and direct 70,000+ successful workflow total
+remain correct.
+
+The final PDF SHA-256 is
+`a938e2eca511e3c7ce7a8904df30478de2d33da3b15bd45a436e96cb917c398e`.
+The build and PDF release manifests bind the review to those exact bytes; the
+Downloads copy matches. Local Markdown links resolve. All 26 recorded runtime
+source files and six test files remain identical to the previously tested
+snapshot. This revision rebuilds documentation and records existing experiments;
+it does not claim a new model-training or local software-suite run.
+
+Publication audits passed for all 251 additions/changes since the original
+public baseline and all 412 current public files, with zero findings. The
+proprietary records, original identifiers and fitted weights remain excluded.

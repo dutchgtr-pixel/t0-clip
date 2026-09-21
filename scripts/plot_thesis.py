@@ -61,6 +61,22 @@ def make_figures(out):
     ax.set_ylabel("Missing pattern (%)");ax.set_ylim(0,125);ax.set_yticks([0,25,50,75,100]);ax.legend(frameon=False,ncol=2,loc="upper right")
     fig.tight_layout();save(fig,"r03_missingness_shortcut",out)
 
+    comparison=read("research/thesis_evidence/historical_neural_comparison.json")
+    by_id={row["model_id"]:row for row in comparison["historical_comparison"]["results"]}
+    rows=[by_id[key] for key in ["xgboost_aft","neural_top20","neural_seed50","neural_meta"]]
+    fig,ax=plt.subplots(figsize=(8.3,4.2))
+    vals=[row["f1"] for row in rows]
+    labels=["XGBoost AFT\nn=941", "Neural top-20\nn=964", "Neural optimized\nn=964", "Neural meta\nn=964"]
+    ax.bar(range(4),vals,color=[GOLD,"#6b969c",TEAL,NAVY],width=.6)
+    for x0,value in enumerate(vals):ax.text(x0,value+.018,f"{value:.4f}",ha="center",fontsize=11,weight="bold")
+    ax.set_xticks(range(4),labels);ax.tick_params(axis="x",labelsize=9)
+    ax.set_ylabel("Recorded F1");ax.set_ylim(0,1.14);ax.set_yticks(np.arange(0,1.01,.2))
+    ax.set_title("21-day tail screening: historical model results",fontsize=12,pad=18)
+    ax.annotate("",xy=(0,1.035),xytext=(3,1.035),arrowprops={"arrowstyle":"|-|","color":TEAL,"lw":1.2})
+    ax.text(1.5,1.065,"Neural meta vs earlier AFT: +7.47 F1 points",ha="center",fontsize=10,color=TEAL)
+    ax.grid(axis="y",alpha=.15);ax.set_axisbelow(True)
+    fig.tight_layout();save(fig,"r14_historical_neural_advantage",out)
+
     fig,axes=plt.subplots(1,3,figsize=(9,3.3),sharey=True)
     for ax,key,title in zip(axes,["prevalence","precision","recall"],["FAST72 prevalence","Selected precision","Selected recall"]):
         cohorts=[ev["locked_policy"][k]["overall"] for k in ["sval","holdout","forward"]]
