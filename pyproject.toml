@@ -14,14 +14,20 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<10", "pypdf>=5,<7"]
+dev = ["pytest>=8,<10", "pypdf>=5,<7", "pglast>=7,<8"]
 plots = ["matplotlib>=3.8,<4"]
+paper = ["reportlab>=4,<5", "pypdf>=5,<7", "PyMuPDF>=1.25,<2", "Pillow>=10,<13", "matplotlib>=3.8,<4"]
 
 [project.scripts]
 marketneural = "marketneural.__main__:main"
 
 [tool.setuptools.packages.find]
-include = ["marketneural*"]
+include = ["marketneural*", "research*"]
+
+[tool.setuptools.package-data]
+"research.production_reference" = ["*.json", "*.md"]
+"research.cascade" = ["*.json", "*.md"]
+"research.feature_store_ddl" = ["*.json", "*.md", "*.cjs", "portable/*.sql", "archived/*.sql"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

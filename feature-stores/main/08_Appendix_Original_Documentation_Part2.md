@@ -43,8 +43,8 @@ ai_owner_private / ai_owner_work / ai_owner_unknown
 ai_ship_can / ai_ship_pickup / ai_ship_unspecified
 – From ai.can_ship and ai.pickup_only booleans (mutually exclusive).
 
-ai_rep_apple / ai_rep_authorized / ai_rep_independent / ai_rep_unknown
-– From ai.repair_provider (apple, authorized, independent, other/NULL → unknown).
+ai_rep_manufacturer / ai_rep_authorized / ai_rep_independent / ai_rep_unknown
+– From ai.repair_provider (manufacturer, authorized, independent, other/NULL → unknown).
 
 ai_can_ship_bin (ai.can_ship),
 
@@ -132,7 +132,7 @@ to_add (feature_name, dtype, expr_sql, is_nullable, description) AS (
   ('ai_ship_unspecified','int4','ai_ship_unspecified',TRUE,'AI: shipping unspecified'),
 
   -- repair provider one-hots
-  ('ai_rep_apple','int4','ai_rep_apple',TRUE,'AI: repair Apple'),
+  ('ai_rep_manufacturer','int4','ai_rep_manufacturer',TRUE,'AI: repair manufacturer'),
   ('ai_rep_authorized','int4','ai_rep_authorized',TRUE,'AI: repair authorized'),
   ('ai_rep_independent','int4','ai_rep_independent',TRUE,'AI: repair independent'),
   ('ai_rep_unknown','int4','ai_rep_unknown',TRUE,'AI: repair unknown'),

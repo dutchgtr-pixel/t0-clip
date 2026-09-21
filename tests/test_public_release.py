@@ -3,11 +3,13 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import io
 import json
 import math
 from pathlib import Path
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from unittest.mock import patch
 import zipfile
 
@@ -15,7 +17,7 @@ import torch
 
 from research.production_reference import model_core as core
 from research.production_reference.training import Objective, historical_model, objective_loss, synthetic_batch, train_tensor_epoch
-from scripts.audit_public_release import ORIGINAL_PUBLIC_BASE, all_public_paths, audit_file, audit_pdf_text, reviewed_artifacts, terminology_findings
+from scripts.audit_public_release import ORIGINAL_PUBLIC_BASE, all_public_paths, audit_file, audit_pdf_text, main as audit_main, reviewed_artifacts, terminology_findings
 
 
 class ArchivedModelTests(unittest.TestCase):
@@ -111,6 +113,39 @@ class ReleaseAuditTests(unittest.TestCase):
         self.assertEqual(terminology_findings(name, "generic adapter")[0].rule, "acquisition_terminology_in_path")
         self.assertEqual(terminology_findings("models.py", "PyTorch NumPy scikit-learn Perceiver"), [])
 
+    def test_product_and_payment_fingerprints_are_blocked_but_browser_identifier_is_allowed(self):
+        for value in ("App" + "le", "ai_rep_app" + "le", "Air" + "Pods", "Ear" + "Pods",
+                      "Sam" + "sung", "Mac" + "Book", "vi" + "pps_only", "mobile" + "pay",
+                      "app" + "lepay", "google" + "pay", "Beats" + "-style"):
+            self.assertTrue(terminology_findings("notes.md", value))
+        self.assertEqual(terminology_findings("adapter.py", "App" + "leWebKit/537.36"), [])
+
+    def test_record_literals_and_urls_are_blocked_without_exposing_values(self):
+        example_identifier = "123" + "456789"
+        examples = [
+            '"listing_id": ' + example_identifier,
+            'WHERE item_id IN (' + example_identifier + ')',
+            'WHERE listing_id IN (1001, ' + example_identifier + ')',
+            '"entity_id":\n  "' + example_identifier + '"',
+            'tool --only-ids ' + example_identifier + ' --dry-run',
+            'tool --only-ids 1001,' + example_identifier + ' --dry-run',
+            'https://example.invalid/item/' + example_identifier,
+            'https://example.invalid/view?listing_id=' + example_identifier,
+        ]
+        for value in examples:
+            findings = terminology_findings("example.md", value)
+            self.assertTrue(findings)
+            self.assertNotIn(example_identifier, repr(findings))
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            path = root / "example.json"
+            path.write_text(examples[2])
+            self.assertEqual(audit_file(root, path)[0].rule, "record_identifier_literal")
+
+    def test_aggregate_counts_dates_dimensions_and_hashes_are_not_record_ids(self):
+        safe = '"database_size_bytes": 29106213679\n"parameters": 17145736\n"date": "2026-09-21"\n"dtype": "int64"\n"sha256": "' + 'a' * 64 + '"\n"listing_id": "fixture-alpha"\nlisting_id = row[0]'
+        self.assertEqual(terminology_findings("aggregate.json", safe), [])
+
     def test_all_public_scope_excludes_missing_files_and_uses_git_ignores(self):
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
@@ -175,10 +210,20 @@ class ReleaseAuditTests(unittest.TestCase):
     def test_data_binary_and_oversized_files_are_blocked(self):
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
-            for filename, content, rule in [("rows.parquet", b"x", "data_or_binary_artifact"), ("mystery.bin", b"a\0b", "binary_content"), ("large.txt", b"x" * 101, "oversized_file")]:
+            for filename, content, rule in [("rows.parquet", b"x", "data_or_binary_artifact"), ("model.joblib", b"x", "data_or_binary_artifact"), ("model.safetensors", b"x", "data_or_binary_artifact"), ("mystery.bin", b"a\0b", "binary_content"), ("large.txt", b"x" * 101, "oversized_file")]:
                 path = root / filename
                 path.write_bytes(content)
                 self.assertEqual(audit_file(root, path, max_bytes=100)[0].rule, rule)
+
+    def test_strict_full_tree_blocks_model_suffix_even_when_content_is_utf8(self):
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            path = root / "model.safetensors"
+            path.write_text("This text must not bypass the blocked model suffix.")
+            output = io.StringIO()
+            with patch("sys.argv", ["audit", "--root", str(root), "--all-public-text", "--include-reviewed-documents", str(path)]), redirect_stdout(output):
+                self.assertEqual(audit_main(), 1)
+            self.assertEqual(json.loads(output.getvalue())["findings"][0]["rule"], "data_or_binary_artifact")
 
     def test_only_explicitly_reviewed_pdf_hash_is_accepted(self):
         with tempfile.TemporaryDirectory() as name:

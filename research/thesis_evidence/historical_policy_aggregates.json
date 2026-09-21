@@ -1,0 +1,139 @@
+{
+  "kind": "historical_saved_prediction_aggregates",
+  "review_date": "2026-09-21",
+  "source_scope": "Saved predictions retrospectively inspected; private row-level artifacts not distributed.",
+  "cohorts": {
+    "sval": {
+      "overall": {
+        "n": 584,
+        "tp": 126,
+        "fp": 14,
+        "fn": 203,
+        "tn": 241,
+        "prevalence": 0.5633561643835616,
+        "precision": 0.9,
+        "recall": 0.3829787234042553,
+        "f1": 0.5373134328358209,
+        "selected_share": 0.23972602739726026,
+        "all_positive_f1": 0.7207009857612268
+      },
+      "zero_duration": {
+        "n": 69,
+        "tp": 31,
+        "fp": 0,
+        "fn": 38,
+        "tn": 0,
+        "prevalence": 1.0,
+        "precision": 1.0,
+        "recall": 0.4492753623188406,
+        "f1": 0.62,
+        "selected_share": 0.4492753623188406,
+        "all_positive_f1": 1.0
+      },
+      "positive_duration": {
+        "n": 515,
+        "tp": 95,
+        "fp": 14,
+        "fn": 165,
+        "tn": 241,
+        "prevalence": 0.5048543689320388,
+        "precision": 0.8715596330275229,
+        "recall": 0.36538461538461536,
+        "f1": 0.5149051490514905,
+        "selected_share": 0.21165048543689322,
+        "all_positive_f1": 0.6709677419354839
+      },
+      "censored": 72
+    },
+    "holdout": {
+      "overall": {
+        "n": 748,
+        "tp": 306,
+        "fp": 93,
+        "fn": 166,
+        "tn": 183,
+        "prevalence": 0.6310160427807486,
+        "precision": 0.7669172932330827,
+        "recall": 0.6483050847457628,
+        "f1": 0.7026406429391504,
+        "selected_share": 0.5334224598930482,
+        "all_positive_f1": 0.7737704918032787
+      },
+      "zero_duration": {
+        "n": 178,
+        "tp": 123,
+        "fp": 0,
+        "fn": 55,
+        "tn": 0,
+        "prevalence": 1.0,
+        "precision": 1.0,
+        "recall": 0.6910112359550562,
+        "f1": 0.8172757475083057,
+        "selected_share": 0.6910112359550562,
+        "all_positive_f1": 1.0
+      },
+      "positive_duration": {
+        "n": 570,
+        "tp": 183,
+        "fp": 93,
+        "fn": 111,
+        "tn": 183,
+        "prevalence": 0.5157894736842106,
+        "precision": 0.6630434782608695,
+        "recall": 0.6224489795918368,
+        "f1": 0.6421052631578947,
+        "selected_share": 0.4842105263157895,
+        "all_positive_f1": 0.6805555555555556
+      },
+      "censored": 98
+    },
+    "forward": {
+      "overall": {
+        "n": 283,
+        "tp": 154,
+        "fp": 27,
+        "fn": 66,
+        "tn": 36,
+        "prevalence": 0.7773851590106007,
+        "precision": 0.850828729281768,
+        "recall": 0.7,
+        "f1": 0.7680798004987531,
+        "selected_share": 0.6395759717314488,
+        "all_positive_f1": 0.8747514910536779
+      },
+      "zero_duration": {
+        "n": 70,
+        "tp": 53,
+        "fp": 0,
+        "fn": 17,
+        "tn": 0,
+        "prevalence": 1.0,
+        "precision": 1.0,
+        "recall": 0.7571428571428571,
+        "f1": 0.8617886178861789,
+        "selected_share": 0.7571428571428571,
+        "all_positive_f1": 1.0
+      },
+      "positive_duration": {
+        "n": 213,
+        "tp": 101,
+        "fp": 27,
+        "fn": 49,
+        "tn": 36,
+        "prevalence": 0.704225352112676,
+        "precision": 0.7890625,
+        "recall": 0.6733333333333333,
+        "f1": 0.7266187050359713,
+        "selected_share": 0.6009389671361502,
+        "all_positive_f1": 0.8264462809917356
+      },
+      "censored": 15
+    },
+    "overlap": {
+      "forward_rows": 283,
+      "forward_ids_in_holdout": 283,
+      "matching_decisions": 283
+    }
+  },
+  "interpretation": "Nested recent slice; zero-duration exclusion is diagnostic, not corrected ground truth. Dedicated historical policy scores are not new compact curve probabilities."
+}

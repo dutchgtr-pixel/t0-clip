@@ -249,7 +249,7 @@ def _norm_payment(v: Optional[str]) -> str:
     if v in ALLOWED_PAY_CONS:
         return v
     # Compatibility aliases
-    if v in {"vipps", "vipps_only", "mobilepay", "applepay", "googlepay", "mobile_pay"}:
+    if v in {"mobile_wallet", "mobile_wallet_only", "contactless_wallet", "mobile_pay"}:
         return "mobile_pay_only"
     if v in {"cash", "cash only", "cash_only"}:
         return "cash_only"

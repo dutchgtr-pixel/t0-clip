@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "sanitized_retrospective_operational_evidence",
+  "review_date": "2026-09-21",
+  "snapshot_date": "2026-04-28",
+  "snapshot_timestamp_note": "Date of retained database metadata bundle; timezone not inferred from folder naming.",
+  "database_size_bytes": 29106213679,
+  "database_size_decimal_gb": 29.106213679,
+  "record_counts": [
+    {
+      "name": "listing_records",
+      "count": 55260,
+      "unit": "rows",
+      "definition": "Stored listing table rows; not a new holdout or a unique lifetime entity count."
+    },
+    {
+      "name": "image_assets",
+      "count": 240622,
+      "unit": "asset rows",
+      "definition": "Multiple images can belong to one listing."
+    },
+    {
+      "name": "image_feature_records",
+      "count": 228958,
+      "unit": "feature rows",
+      "definition": "Enrichment records, potentially versioned; not independent labeled outcomes."
+    },
+    {
+      "name": "text_enrichment_records",
+      "count": 54841,
+      "unit": "enrichment rows",
+      "definition": "Structured text-derived records; not raw token count."
+    },
+    {
+      "name": "text_vector_records",
+      "count": 62244,
+      "unit": "vector rows",
+      "definition": "768-dimensional vector records; versions and source coverage differ from listing rows."
+    },
+    {
+      "name": "image_vector_records",
+      "count": 80688,
+      "unit": "vector rows",
+      "definition": "512-dimensional vector records; not all stored images necessarily embedded."
+    },
+    {
+      "name": "post_event_audit_records",
+      "count": 34307,
+      "unit": "audit rows",
+      "definition": "Outcome-stage audit records, excluded from decision-time inputs unless a distinct admissible contract applies."
+    }
+  ],
+  "scheduler_history": {
+    "total": 15360,
+    "states": {
+      "success": 15254,
+      "failed": 103,
+      "running": 2,
+      "queued": 1
+    },
+    "distinct_dag_ids": 40,
+    "duplicate_primary_key_rows": 0,
+    "first_execution_date": "2025-09-16 23:30:00+00",
+    "last_execution_date": "2026-03-31 07:03:18+00",
+    "terminal_success_percent": 99.32929608647522,
+    "terminal_success_denominator": 15357
+  },
+  "scheduler_snapshot_date": "2026-04-29",
+  "scheduler_interpretation": "Retained history of one scheduler metadata database; run state is final stored state, not first-attempt success or uptime. Retained execution dates end earlier than backup date. Task instances are not added to workflow runs.",
+  "lifetime_volume": {
+    "approximately_successful_runs": 70000,
+    "status": "operator_reported_not_independently_counted",
+    "scope": "Larger lifetime platform history, outside the one retained scheduler snapshot."
+  },
+  "restore_evidence": {
+    "reports": 6,
+    "successful_reports": 6,
+    "latest_report_date": "2026-04-25",
+    "matching_files": 10230,
+    "critical_relation_counts_compared": 23,
+    "data_profiles_compared": 8,
+    "all_declared_checks_exact_match": true,
+    "status": "historical_saved_reports_not_a_new_restore_test"
+  },
+  "provenance": {
+    "basis": "Read-only retrospective inspection of retained metadata, scheduler records, and restoration reports. Raw private artifacts are not redistributed.",
+    "audit_receipt_sha256": {
+      "scheduler": "88d069d374da40eb5a5f155b60d660cf306e11f3a8d511d6914d80af0defeba3",
+      "database_and_restore": "1fc90e3acf0f96361cedf6f795ef607647c0fd24d7501284842c4594d5effb98"
+    },
+    "hash_scope": "Hashes identify earlier audit summary receipts, not a full raw database digest; receipt contents are not distributed."
+  },
+  "retained_survival_inference_workflow": {
+    "success": 262,
+    "failed": 3,
+    "unit": "stored workflow-run states",
+    "scope": "One inference workflow within the retained scheduler snapshot; not all model-stage jobs."
+  }
+}

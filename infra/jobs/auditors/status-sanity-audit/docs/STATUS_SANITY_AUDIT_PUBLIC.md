@@ -298,7 +298,8 @@ status_sanity_audit \
 
 ### Incident response (single listing)
 ```bash
-status_sanity_audit --mode run --only-ids 123456789 --force --apply none --log-json
+# Synthetic identifier for this documentation example.
+status_sanity_audit --mode run --only-ids 1001 --force --apply none --log-json
 ```
 
 ### Export mismatch triage queue

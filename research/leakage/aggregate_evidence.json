@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "scope": "Aggregate evidence from the independently inspected historical artifacts; no record identifiers or private paths. Separate cohort versions must not be pooled.",
+  "sources": [
+    {
+      "id": "independent_leakage_review",
+      "sha256": "bb56a3f0ef5b0e654b9a58cb8ad7008b1e3ec79cbf598f002b214194969390bf",
+      "evidence_class": "saved independent read-only review of source and selected historical artifacts"
+    },
+    {
+      "id": "independent_prediction_recalculation",
+      "sha256": "3dd5ba137599b73bdb9c32debb919f763f7171f676364e3bdecc69e3a865c6aa",
+      "evidence_class": "saved independent arithmetic recomputation from retained prediction records"
+    }
+  ],
+  "lifecycle_availability": [
+    {
+      "cohort": "frozen_validation",
+      "time_basis": "historical event-date partition",
+      "rows": 408,
+      "missing_pattern_rows": 219,
+      "fast72_rows": 167,
+      "fast72_missing_pattern_rows": 167,
+      "duration_buckets": [
+        {
+          "hours": "0-72",
+          "missing": 167,
+          "total": 167
+        },
+        {
+          "hours": "72-168",
+          "missing": 52,
+          "total": 69
+        },
+        {
+          "hours": "168-240",
+          "missing": 0,
+          "total": 41
+        },
+        {
+          "hours": "240-504",
+          "missing": 0,
+          "total": 52
+        },
+        {
+          "hours": ">504",
+          "missing": 0,
+          "total": 79
+        }
+      ],
+      "evidence_class": "artifact-reproduced overall and fast72 counts; documented bucket detail",
+      "missingness_only_rule": {
+        "rule": "predict fast72 if zero segment count and matching missing segment-share pattern",
+        "tp": 167,
+        "fp": 52,
+        "fn": 0,
+        "tn": 189,
+        "precision": 0.7625570776255708,
+        "recall": 1.0,
+        "f1": 0.8652849740932642,
+        "evidence_class": "analytical diagnostic derived from the reproduced aggregate cross-tab; not a trained model result or prospective estimate"
+      }
+    },
+    {
+      "cohort": "frozen_holdout",
+      "time_basis": "subsequent historical event-date partition",
+      "rows": 503,
+      "missing_pattern_rows": 335,
+      "fast72_rows": 208,
+      "fast72_missing_pattern_rows": 208,
+      "duration_buckets": [
+        {
+          "hours": "0-72",
+          "missing": 208,
+          "total": 208
+        },
+        {
+          "hours": "72-168",
+          "missing": 100,
+          "total": 100
+        },
+        {
+          "hours": "168-240",
+          "missing": 25,
+          "total": 37
+        },
+        {
+          "hours": "240-504",
+          "missing": 2,
+          "total": 57
+        },
+        {
+          "hours": ">504",
+          "missing": 0,
+          "total": 101
+        }
+      ],
+      "evidence_class": "artifact-reproduced overall and fast72 counts; documented bucket detail",
+      "missingness_only_rule": {
+        "rule": "predict fast72 if zero segment count and matching missing segment-share pattern",
+        "tp": 208,
+        "fp": 127,
+        "fn": 0,
+        "tn": 168,
+        "precision": 0.6208955223880597,
+        "recall": 1.0,
+        "f1": 0.7661141804788214,
+        "evidence_class": "analytical diagnostic derived from the reproduced aggregate cross-tab; not a trained model result or prospective estimate"
+      }
+    }
+  ],
+  "split_overlap": {
+    "snapshot": "later rebuilt April23 source; not asserted identical to original locked fit matrix",
+    "training_rows": 43146,
+    "splits": [
+      {
+        "cohort": "validation",
+        "rows": 634,
+        "also_in_training": 0
+      },
+      {
+        "cohort": "holdout",
+        "rows": 824,
+        "also_in_training": 0
+      },
+      {
+        "cohort": "tail_validation",
+        "rows": 1570,
+        "also_in_training": 1570
+      },
+      {
+        "cohort": "tail_evaluation",
+        "rows": 1121,
+        "also_in_training": 1121
+      }
+    ],
+    "evidence_class": "independent artifact key intersection"
+  },
+  "locked_policy": {
+    "sval": {
+      "overall": {
+        "n": 584,
+        "tp": 126,
+        "fp": 14,
+        "fn": 203,
+        "tn": 241,
+        "prevalence": 0.5633561643835616,
+        "precision": 0.9,
+        "recall": 0.3829787234042553,
+        "f1": 0.5373134328358209,
+        "selected_share": 0.23972602739726026,
+        "all_positive_f1": 0.7207009857612268
+      },
+      "zero_duration": {
+        "n": 69,
+        "tp": 31,
+        "fp": 0,
+        "fn": 38,
+        "tn": 0,
+        "prevalence": 1.0,
+        "precision": 1.0,
+        "recall": 0.4492753623188406,
+        "f1": 0.62,
+        "selected_share": 0.4492753623188406,
+        "all_positive_f1": 1.0
+      },
+      "positive_duration": {
+        "n": 515,
+        "tp": 95,
+        "fp": 14,
+        "fn": 165,
+        "tn": 241,
+        "prevalence": 0.5048543689320388,
+        "precision": 0.8715596330275229,
+        "recall": 0.36538461538461536,
+        "f1": 0.5149051490514905,
+        "selected_share": 0.21165048543689322,
+        "all_positive_f1": 0.6709677419354839
+      },
+      "censored": 72
+    },
+    "holdout": {
+      "overall": {
+        "n": 748,
+        "tp": 306,
+        "fp": 93,
+        "fn": 166,
+        "tn": 183,
+        "prevalence": 0.6310160427807486,
+        "precision": 0.7669172932330827,
+        "recall": 0.6483050847457628,
+        "f1": 0.7026406429391504,
+        "selected_share": 0.5334224598930482,
+        "all_positive_f1": 0.7737704918032787
+      },
+      "zero_duration": {
+        "n": 178,
+        "tp": 123,
+        "fp": 0,
+        "fn": 55,
+        "tn": 0,
+        "prevalence": 1.0,
+        "precision": 1.0,
+        "recall": 0.6910112359550562,
+        "f1": 0.8172757475083057,
+        "selected_share": 0.6910112359550562,
+        "all_positive_f1": 1.0
+      },
+      "positive_duration": {
+        "n": 570,
+        "tp": 183,
+        "fp": 93,
+        "fn": 111,
+        "tn": 183,
+        "prevalence": 0.5157894736842106,
+        "precision": 0.6630434782608695,
+        "recall": 0.6224489795918368,
+        "f1": 0.6421052631578947,
+        "selected_share": 0.4842105263157895,
+        "all_positive_f1": 0.6805555555555556
+      },
+      "censored": 98
+    },
+    "forward": {
+      "overall": {
+        "n": 283,
+        "tp": 154,
+        "fp": 27,
+        "fn": 66,
+        "tn": 36,
+        "prevalence": 0.7773851590106007,
+        "precision": 0.850828729281768,
+        "recall": 0.7,
+        "f1": 0.7680798004987531,
+        "selected_share": 0.6395759717314488,
+        "all_positive_f1": 0.8747514910536779
+      },
+      "zero_duration": {
+        "n": 70,
+        "tp": 53,
+        "fp": 0,
+        "fn": 17,
+        "tn": 0,
+        "prevalence": 1.0,
+        "precision": 1.0,
+        "recall": 0.7571428571428571,
+        "f1": 0.8617886178861789,
+        "selected_share": 0.7571428571428571,
+        "all_positive_f1": 1.0
+      },
+      "positive_duration": {
+        "n": 213,
+        "tp": 101,
+        "fp": 27,
+        "fn": 49,
+        "tn": 36,
+        "prevalence": 0.704225352112676,
+        "precision": 0.7890625,
+        "recall": 0.6733333333333333,
+        "f1": 0.7266187050359713,
+        "selected_share": 0.6009389671361502,
+        "all_positive_f1": 0.8264462809917356
+      },
+      "censored": 15
+    },
+    "overlap": {
+      "forward_rows": 283,
+      "forward_ids_in_holdout": 283,
+      "matching_decisions": 283
+    }
+  },
+  "decision_time": {
+    "target_origin": "recorded listing edit time",
+    "prediction_time": "later score-ready time",
+    "claim": "The 72-hour target is not a new 72-hour interval from prediction time."
+  }
+}

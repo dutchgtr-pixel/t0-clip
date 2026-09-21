@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "kind": "conceptual_feature_lineage_not_complete_database_dependency_graph",
+  "nodes": [
+    {
+      "id": "source_versions",
+      "kind": "source"
+    },
+    {
+      "id": "image_labels",
+      "kind": "source"
+    },
+    {
+      "id": "text_and_image_encoders",
+      "kind": "external_adapter"
+    },
+    {
+      "id": "geo_release",
+      "kind": "source"
+    },
+    {
+      "id": "market_history",
+      "kind": "source"
+    },
+    {
+      "id": "fit_membership",
+      "kind": "source"
+    },
+    {
+      "id": "main",
+      "kind": "feature"
+    },
+    {
+      "id": "image_roles",
+      "kind": "feature"
+    },
+    {
+      "id": "image_reports_k8",
+      "kind": "feature"
+    },
+    {
+      "id": "geo",
+      "kind": "feature"
+    },
+    {
+      "id": "context",
+      "kind": "feature"
+    },
+    {
+      "id": "price_anchor",
+      "kind": "feature"
+    },
+    {
+      "id": "channel_prior",
+      "kind": "feature"
+    },
+    {
+      "id": "learned_anchor",
+      "kind": "feature"
+    },
+    {
+      "id": "trainer_derived",
+      "kind": "feature"
+    },
+    {
+      "id": "certification",
+      "kind": "guard"
+    },
+    {
+      "id": "frozen_export",
+      "kind": "artifact"
+    },
+    {
+      "id": "cascade_consumers",
+      "kind": "consumer"
+    }
+  ],
+  "edges": [
+    {
+      "from": "source_versions",
+      "to": "main"
+    },
+    {
+      "from": "image_labels",
+      "to": "image_roles"
+    },
+    {
+      "from": "image_roles",
+      "to": "image_reports_k8"
+    },
+    {
+      "from": "text_and_image_encoders",
+      "to": "image_reports_k8"
+    },
+    {
+      "from": "geo_release",
+      "to": "geo"
+    },
+    {
+      "from": "market_history",
+      "to": "context"
+    },
+    {
+      "from": "market_history",
+      "to": "price_anchor"
+    },
+    {
+      "from": "market_history",
+      "to": "channel_prior"
+    },
+    {
+      "from": "fit_membership",
+      "to": "learned_anchor"
+    },
+    {
+      "from": "main",
+      "to": "trainer_derived"
+    },
+    {
+      "from": "image_reports_k8",
+      "to": "trainer_derived"
+    },
+    {
+      "from": "geo",
+      "to": "trainer_derived"
+    },
+    {
+      "from": "context",
+      "to": "trainer_derived"
+    },
+    {
+      "from": "price_anchor",
+      "to": "trainer_derived"
+    },
+    {
+      "from": "channel_prior",
+      "to": "trainer_derived"
+    },
+    {
+      "from": "learned_anchor",
+      "to": "trainer_derived"
+    },
+    {
+      "from": "trainer_derived",
+      "to": "certification"
+    },
+    {
+      "from": "certification",
+      "to": "frozen_export"
+    },
+    {
+      "from": "frozen_export",
+      "to": "cascade_consumers"
+    }
+  ],
+  "limitations": "A manual high-level map; see inventory.json for syntax-derived qualified relation references. Runtime SQL, function bodies and external adapters remain explicit review boundaries."
+}

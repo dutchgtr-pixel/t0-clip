@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "snapshot_generated_at": "2026-04-18T12:43:40.871Z",
+  "snapshot_listing_rows": 42082,
+  "snapshot_sha256": "6f29385c59b15485440edf0a5b15f55c8473dfaf480c7ba88471eb2fed0da376",
+  "scope": "Anonymous selected real photographs and saved model-produced judgments; no source identifiers or links distributed.",
+  "cases": [
+    {
+      "case": "A",
+      "image_path": "research/thesis_evidence/figures/case_a_damage.png",
+      "image_sha256": "be98de984a859170f72688a7f64fd71e2b84f5ce54e6e9f5c8681d3ee12745f1",
+      "source_image_sha256": "beee306c3cee2972a23a4cdce386e72ecc2d603cbb921c06aa255dba253e2411",
+      "stored_output": {
+        "damage_summary_text": "front screen cracked with visible cracks",
+        "photo_quality_level": 3,
+        "visible_damage_level": 2,
+        "damage_on_protector_only": false,
+        "image_damage_level": null
+      },
+      "pairing": "Private record-key and image-index match; visually consistent. No inference-time content digest recovered.",
+      "selected_for": "Illustrative visual evidence, not a random accuracy sample",
+      "image_transform": "Lossless PNG re-encoding of decoded RGB pixels, original dimensions; no visual alteration.",
+      "local_caption_translation": "Almost new [device]",
+      "caption_generalization": "Product name replaced by device in translation."
+    },
+    {
+      "case": "B",
+      "image_path": "research/thesis_evidence/figures/case_b_reflection.png",
+      "image_sha256": "a37fa55f324a94368015a12ded9c7af18999152b3a720d29dfff6d8cfdf34d02",
+      "source_image_sha256": "887a9381913b7ce835aeff997ec0d01b05c65578ff2b165b7849a61cb1b26c68",
+      "stored_output": {
+        "damage_summary_text": "Screen off with strong reflections and some smudges/dust; no clear scratches or cracks visible.",
+        "photo_quality_level": 2,
+        "visible_damage_level": 2,
+        "damage_on_protector_only": false,
+        "image_damage_level": null
+      },
+      "pairing": "Private record-key and image-index match; visually consistent. No inference-time content digest recovered.",
+      "selected_for": "Illustrative visual evidence, not a random accuracy sample",
+      "image_transform": "Lossless PNG re-encoding of decoded RGB pixels, original dimensions; no visual alteration."
+    }
+  ]
+}

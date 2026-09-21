@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "executed_at_utc": "2026-09-21T21:35:49.352589+00:00",
+  "scope": "Current software validation on synthetic fixtures; not historical predictive accuracy or prospective deployment certification.",
+  "full_suite": {
+    "command": "python -m pytest -q",
+    "tests": 101,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 22.81,
+    "warnings": 2,
+    "warning_description": "Preserved historical logistic-regression penalty argument is deprecated by the installed library.",
+    "result_source": "completed local process output",
+    "exit_code": 0
+  },
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows",
+    "dependencies": {
+      "numpy": "2.3.5",
+      "pandas": "3.0.1",
+      "scipy": "1.17.1",
+      "torch": "2.11.0+cu128",
+      "scikit-learn": "1.9.0",
+      "scikit-survival": "0.28.0",
+      "pytest": "9.0.3",
+      "pglast": "7.18"
+    }
+  },
+  "source_snapshot": {
+    "hash_rule": "File bytes normalized CRLF to LF; sorted relative-path/hash records serialized as compact sorted-key JSON for bundle hashes.",
+    "code": {
+      "canonical_sha256": "9bb735d3f6cd548bceb32ff14a3010073d60c66c32cbaae6494237d69b55c968",
+      "file_count": 26,
+      "files": [
+        {
+          "path": "marketneural/__init__.py",
+          "sha256": "271ec9a7485abb14fc0bb5559aec3b40a38a5cd3a2eef19da09d89583b60f23d"
+        },
+        {
+          "path": "marketneural/__main__.py",
+          "sha256": "948177fdc73720e753f3212ac0ed4052d90c5ba7d96ac2e3a8f017e0b185eacb"
+        },
+        {
+          "path": "marketneural/benchmark.py",
+          "sha256": "5fb678940c5de1e41ad47bfdd353a44bf2456a3929f8587e251b99b4155a91fb"
+        },
+        {
+          "path": "marketneural/data.py",
+          "sha256": "24a2235d5e8caf69c69777c976f39b0db1fb87b592ade757dd7585d554fd187e"
+        },
+        {
+          "path": "marketneural/metrics.py",
+          "sha256": "8a65b54b272e7bfd62ef1ce7c7a093c17025840f06079be34d3c8677b6680e6e"
+        },
+        {
+          "path": "marketneural/models.py",
+          "sha256": "178001477fdb369e3192a36edfad6584463d597533b3b90f5c1ea3836dfa4360"
+        },
+        {
+          "path": "marketneural/neural.py",
+          "sha256": "c3b78450b85b621d597d21200b35b4359d7d4f21636822414884189b28f7ea3c"
+        },
+        {
+          "path": "marketneural/synthetic.py",
+          "sha256": "3fa6f84474e2f52e76a09bc6a484c0ea757c2b7c0fe1dca0ef18b77809a9c205"
+        },
+        {
+          "path": "research/cascade/__init__.py",
+          "sha256": "e470833b4fe9def327607ef2c178b95d007d5f996933c205ed11acfbc2f1f40e"
+        },
+        {
+          "path": "research/cascade/__main__.py",
+          "sha256": "d17e51973133c5f9568cfa4f8c6dbc3fefb1b6bbe8c39036603755898c074779"
+        },
+        {
+          "path": "research/cascade/ensemble.py",
+          "sha256": "7035a74b76f87753ca7da146abb5b4d51db1907df2b9abb2a7b2d09824cde0a2"
+        },
+        {
+          "path": "research/cascade/legacy_core.py",
+          "sha256": "db93561fca121e93450523dd6d7d68f365df113c898467f04f30d3f79c323b31"
+        },
+        {
+          "path": "research/cascade/pipeline.py",
+          "sha256": "1ff6fea11403b20515eac4436d36b1ef475c57df56807589302c082c0916826c"
+        },
+        {
+          "path": "research/cascade/portable.py",
+          "sha256": "2e244209d86748126b87e5648710bdd04ec2e9c48092cfc8b57bb4f9384211da"
+        },
+        {
+          "path": "research/cascade/routing_core.py",
+          "sha256": "5aff644ec62dc617ce3d5877726739267d48efb1efa6beea34760f7cca1663ad"
+        },
+        {
+          "path": "research/cascade/search_core.py",
+          "sha256": "2fb57ef44244932d4454d3102991f4765de8adc778030ea2485278ca1671705c"
+        },
+        {
+          "path": "research/cascade/stage0_ensemble_core.py",
+          "sha256": "b48323c12a0373e6bcd9710b60b53ac46102142564d5c41242c064055acf80ab"
+        },
+        {
+          "path": "research/cascade/stage1_core.py",
+          "sha256": "8596f8e581bac8af1151a647482e61388b25bb8de191c70530095703dae985a0"
+        },
+        {
+          "path": "research/cascade/stage1_ensemble_core.py",
+          "sha256": "fa850ac7b3916538917537d98a6fb168d9109500660eb0c8e7f5adbeb7a78bf9"
+        },
+        {
+          "path": "research/cascade/stage2_core.py",
+          "sha256": "b243db3a3573cdad6098789c6093a988e010a048918e72fff4a84a6001d19913"
+        },
+        {
+          "path": "research/cascade/stage2_ensemble_core.py",
+          "sha256": "db9e789a47fda883c5eda2b8c7c70baa290d5215b6e26fda14e8502148f28b84"
+        },
+        {
+          "path": "research/feature_store_ddl/__init__.py",
+          "sha256": "8d53e8932c926813d17e04636173b1da481684edf2c82156730e100093c24e86"
+        },
+        {
+          "path": "research/feature_store_ddl/inventory.py",
+          "sha256": "fa98d2b337759a2f462c089178a4f2868192982604431ae1e6704b797be70eb1"
+        },
+        {
+          "path": "research/production_reference/__init__.py",
+          "sha256": "0a027b6aaa094a45bf400f30db509bebfb68063422b429a3f034f41cc4186ee6"
+        },
+        {
+          "path": "research/production_reference/model_core.py",
+          "sha256": "72e7aa4243a9593fff1e47eb124c9f9725256494bf749bcbcc558b888e2f4c24"
+        },
+        {
+          "path": "research/production_reference/training.py",
+          "sha256": "08f25d363c317b54efac704c50d71cdf27af55394df8b6b3a23d8b169b67b91c"
+        }
+      ]
+    },
+    "tests": {
+      "canonical_sha256": "982b6b0c5b3ef30adaf07eab4b96dcbb39a62282e091a114cbde63dc1eb3ac1b",
+      "file_count": 6,
+      "files": [
+        {
+          "path": "tests/test_cascade.py",
+          "sha256": "125c0e20e7bdecdb6b91644f6260aeadf6fc2f8d2c8d9d341a06b0715a3f5430"
+        },
+        {
+          "path": "tests/test_data_metrics.py",
+          "sha256": "4245e7c6a4957b4a7dbd5bb50c776e59c1019027f8966d97dfc25e8656105621"
+        },
+        {
+          "path": "tests/test_feature_store_ddl.py",
+          "sha256": "f1b8bbbcc57e8990461cb6f51047eac473426cc8b62b12b9cdc6f565c8117894"
+        },
+        {
+          "path": "tests/test_models.py",
+          "sha256": "03e0a7bc440384f52e7e0ed6ea86b4883501316627f72407eea31f17ec05e26b"
+        },
+        {
+          "path": "tests/test_public_release.py",
+          "sha256": "7599615fdf5ebc10605c38568b1f2dc328ebf6bc77ecb2fcdb3fd79193818984"
+        },
+        {
+          "path": "tests/test_release_images.py",
+          "sha256": "f98ec47e460a0f34e13aad962c3cc0e66ac79b2e3215ab5e84171cfb05b18262"
+        }
+      ]
+    },
+    "pyproject_sha256": "384bdff82def7d8301c4ba460b0d8bf3b780842f83e384633e30834f54ef0f5b",
+    "release_tooling": {
+      "canonical_sha256": "3c8de3dd9695fffca666f3ae0ee30028d2e8f4feb31c96b360acbc6e58c0bfee",
+      "file_count": 4,
+      "files": [
+        {
+          "path": "scripts/audit_public_release.py",
+          "sha256": "49a54e426925229121a0d627bd45bacdd5fae208bee187f65378625688767679"
+        },
+        {
+          "path": "scripts/build_thesis.py",
+          "sha256": "5d196c11575e39fbdd3d410efd7eb374280b50d02b2a2cb951ffb2b1796da2c7"
+        },
+        {
+          "path": "scripts/plot_benchmark.py",
+          "sha256": "1f33917a59431d4889bb25f5a66e883efbc19b7e01c6246915d7e7e6105fc298"
+        },
+        {
+          "path": "scripts/plot_thesis.py",
+          "sha256": "f321f6ce49ce2d5af68b31e151dede172e7ce8f8b6ab3e985056dd9376e279bf"
+        }
+      ]
+    }
+  },
+  "wheel": {
+    "name": "marketneural-0.1.0-py3-none-any.whl",
+    "sha256": "832f20335811021bb3a885007b92e32238da7b5fed037483bba61a6eccbcdb56",
+    "build": "PEP 517 isolated build; dependencies not bundled",
+    "installation": "Separate target directory; Python isolated mode; module origins checked against installed target",
+    "smoke": {
+      "isolated_interpreter": true,
+      "imports_from_installed_target": [
+        "marketneural.models",
+        "marketneural.neural",
+        "research.cascade.portable",
+        "research.cascade.search_core",
+        "research.production_reference.training",
+        "research.feature_store_ddl.inventory"
+      ],
+      "historical_model_trainable_parameters": 17145736,
+      "legacy_forward_finite": true,
+      "all_four_cascade_routes": true,
+      "portable_sql_files": 5,
+      "archived_sql_files": 8,
+      "portable_sql_parsed_statements": 33,
+      "required_package_resources_present": true
+    },
+    "runtime_sources_unchanged_since_installation_check": true,
+    "repeat_build_required_for_final_test_changes": false,
+    "scope": "Wheel installation check refers to the recorded wheel bytes from before the final documentation and inventory receipt edits. Runtime Python sources and pyproject remain unchanged; this wheel hash is not asserted to identify a rebuilt final documentation/resource bundle."
+  },
+  "cascade_smoke": {
+    "artifact": "research/cascade/synthetic_smoke.json",
+    "sha256": "f2306f6ce64009bb20541914b6cf06dd2c7456d85e1328be796267904185d8c1"
+  },
+  "limits": [
+    "SQL resources were parsed in the installed wheel; database execution is separately documented in the feature-store validation report.",
+    "No live services or private training jobs were started for these checks.",
+    "Public figures and thesis layout have separate visual-review evidence."
+  ],
+  "visual_review": {
+    "pdf": "papers/marketneural/marketneural-thesis.pdf",
+    "sha256": "b6377260d358167f18227f1ab5897927e6179516e4e06e9a398568296d402d96",
+    "total_pages": 99,
+    "reviewed_pdf_page_numbers": [
+      34,
+      79
+    ],
+    "coverage": "All 46 pages from 34 through 79 inclusive",
+    "rendering": "Poppler at 100 DPI; all-page contact sheets plus full-size checks of equations, network figure and comparison table",
+    "blocking_findings": 0,
+    "note": "This entry covers the assigned model/method/results pages; other page ranges are reviewed separately."
+  }
+}
