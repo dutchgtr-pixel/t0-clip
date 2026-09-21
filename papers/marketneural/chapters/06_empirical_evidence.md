@@ -6,6 +6,33 @@ The available results belong to three distinct layers. Historical reports and sa
 
 The historical project is substantial: it progressed from temporal feature stores and AFT tail screening to multimodal neural models, stage-specific decisions, calibration, policy selection, and deployed inference. A critical review should acknowledge that progression while examining which final populations were independent of development. The public comparison provides a cleaner experimental scaffold, but its synthetic population does not establish superiority on the historical market data. Aggregate evidence files accompanying this chapter make the numerical distinctions inspectable without releasing private rows.
 
+## Neural ensembles improved on the earlier XGBoost result
+
+The recorded 21-day tail-screening experiments show a clear historical improvement: **F1 increased from 0.8462 for the earlier XGBoost AFT model to 0.9209 for the later neural meta-ensemble**. This is an increase of **7.47 F1 percentage points**, or approximately **8.83% relative to the earlier score**. Precision increased from 0.8314 to 0.9802, while recall increased from 0.8614 to 0.8684. The later neural system therefore achieved substantially higher recorded precision while maintaining similar recall.
+
+The earlier tree evaluation contains 941 sold records, including 166 slow outcomes. The neural holdout contains 964 sold records, including 114 slow outcomes. The table reports each model's recorded evaluation population; it does not silently treat these cohorts as identical.
+
+| Historical model | Evaluation N | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|
+| XGBoost AFT | 941 | 0.8314 | 0.8614 | 0.8462 |
+| Neural top-20 stack | 964 | 0.9307 | 0.8246 | 0.8744 |
+| Neural optimized ensemble | 964 | 0.9091 | 0.8772 | 0.8929 |
+| Neural meta-ensemble | 964 | **0.9802** | **0.8684** | **0.9209** |
+
+The XGBoost result comes from the earlier empirical paper and its confusion matrix. The neural rows come from retained user-pasted execution output dated 11 February 2026. The output records 49 base candidates with selection and holdout predictions, a top-20 stack, a seed-specific optimized ensemble, and a mean-logit ensemble of ensembles. The accompanying code selects the original top-20 stack's regularization and threshold on SVAL, then applies that threshold to holdout. The later meta-ensemble output preserves its threshold and metrics; its complete selection history has not been reconstructed from that excerpt. The [aggregate comparison record](../../../research/thesis_evidence/historical_neural_comparison.json) identifies the retained sources by hash and provides the arithmetic behind the reported improvements.
+
+![Historical tail-screening performance: the neural meta-ensemble records higher F1 and precision than the earlier XGBoost AFT system. The tree evaluation contains 941 records and the neural holdout 964; these are recorded historical cohorts.](../figures/r14_historical_neural_advantage.svg)
+
+The recorded advantage concerns the selected neural-and-meta system on its historical task. It does not isolate the effect of replacing a tree with a neural network while holding every other input and decision fixed. Feature representations, fitting procedures, ensembles and cohorts evolved together. The older report uses a slow-tail boundary of at least 504 hours, while the recovered neural code uses greater than 504 hours. Those details must remain visible when reconstructing a row-matched comparison. They do not erase the higher neural metrics recorded during development.
+
+### Scale of the completed experiments
+
+The research already includes extensive model fitting and comparative optimization. A retained Stage 1 pool contains **233 neural trial prediction pairs plus three selected-model snapshots**, spanning three training phases. Its alignment checks examined 243 candidates, retained 236 and rejected seven for row mismatches. One subsequent ensemble-search run records **8,000 evaluated candidates across ten search seeds**, with 800 candidate rows per seed. These are ensemble configurations evaluated over retained neural predictions; they are distinct from the count of trained neural trials.
+
+This distinction makes the experimental workload concrete. The project tested neural representations and training configurations, then tested how their outputs should be combined and converted into operational gates. The retained artifacts include competing combination methods and rejected candidates as well as selected results. The implemented XGBoost baseline is also available in the [original public training code](../../../modeling/slow21/train_slow21_gate_classifier.py), including its survival AFT objective, tuning, calibration, monotonic constraints and boundary-focused evaluation.
+
+The historical neural advantage is therefore part of an experimental development program. The prospective protocol described later extends that work by measuring how the improvement persists across new periods and matched information sets.
+
 ## Earlier tail screening with structured anchors
 
 The earlier AFT work focused on a slow tail, defined at 504 hours, or 21 days. The saved empirical chapter reports an evaluation cohort of 941 observations, including 166 slow outcomes, and a calibration cohort of 853 observations, including 171 slow outcomes. The confusion matrices are reproduced from the historical figure rather than reconstructed from hypothetical predictions.
@@ -103,10 +130,10 @@ The paired difference between compact Perceiver and Cox IBS is approximately 0.0
 
 The main result of these runs is methodological: the benchmark executes, freezes selection, produces comparable survival metrics, and reports an outcome that does not favor its most elaborate architecture. This is a useful property for subsequent real-data work. Synthetic smoke results remain a demonstration of that pipeline, not evidence that the historical operational model beats Cox or trees on genuine future listings.
 
-## What a complete empirical claim still requires
+## Extending the completed comparisons
 
-The real comparison needs a versioned decision-time cohort, explicit event provenance, resolved temporal overlap, train-fitted transforms, and a final population that has not influenced feature or policy choices. It also needs enough observed events in each duration region to assess all stages. High-dimensional image counts cannot substitute for event counts, and a successful forward pass cannot substitute for statistical validation.
+Reconstructing a common-cohort comparison from the completed experiments requires a versioned decision-time cohort, explicit event provenance, resolved temporal overlap, train-fitted transforms, and the recorded model and policy choices. Extending it prospectively adds a final population that has not influenced those choices. Each duration region also needs enough observed events to assess its corresponding stage.
 
 The most informative next study would combine the established operational evidence with a sealed future evaluation. Its first analysis would compare whole-curve performance and calibration across the six model families. Prespecified ablations would then isolate structured attributes, listing text, pooled visual vectors, and per-image reports. A temporal analysis would compare recent and older training windows while holding the test period fixed. A policy analysis would evaluate selected fraction, precision, recall, and explicitly stated utility, keeping prediction and intervention claims separate.
 
-The current evidence already supports a serious research-and-engineering contribution: a large multimodal data system, multiple survival formulations, real policy artifacts, verified execution parity, and an executable neutral benchmark. Its principal unresolved empirical question is the size and stability of the neural model's advantage, if any, under a matched prospective comparison. Presenting that question precisely strengthens the work because it makes the next result interpretable whichever estimator succeeds.
+The current evidence supports a substantial experimental contribution: a large multimodal data system, hundreds of retained neural trial outputs, thousands of ensemble candidates, higher historical neural tail-screening metrics, operational policy artifacts and an executable neutral benchmark. A matched prospective comparison can establish how much of the recorded advantage persists under a common information set and later market conditions.

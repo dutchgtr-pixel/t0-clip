@@ -1,0 +1,429 @@
+{
+  "schema_version": 1,
+  "kind": "historical_neural_tree_comparison_and_experiment_receipt",
+  "review_date": "2026-09-22",
+  "scope": "Aggregate audit of retained historical execution output and prediction/search artifacts. No new model training or prospective evaluation was performed for this receipt.",
+  "privacy": "Contains model settings, aggregate counts, metrics and source hashes only. Private source locations, row identifiers, raw data, feature vocabularies and trained weights are not redistributed.",
+  "historical_comparison": {
+    "supported_statement": "The Stage0 neural ensembles outperformed the earlier XGBoost AFT result on reported historical F1; the strongest retained neural meta result also had higher reported precision and recall.",
+    "comparison_type": "Historical results on different reported evaluation cohorts; not a reconstructed paired benchmark.",
+    "target_horizon_hours": 504,
+    "results": [
+      {
+        "model_id": "xgboost_aft",
+        "label": "Earlier XGBoost AFT",
+        "cohort_n": 941,
+        "positives": 166,
+        "precision": 0.8314,
+        "recall": 0.8614,
+        "f1": 0.8462,
+        "source_evidence_id": "historical-aft-report",
+        "positive_label": "observed duration >= 504 hours",
+        "confusion": {
+          "tp": 143,
+          "fp": 29,
+          "fn": 23,
+          "tn": 746
+        },
+        "cohort_basis": "Population and confusion matrix reported in the historical empirical report."
+      },
+      {
+        "model_id": "neural_top20",
+        "label": "Stage0 neural top-20 ensemble",
+        "cohort_n": 964,
+        "positives": 114,
+        "precision": 0.9307,
+        "recall": 0.8246,
+        "f1": 0.8744,
+        "source_evidence_id": "archived-neural-execution-output-2026-02",
+        "source_lines": [
+          5254,
+          5256
+        ],
+        "positive_label": "observed duration > 504 hours",
+        "confusion": {
+          "tp": 94,
+          "fp": 7,
+          "fn": 20,
+          "tn": 843
+        },
+        "cohort_basis": "Population and confusion matrix printed in the execution output.",
+        "threshold": 0.683
+      },
+      {
+        "model_id": "neural_seed50",
+        "label": "Stage0 neural seed-50 weighted-logit ensemble",
+        "cohort_n": 964,
+        "positives": 114,
+        "precision": 0.9091,
+        "recall": 0.8772,
+        "f1": 0.8929,
+        "source_evidence_id": "archived-neural-execution-output-2026-02",
+        "source_lines": [
+          5283,
+          5285
+        ],
+        "positive_label": "observed duration > 504 hours",
+        "confusion": {
+          "tp": 100,
+          "fp": 10,
+          "fn": 14,
+          "tn": 840
+        },
+        "cohort_basis": "Population follows directly from the printed confusion matrix.",
+        "threshold": 0.55465
+      },
+      {
+        "model_id": "neural_meta",
+        "label": "Stage0 neural mean-logit meta-ensemble",
+        "cohort_n": 964,
+        "positives": 114,
+        "precision": 0.9802,
+        "recall": 0.8684,
+        "f1": 0.9209,
+        "source_evidence_id": "archived-neural-execution-output-2026-02",
+        "source_lines": [
+          5291,
+          5294
+        ],
+        "positive_label": "observed duration > 504 hours",
+        "cohort_basis": "The aggregate metrics are printed; population is associated with the same surrounding holdout stream, not separately printed for this meta result.",
+        "threshold": 0.587145
+      }
+    ],
+    "metric_precision": "Metrics are preserved as published to four decimal places. Derived differences below use those rounded reported metrics.",
+    "reported_meta_vs_aft_delta": {
+      "f1_absolute": 0.0747,
+      "f1_percentage_points": 7.47,
+      "f1_relative_percent": 8.827700307255968,
+      "precision_percentage_points": 14.88,
+      "recall_percentage_points": 0.7
+    },
+    "selection_provenance": {
+      "top20": "The saved analysis code selects the top twenty from 49 available model prediction sets using SVAL and derives the operating threshold from SVAL before applying it to the holdout. The printed setting is CV=5 and combined scoring.",
+      "seed50_and_meta": "The saved execution output records these results. The complete later meta-selection history and every use of the evaluation labels have not been reconstructed.",
+      "earlier_aft": "The earlier report and public implementation are retained. A matched reconstruction of its selection budget, features and evaluation cohort against the neural run has not been completed."
+    },
+    "interpretation_limits": [
+      "The earlier tree report evaluates 941 records with 166 positives; the neural holdout stream evaluates 964 records with 114 positives. Identity, time-window and feature equivalence have not been established for a paired comparison.",
+      "The reported tree positive boundary is duration >= 504 hours; the saved neural analysis uses duration > 504 hours. Boundary cases are not harmonized here.",
+      "The difference is a historical reported-performance advantage, not a statistical significance estimate or an architecture-only treatment effect.",
+      "This evidence concerns the earlier XGBoost AFT result. It does not establish superiority over every tree method, Cox models, all datasets or every operating point.",
+      "Extensive candidate testing supports the experimental-development history but does not make repeatedly used development data an independent final test."
+    ],
+    "public_tree_implementation": {
+      "path": "modeling/slow21/train_slow21_gate_classifier.py",
+      "url": "https://github.com/dutchgtr-pixel/t0-clip/blob/main/modeling/slow21/train_slow21_gate_classifier.py",
+      "objective": "survival:aft",
+      "objective_line": 4298
+    }
+  },
+  "experiment_volume": {
+    "stage0_february_execution": {
+      "base_prediction_sets_with_sval": 49,
+      "base_prediction_sets_with_holdout": 49,
+      "selected_top_k": 20,
+      "source_evidence_id": "archived-neural-execution-output-2026-02",
+      "source_line": 5152
+    },
+    "stage1_march_prediction_pool": {
+      "original_trial_prediction_pairs": 233,
+      "best_snapshot_pairs": 3,
+      "retained_prediction_pairs": 236,
+      "candidates_examined": 243,
+      "candidates_dropped_for_row_mismatch": 7,
+      "phase_counts_including_best": {
+        "phaseA": 74,
+        "phaseB": 81,
+        "phaseC_arch": 81
+      },
+      "sval_rows": 293,
+      "holdout_rows": 413,
+      "source_evidence_ids": [
+        "stage1-pool-manifest",
+        "stage1-pool-metadata"
+      ],
+      "interpretation": "These are retained paired SVAL/holdout prediction outputs with trial provenance, not a claim that 236 distinct trained checkpoint files were recovered. Best snapshots may duplicate trial outputs."
+    },
+    "stage1_ensemble_search": {
+      "search_seeds": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51
+      ],
+      "candidates_per_search_seed": 800,
+      "recorded_candidate_evaluations": 8000,
+      "source_evidence_ids": [
+        "stage1-search-seed-42",
+        "stage1-search-seed-43",
+        "stage1-search-seed-44",
+        "stage1-search-seed-45",
+        "stage1-search-seed-46",
+        "stage1-search-seed-47",
+        "stage1-search-seed-48",
+        "stage1-search-seed-49",
+        "stage1-search-seed-50",
+        "stage1-search-seed-51"
+      ],
+      "interpretation": "These are ensemble, method and policy search evaluations over retained neural outputs. Search seeds are not 8,000 newly trained neural networks or independent test cohorts."
+    }
+  },
+  "separate_stage1_hybrid_result": {
+    "model": "Neural prediction ensemble with histogram gradient boosting meta-layer",
+    "target": "fast event within 168 hours under the retained Stage1 gate evaluation contract",
+    "selected_meta_mode": "stack_hgb",
+    "holdout": {
+      "n": 413,
+      "positives": 296,
+      "tp": 256,
+      "fp": 33,
+      "fn": 40,
+      "tn": 84,
+      "precision": 0.8858131487889274,
+      "recall": 0.8648648648648649,
+      "f1": 0.8752136752136752
+    },
+    "sval": {
+      "n": 293,
+      "positives": 216,
+      "precision": 1.0,
+      "recall": 1.0,
+      "interpretation": "Development-set metrics for the fitted meta-layer; not independent test performance."
+    },
+    "same_cohort_meta_method_comparison": [
+      {
+        "method": "mean_logit",
+        "holdout_f1": 0.6865671641791045,
+        "holdout_precision": 0.930635838150289,
+        "holdout_recall": 0.543918918918919
+      },
+      {
+        "method": "median_logit",
+        "holdout_f1": 0.7100840336134453,
+        "holdout_precision": 0.9388888888888888,
+        "holdout_recall": 0.5709459459459459
+      },
+      {
+        "method": "mean_prob",
+        "holdout_f1": 0.6795698924731183,
+        "holdout_precision": 0.9349112426035504,
+        "holdout_recall": 0.5337837837837838
+      },
+      {
+        "method": "vote",
+        "holdout_f1": 0.7008547008547009,
+        "holdout_precision": 0.9534883720930232,
+        "holdout_recall": 0.5540540540540541
+      },
+      {
+        "method": "stack_wlogit",
+        "holdout_f1": 0.7226890756302521,
+        "holdout_precision": 0.9555555555555556,
+        "holdout_recall": 0.581081081081081
+      },
+      {
+        "method": "stack_hgb",
+        "holdout_f1": 0.8752136752136752,
+        "holdout_precision": 0.8858131487889274,
+        "holdout_recall": 0.8648648648648649
+      },
+      {
+        "method": "stack_sgd",
+        "holdout_f1": 0.7291666666666667,
+        "holdout_precision": 0.9510869565217392,
+        "holdout_recall": 0.5912162162162162
+      }
+    ],
+    "source_evidence_ids": [
+      "stage1-meta-selected",
+      "stage1-meta-comparison"
+    ],
+    "interpretation": "This result demonstrates a hybrid neural-plus-tree approach and compares neural-score combiners. It is separate from the Stage0 historical comparison and is not a raw-feature neural-versus-tree benchmark. The complete independence of final method selection from all holdout inspection has not been reconstructed."
+  },
+  "source_receipts": {
+    "hash_rule": "SHA-256 over original file bytes. A hash identifies the retained source version, not independent factual validity.",
+    "sources": [
+      {
+        "evidence_id": "historical-aft-report",
+        "sha256": "dff51da65bb1eade4efd984edeaccc4b082b229c3f60e2121a0ecfbeb2a2e3b3",
+        "bytes": 691057,
+        "description": "Earlier tree-model empirical report.",
+        "access": "public_repository_document",
+        "public_path": "papers/part-3-modeling/ch05-empirical-results-sacrifice.pdf",
+        "page_anchors": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "confusion_figure_page": 3
+      },
+      {
+        "evidence_id": "archived-neural-execution-output-2026-02",
+        "sha256": "b9bf5dd7c22accd73d51970913bedfaf54d289ef289e3cb269b22f431b10618f",
+        "description": "Archived February 2026 model-development conversation, user-pasted execution output.",
+        "access": "private_retained_source_not_redistributed",
+        "evidence_type": "Saved execution output pasted by the user; the DOM user-query ancestry was checked separately from assistant prose.",
+        "line_anchor_rule": "Parse saved HTML with BeautifulSoup; remove script and style elements; call get_text('\\n', strip=True); count resulting lines from one.",
+        "line_anchors": {
+          "user_message_marker": 4747,
+          "pasted_analysis_code": [
+            4748,
+            5147
+          ],
+          "execution_output": [
+            5149,
+            5296
+          ],
+          "assistant_message_marker": 5297,
+          "comparison_settings": 5151,
+          "base_prediction_count": 5152,
+          "sval_population": 5195,
+          "sval_top20_result": [
+            5229,
+            5230
+          ],
+          "holdout_top20_result": [
+            5254,
+            5256
+          ],
+          "seed50_results": [
+            5283,
+            5285
+          ],
+          "meta_results": [
+            5291,
+            5294
+          ],
+          "neural_label_boundary": 4878
+        }
+      },
+      {
+        "evidence_id": "stage1-pool-manifest",
+        "sha256": "09598fc444240d15a79fb0d57ce06cab0c720a1f251280ae3a368fd9831e98a6",
+        "bytes": 76291,
+        "description": "Retained prediction-pool provenance: original phase, source type and trial for each entry.",
+        "data_rows": 236,
+        "access": "private_retained_source_not_redistributed"
+      },
+      {
+        "evidence_id": "stage1-pool-metadata",
+        "sha256": "680fae0a82b0f1110c88980dd11fa43f55182f0d15c90642f999ea4987b5a591",
+        "bytes": 430,
+        "description": "Candidate filtering and common SVAL/holdout row counts.",
+        "access": "private_retained_source_not_redistributed"
+      },
+      {
+        "evidence_id": "stage1-meta-selected",
+        "sha256": "efefee87e2b643eb02ca80499f0b86cda7ac6bb0f3de45500ebd43c8b1d6d210",
+        "bytes": 1694,
+        "description": "Saved selected hybrid meta-ensemble aggregate metrics.",
+        "access": "private_retained_source_not_redistributed"
+      },
+      {
+        "evidence_id": "stage1-meta-comparison",
+        "sha256": "366a1e1c7c3e1ceb5c2ad8d2b7e123e6ce12fe880616dce88fbdff50cf3d7d88",
+        "bytes": 2553,
+        "description": "Seven saved neural-score combination methods on the same Stage1 cohort.",
+        "access": "private_retained_source_not_redistributed"
+      },
+      {
+        "evidence_id": "stage1-search-seed-42",
+        "sha256": "631c47736896f236dfe057c62fed81a4da808eb7a9f5921e580c23765922229e",
+        "bytes": 315660,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 42
+      },
+      {
+        "evidence_id": "stage1-search-seed-43",
+        "sha256": "bb320232f2740989d667b83249b7b6038379639b3995b8e8b8c0babd8cef76c0",
+        "bytes": 317266,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 43
+      },
+      {
+        "evidence_id": "stage1-search-seed-44",
+        "sha256": "b5a31efdb336dd090d183add312c330a277aa09da408b0b9052bd5500cdae111",
+        "bytes": 317715,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 44
+      },
+      {
+        "evidence_id": "stage1-search-seed-45",
+        "sha256": "67c18608fa8fcf9bb62edcffca314f1a9abc06d33c31db6ad340455a58dd4f75",
+        "bytes": 317642,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 45
+      },
+      {
+        "evidence_id": "stage1-search-seed-46",
+        "sha256": "a3996f4490ae474faab4829dde5b2456125561fdd8b82340f8b4649f34459a1c",
+        "bytes": 310762,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 46
+      },
+      {
+        "evidence_id": "stage1-search-seed-47",
+        "sha256": "fef5432716fc40f042059c4a3cf6d73f254c620adc62ec93bdd24a74d31b7491",
+        "bytes": 310318,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 47
+      },
+      {
+        "evidence_id": "stage1-search-seed-48",
+        "sha256": "c6e4e2e6bcf822a7effa439fc40e5ec749013c9acab9643b47a415eb8ed96777",
+        "bytes": 317455,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 48
+      },
+      {
+        "evidence_id": "stage1-search-seed-49",
+        "sha256": "d10ed2caf950617014cb1ae1a113ec620936a75145681d8828868279bb57ec59",
+        "bytes": 313898,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 49
+      },
+      {
+        "evidence_id": "stage1-search-seed-50",
+        "sha256": "168df4448efd59b748287eb42f5f8b0bd2fe780e44c7e4a6baf2b41cef8e35f8",
+        "bytes": 318211,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 50
+      },
+      {
+        "evidence_id": "stage1-search-seed-51",
+        "sha256": "39b78d1bffc9d84c27ee92c317996fa24c67ee115b8280ccadbe2826319ac9c9",
+        "bytes": 321724,
+        "description": "Recorded ensemble candidate search history.",
+        "data_rows": 800,
+        "access": "private_retained_source_not_redistributed",
+        "search_seed": 51
+      }
+    ]
+  }
+}

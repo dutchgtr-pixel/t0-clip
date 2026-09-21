@@ -279,5 +279,58 @@
       "blocking_findings": 0,
       "author": "Ghaffar Masomi"
     }
+  },
+  "historical_comparison_documentation_revision": {
+    "date": "2026-09-22",
+    "scope": "Documentation and evidence update; no runtime model changes or new training run. The original software-suite execution timestamp remains unchanged.",
+    "pdf_sha256": "a938e2eca511e3c7ce7a8904df30478de2d33da3b15bd45a436e96cb917c398e",
+    "pages": 102,
+    "source_receipt": "research/thesis_evidence/historical_neural_comparison.json",
+    "checks": [
+      "Verified recorded confusion-matrix arithmetic and rounded metric differences",
+      "Verified source hashes, 233 trial prediction pairs plus three best snapshots, and 8000 ensemble-candidate rows",
+      "Local Markdown links resolve",
+      "26 runtime source files and six test files match the recorded tested snapshot",
+      "UTF-8 review and page-boundary text checks passed"
+    ],
+    "visual_review": {
+      "sha256": "a938e2eca511e3c7ce7a8904df30478de2d33da3b15bd45a436e96cb917c398e",
+      "pages": 102,
+      "reviewed_on": "2026-09-22",
+      "rendering": "Poppler at 90 DPI, complete contact sheets and enlarged table, chart, equation and architecture checks",
+      "reviewed_physical_page_ranges": [
+        [
+          1,
+          50
+        ],
+        [
+          51,
+          102
+        ]
+      ],
+      "enlarged_pages": [
+        2,
+        23,
+        42,
+        48,
+        50,
+        66,
+        67,
+        68,
+        72,
+        75,
+        90,
+        98,
+        101,
+        102
+      ],
+      "blocking_findings": 0,
+      "minor_observations": "Physical pages 84 and 96 retain sparse continuation text; no missing content or clipping.",
+      "reviewers": [
+        "application_review",
+        "operations_review",
+        "parent integration review"
+      ]
+    }
   }
 }

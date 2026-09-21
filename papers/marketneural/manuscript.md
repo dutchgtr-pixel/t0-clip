@@ -2,7 +2,7 @@
 
 Ghaffar Masomi
 
-Technical edition 0.2 / 21 September 2026.
+Technical edition 0.3 / 22 September 2026.
 
 # The research problem and the system that made it measurable
 
@@ -30,7 +30,7 @@ The operational contribution includes a real operator system for candidate revie
 
 This monograph asks five connected questions. First, what data and engineering were necessary to construct prediction-time representations at the observed scale? Second, how did the implemented cascade and later multimodal network formulate their survival targets and decision rules? Third, which safeguards detected leakage, and which mechanisms escaped them? Fourth, how much do the retained results establish about predictive behavior, adaptation and operational reliability? Fifth, how can the implemented decision architecture use survival information while preserving the distinction between analysis, policy and execution?
 
-The available evidence answers these questions unevenly. Source code and saved configurations establish many architectural details. Prediction artifacts support exact recomputation of selected confusion matrices and overlap counts. Retained reports document tests and operational behavior at particular dates. A matched real-data demonstration that neural networks outperform Cox or tree models remains an experiment to complete.
+The available evidence answers these questions unevenly. Source code and saved configurations establish many architectural details. Prediction artifacts support exact recomputation of selected confusion matrices and overlap counts. Retained reports document tests and operational behavior at particular dates. Historical tail-screening results show the neural meta-ensemble improving F1 from the earlier XGBoost AFT score of 0.8462 to 0.9209. The empirical chapter presents those completed experiments with their cohort definitions; the prospective protocol tests whether the advantage persists under matched inputs and later market conditions.
 
 This asymmetry is part of the research result. A thesis-style treatment should preserve it rather than flatten all statements into a single confidence level. Successful scheduling is evidence of execution. A restoration report is evidence of recoverability within its declared checks. A parity test is evidence of agreement between implementations. None of these alone establishes calibration, prospective utility or economic return.
 
@@ -622,6 +622,8 @@ Verification uses artificial data and analytical arithmetic. Tests check source 
 
 The main empirical question is whether a learned multimodal survival model improves the quality of predictions made from the same admissible evidence. Architecture size, the presence of attention, and the ability to process high-dimensional vectors do not answer that question. A fair comparison requires common populations, time origins, censoring rules, information cutoffs, evaluation horizons, and selection budgets. It must also distinguish the benefit of richer inputs from the benefit of a particular estimator.
 
+The project's historical development already provides evidence of a neural advantage. Retained execution output reports Slow21 holdout F1 of 0.9209 for the neural mean-logit meta ensemble, compared with 0.8462 in the earlier XGBoost AFT report. The historical evidence chapter presents the underlying precision, recall, and cohort counts. These results document an improvement across the developed systems; they are not a comparison reconstructed on identical rows. The controlled design below extends that evidence by separating the effects of estimator, representation, cohort, and tuning.
+
 This distinction is especially consequential here. The historical tree work used carefully engineered market and anchor features, while the later neural system consumes structured fields and semantic representations. Comparing a neural model with images against a tree trained only on price would confound representation and estimator. Conversely, forcing a tree to use thousands of raw coordinates without giving it a sensible regularized or reduced representation would test a particular implementation choice rather than the broad usefulness of trees.
 
 The controlled research design therefore has two axes. One axis changes the estimator while holding the information set fixed. The other changes the information set within each estimator. Structured-only, structured-plus-text, structured-plus-images, and full evidence configurations identify where any improvement arises. Image reports should be added as a separate ablation because they are generated transformations of image evidence, not an independent sensor. Missingness indicators and preprocessing must be identical in meaning even when each estimator represents them differently.
@@ -630,7 +632,7 @@ The controlled research design therefore has two axes. One axis changes the esti
 
 Dense text and image vectors distribute information across coordinates. A small semantic change can move many coordinates together. Axis-aligned tree splits may require several partitions to represent such relationships, whereas a learned linear projection can combine them directly. Attention adds a mechanism for conditioning an item's representation on selected interactions between structured features and image or text tokens. Latent bottlenecks limit the number of internal positions and can make heterogeneous inputs computationally manageable.
 
-These are reasons to test neural fusion, not proofs of superiority. Dense vectors can be redundant, noisy, weakly related to duration, or dominated by irrelevant visual style. Neural optimization can fit those nuisances, especially when the effective number of independent observed events is much smaller than the number of image assets. Missing modalities can also create shortcuts. A high-capacity network can learn the pattern of which jobs finished rather than the item's condition.
+These mechanisms offer plausible explanations for the observed historical improvement; their individual contributions require ablation. Dense vectors can be redundant, noisy, weakly related to duration, or dominated by irrelevant visual style. Neural optimization can fit those nuisances, especially when the effective number of independent observed events is much smaller than the number of image assets. Missing modalities can also create shortcuts. A high-capacity network can learn the pattern of which jobs finished rather than the item's condition.
 
 Trees have complementary strengths: useful nonlinear interactions, robustness to monotone transformations, relatively direct handling of heterogeneous tabular scales, and strong performance in many medium-sized tabular problems. Grinsztajn, Oyallon, and Varoquaux (2022) provide a broad empirical reason to retain strong tree baselines rather than presume that deep learning wins. Their benchmark concerns typical tabular datasets; it does not settle this particular censored multimodal task. [Grinsztajn et al., 2022](https://proceedings.nips.cc/paper_files/paper/2022/hash/0378c7692da36807bdec87ab043cdadc-Abstract-Datasets_and_Benchmarks.html).
 
@@ -689,13 +691,13 @@ IPCW concordance provides a complementary ranking statistic, while thresholded p
 
 The archived network also contains dedicated horizon heads and policy combinations. Their scores must not be relabeled as $1-\widehat S(72)$ when the stored decision actually uses a distinct head or conjunction. Historical reports and the compact benchmark can both discuss 72-hour events while computing materially different quantities. Exact output semantics are part of the estimator definition.
 
-## Uncertainty and the experiment that would support a superiority claim
+## Uncertainty and testing the historical advantage under shared controls
 
 Paired bootstrap resampling of final-test observations compares models on the same cases and preserves their correlation. The public demonstration uses the first prespecified fitted seed as the primary paired comparison and holds training censoring weights fixed during resampling. Its intervals describe uncertainty conditional on those fitted models and that dataset-generation process. They do not include retraining variability, repeated feature selection, or the cost of trying many unreported comparisons.
 
 The real-data study should repeat fitting across prespecified seeds, report temporal blocks separately, and use entity-level resampling where repeated observations are retained within a permitted partition. Subgroup analyses should emphasize effect size and sample support rather than a large collection of nominal significance claims. An incremental value claim for visual evidence requires a matched ablation; an economic value claim requires a separately specified decision and cost model.
 
-The conclusion rule is deliberately symmetric. A neural advantage would be supported by improved primary survival prediction with adequate calibration, stable temporal behavior, and acceptable operational cost under the sealed protocol. A tie or a Cox/tree advantage would support a simpler estimator for that setting. Either outcome would be scientifically useful because the platform and controlled comparison make the claim falsifiable rather than architectural preference.
+The conclusion rule is deliberately symmetric. Persistence of the historical neural advantage under the sealed protocol would strengthen the result through improved primary survival prediction, adequate calibration, stable temporal behavior, and acceptable operational cost. A tie or a Cox/tree advantage would support a simpler estimator for that setting. Either outcome would clarify how broadly the documented historical gain transfers across populations and evaluation criteria.
 
 
 ![Historical fit, selection and evaluation roles. SVAL is used for model and policy selection; an untouched evaluation cohort must remain outside that feedback loop. The proposed real-data protocol additionally separates calibration, as described in the text.](figures/r13_training_selection.svg)
@@ -847,6 +849,33 @@ The available results belong to three distinct layers. Historical reports and sa
 
 The historical project is substantial: it progressed from temporal feature stores and AFT tail screening to multimodal neural models, stage-specific decisions, calibration, policy selection, and deployed inference. A critical review should acknowledge that progression while examining which final populations were independent of development. The public comparison provides a cleaner experimental scaffold, but its synthetic population does not establish superiority on the historical market data. Aggregate evidence files accompanying this chapter make the numerical distinctions inspectable without releasing private rows.
 
+## Neural ensembles improved on the earlier XGBoost result
+
+The recorded 21-day tail-screening experiments show a clear historical improvement: **F1 increased from 0.8462 for the earlier XGBoost AFT model to 0.9209 for the later neural meta-ensemble**. This is an increase of **7.47 F1 percentage points**, or approximately **8.83% relative to the earlier score**. Precision increased from 0.8314 to 0.9802, while recall increased from 0.8614 to 0.8684. The later neural system therefore achieved substantially higher recorded precision while maintaining similar recall.
+
+The earlier tree evaluation contains 941 sold records, including 166 slow outcomes. The neural holdout contains 964 sold records, including 114 slow outcomes. The table reports each model's recorded evaluation population; it does not silently treat these cohorts as identical.
+
+| Historical model | Evaluation N | Precision | Recall | F1 |
+|---|---:|---:|---:|---:|
+| XGBoost AFT | 941 | 0.8314 | 0.8614 | 0.8462 |
+| Neural top-20 stack | 964 | 0.9307 | 0.8246 | 0.8744 |
+| Neural optimized ensemble | 964 | 0.9091 | 0.8772 | 0.8929 |
+| Neural meta-ensemble | 964 | **0.9802** | **0.8684** | **0.9209** |
+
+The XGBoost result comes from the earlier empirical paper and its confusion matrix. The neural rows come from retained user-pasted execution output dated 11 February 2026. The output records 49 base candidates with selection and holdout predictions, a top-20 stack, a seed-specific optimized ensemble, and a mean-logit ensemble of ensembles. The accompanying code selects the original top-20 stack's regularization and threshold on SVAL, then applies that threshold to holdout. The later meta-ensemble output preserves its threshold and metrics; its complete selection history has not been reconstructed from that excerpt. The [aggregate comparison record](../../research/thesis_evidence/historical_neural_comparison.json) identifies the retained sources by hash and provides the arithmetic behind the reported improvements.
+
+![Historical tail-screening performance: the neural meta-ensemble records higher F1 and precision than the earlier XGBoost AFT system. The tree evaluation contains 941 records and the neural holdout 964; these are recorded historical cohorts.](figures/r14_historical_neural_advantage.svg)
+
+The recorded advantage concerns the selected neural-and-meta system on its historical task. It does not isolate the effect of replacing a tree with a neural network while holding every other input and decision fixed. Feature representations, fitting procedures, ensembles and cohorts evolved together. The older report uses a slow-tail boundary of at least 504 hours, while the recovered neural code uses greater than 504 hours. Those details must remain visible when reconstructing a row-matched comparison. They do not erase the higher neural metrics recorded during development.
+
+### Scale of the completed experiments
+
+The research already includes extensive model fitting and comparative optimization. A retained Stage 1 pool contains **233 neural trial prediction pairs plus three selected-model snapshots**, spanning three training phases. Its alignment checks examined 243 candidates, retained 236 and rejected seven for row mismatches. One subsequent ensemble-search run records **8,000 evaluated candidates across ten search seeds**, with 800 candidate rows per seed. These are ensemble configurations evaluated over retained neural predictions; they are distinct from the count of trained neural trials.
+
+This distinction makes the experimental workload concrete. The project tested neural representations and training configurations, then tested how their outputs should be combined and converted into operational gates. The retained artifacts include competing combination methods and rejected candidates as well as selected results. The implemented XGBoost baseline is also available in the [original public training code](../../modeling/slow21/train_slow21_gate_classifier.py), including its survival AFT objective, tuning, calibration, monotonic constraints and boundary-focused evaluation.
+
+The historical neural advantage is therefore part of an experimental development program. The prospective protocol described later extends that work by measuring how the improvement persists across new periods and matched information sets.
+
 ## Earlier tail screening with structured anchors
 
 The earlier AFT work focused on a slow tail, defined at 504 hours, or 21 days. The saved empirical chapter reports an evaluation cohort of 941 observations, including 166 slow outcomes, and a calibration cohort of 853 observations, including 171 slow outcomes. The confusion matrices are reproduced from the historical figure rather than reconstructed from hypothetical predictions.
@@ -944,13 +973,13 @@ The paired difference between compact Perceiver and Cox IBS is approximately 0.0
 
 The main result of these runs is methodological: the benchmark executes, freezes selection, produces comparable survival metrics, and reports an outcome that does not favor its most elaborate architecture. This is a useful property for subsequent real-data work. Synthetic smoke results remain a demonstration of that pipeline, not evidence that the historical operational model beats Cox or trees on genuine future listings.
 
-## What a complete empirical claim still requires
+## Extending the completed comparisons
 
-The real comparison needs a versioned decision-time cohort, explicit event provenance, resolved temporal overlap, train-fitted transforms, and a final population that has not influenced feature or policy choices. It also needs enough observed events in each duration region to assess all stages. High-dimensional image counts cannot substitute for event counts, and a successful forward pass cannot substitute for statistical validation.
+Reconstructing a common-cohort comparison from the completed experiments requires a versioned decision-time cohort, explicit event provenance, resolved temporal overlap, train-fitted transforms, and the recorded model and policy choices. Extending it prospectively adds a final population that has not influenced those choices. Each duration region also needs enough observed events to assess its corresponding stage.
 
 The most informative next study would combine the established operational evidence with a sealed future evaluation. Its first analysis would compare whole-curve performance and calibration across the six model families. Prespecified ablations would then isolate structured attributes, listing text, pooled visual vectors, and per-image reports. A temporal analysis would compare recent and older training windows while holding the test period fixed. A policy analysis would evaluate selected fraction, precision, recall, and explicitly stated utility, keeping prediction and intervention claims separate.
 
-The current evidence already supports a serious research-and-engineering contribution: a large multimodal data system, multiple survival formulations, real policy artifacts, verified execution parity, and an executable neutral benchmark. Its principal unresolved empirical question is the size and stability of the neural model's advantage, if any, under a matched prospective comparison. Presenting that question precisely strengthens the work because it makes the next result interpretable whichever estimator succeeds.
+The current evidence supports a substantial experimental contribution: a large multimodal data system, hundreds of retained neural trial outputs, thousands of ensemble candidates, higher historical neural tail-screening metrics, operational policy artifacts and an executable neutral benchmark. A matched prospective comparison can establish how much of the recorded advantage persists under a common information set and later market conditions.
 
 
 ![Changing composition and operating characteristics under the locked short-horizon policy. Validation n=584, holdout n=748, recent n=283. The recent cohort is wholly nested within holdout; it is not an independent prospective replication. Prevalence is conditional on eligible labeled records, not market-wide turnover.](figures/r04_cohort_shift.svg)
@@ -1070,9 +1099,9 @@ The temporal platform is thus more than a leakage defense. It is the infrastruct
 
 ## What can be concluded about model performance
 
-The historical results establish that the platform produced nontrivial predictive policies and that their selected operating points can be reconstructed. The early slow-tail classifier achieved strong descriptive precision and recall on its reported population. The later 72-hour policy demonstrated selective high precision during tuning and different precision-recall behavior on subsequent saved populations. These are meaningful empirical artifacts, with cohort and selection limitations that must accompany them.
+The historical results establish that the platform produced nontrivial predictive policies and that their selected operating points can be reconstructed. They also document an improvement from the earlier XGBoost AFT Slow21 result, F1 0.8462, to the neural mean-logit meta ensemble's saved holdout F1 of 0.9209. The neural result combines precision 0.9802 with recall 0.8684, against the tree report's 0.8314 and 0.8614. The later 72-hour policy demonstrated selective high precision during tuning and different precision-recall behavior on subsequent saved populations. These are meaningful empirical results from an extensive model-development process.
 
-The results do not establish that the neural system is generally superior to Cox, random survival forests, or boosted survival models. That comparison was not completed on a single sealed real-data cohort with a common information contract. The public synthetic experiment is deliberately informative here: Cox has the best observed integrated Brier score in both fixtures. The more elaborate network cannot claim a win simply because it can represent nonlinear multimodal interactions.
+The scope of the historical advantage should be stated precisely. The tree report uses 941 observations with 166 slow outcomes, while the surrounding neural holdout logs identify 964 observations with 114 slow outcomes. The retained evidence does not reconstruct the tree and neural predictions on one shared cohort with identical input and selection contracts. This limits attribution of the gain to architecture alone; it does not mean the historical experiments were unperformed. Nor does an advantage over the documented earlier tree system establish universal superiority over Cox or every survival-tree family. In the separate public synthetic fixtures, Cox has the lowest integrated Brier score. Those fixture results concern different data and a different scoring rule, and neither overturn nor reproduce the historical Slow21 result.
 
 There are several scientifically interesting possible outcomes of a matched comparison. Neural fusion may win because per-image evidence matters. A strong tree may match it because engineered anchors already explain most predictable variation. Cox may remain competitive because event support is limited relative to model flexibility. A simple model may win overall while a neural model improves a prespecified subgroup. Each outcome would refine the understanding of the problem if assessed under the same protocol and reported without selective emphasis.
 
@@ -1289,7 +1318,7 @@ The first deliverable should be a label and evidence audit, accompanied by a cle
 
 A successful extension would preserve separate outputs for eligibility, content inconsistency, survival timing and adjudicated-risk prediction. It would make abstention and review explicit, freeze feature and model versions, and retain a reversible audit trail for corrections. The current implementation provides useful building blocks for that work: structured enrichment, deterministic reconciliation rules, multimodal evidence summaries and temporal feature contracts. The available evidence supports those engineering capabilities. It does not yet support fraud-performance claims, a calibrated fraud probability, or a statement that an operational supervised fraud model has been demonstrated.
 
-# Reproduction, release boundaries and the next decisive experiment
+# Reproduction, release boundaries and further evaluation
 
 ## What the public package reproduces
 
@@ -1349,9 +1378,9 @@ Publication screening checks source terminology, private paths, secret-like assi
 
 The review scope is the current release tree. Earlier repository history is not rewritten. Source-neutral current files do not imply that every historical commit was anonymized. The release also does not restart or modify the paused private production stack.
 
-## The experiment needed for a stronger modeling claim
+## Reconstructing the comparisons and extending evaluation
 
-The next decisive experiment is a matched, forward-in-time comparison on a frozen real-data cohort with documented feature availability. Its protocol should predeclare the event definition, censoring treatment, initial decision rule, entity grouping, horizons, permitted features, training window and final observation cutoff. Original fit data, learned transforms and model selection must remain under content hashes so later repairs cannot silently replace the experiment.
+The completed historical experiments include the XGBoost baseline, neural training trials, ensemble searches and the improved neural tail-screening results documented in the empirical chapter. Reconstruction should first connect each retained model, prediction file, target convention and selection decision. A further prospective experiment can then compare frozen models on a common future cohort with documented feature availability. Its protocol should predeclare the event definition, censoring treatment, initial decision rule, entity grouping, horizons, permitted features, training window and final observation cutoff. Original fit data, learned transforms and model selection must remain under content hashes so later repairs cannot silently replace the experiment.
 
 Information ablations should compare structured-only inputs, structured plus text, structured plus images, and the full representation. Generated image reports require a separate ablation. If ordinary and whitened vectors are included, the whitening transform must be fitted inside training and preserved with its dimensions and population hash. Conventional estimators should receive meaningful reduced or regularized representations with equivalent information and a documented tuning budget.
 
