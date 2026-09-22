@@ -11,7 +11,11 @@
 \setlength{\headheight}{15pt}
 \renewcommand{\headrulewidth}{0.3pt}
 \fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\thepage}\renewcommand{\headrulewidth}{0pt}}
-\titleformat{\chapter}[display]{\normalfont\color{ResearchNavy}}{\sffamily\small\MakeUppercase{\chaptertitlename}\ \thechapter}{12pt}{\Huge\bfseries}
+\titleformat{\chapter}[display]{\normalfont\color{ResearchNavy}}{\sffamily\small\MakeUppercase{\chaptertitlename}\ \thechapter}{12pt}{\Huge\bfseries\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000}
+\makeatletter
+\renewcommand*\l@section{\@dottedtocline{1}{1.5em}{3.2em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{4.7em}{3.8em}}
+\makeatother
 \titlespacing*{\chapter}{0pt}{0pt}{24pt}
 \titleformat{\section}{\Large\bfseries\color{ResearchNavy}}{\thesection}{.65em}{}
 \titleformat{\subsection}{\large\bfseries\color{ResearchNavy}}{\thesubsection}{.65em}{}

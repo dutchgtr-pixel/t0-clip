@@ -70,6 +70,23 @@ The experiment uses three blocks. A separate calibration block and a matched rea
 
 Independent mathematical cross-review of the foundations, enrichment, comparison, and results chapters found no major mismatch and corrected the image/report contract to retain separate availability masks. Operational cross-review verified the database counts, scheduler states, restoration counts, and receipt hashes against the retained audit evidence. A separate reader reviewed the orientation, image case studies, agentic decisions, and fraud extension for scope and source-neutrality. Final typesetting and integration include the separately authored cascade and schema/leakage methods. The parent publication workflow records the final release checks and visual inspection of the complete PDF; these are distinct from the content reviews recorded here.
 
+## Recovered mechanism and experimental evidence: edition 0.5
+
+The [mechanism study](../../research/leakage/availability_mechanism.md) adds direct
+verification of all 911 frozen masks, a formal event-window selection argument,
+and a public constructed negative control. The recorded 47,704-by-13 lookup
+replay remains explicitly historical documentary evidence.
+
+The [experimental contribution receipt](../../research/thesis_evidence/experimental_contributions.json)
+adds paired reanalysis of seven Stage 0 policies on 523 records and two Stage 1
+policies on 413 records, a documented frozen-policy source correction on 441
+scored records, and a separate unfavorable 587-row replay. Exact invariants,
+selection scopes, operating-point tradeoffs and private-artifact gaps are stated.
+The [nearest-prior-work comparison](../../research/thesis_evidence/NOVELTY_PRIOR_ART.md)
+positions these findings against 16 primary sources. The research contribution
+chapter now develops the measured mechanism and experiments rather than relying
+on system complexity as evidence of originality.
+
 ## Contribution and prospective-validation expansion
 
 The [original-contribution chapter](chapters/12_original_contributions.md) states

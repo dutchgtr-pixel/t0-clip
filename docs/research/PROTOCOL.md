@@ -1,8 +1,8 @@
 # MarketNeural controlled comparison protocol
 
-**Version 0.1 — 2026-09-21. Status: prospective specification; controlled real-data comparison NOT RUN.**
+**Version 0.2 — 2026-09-22. Status: specification for an additional prospective six-family study; this particular study has not been executed.**
 
-This document defines the next scientific experiment. It is not a claim that the experiment has happened. The compact synthetic benchmark implements a smaller execution lane and is described separately below. Any amendment after access to final-test labels must be dated and labeled exploratory.
+This document defines an additional scientific experiment. Completed historical work already includes common-population system and ensemble comparisons, a documented fixed-policy feature-source intervention, and reconstructed coverage/cohort diagnostics; see the [experiment receipt](../../research/thesis_evidence/experimental_contributions.json) and [mechanism study](../../research/leakage/availability_mechanism.md). Those experiments have their own recorded controls and are not relabeled as this prospective study. The compact synthetic benchmark implements a smaller execution lane and is described separately below. Any amendment after access to final-test labels must be dated and labeled exploratory.
 
 ## 1. Question and estimand
 

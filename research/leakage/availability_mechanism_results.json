@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "scope": "Coverage cutoff and outcome-time cohort geometry; aggregate evidence only. Historical findings and constructed verification are separate.",
+  "historical_recomputation": [
+    {
+      "evidence_class": "aggregate recomputation from supplied event records",
+      "source_sha256": "02be5fb45d71e479d5e6a2026dbf8e0c3aba8e6ca9ed7251bff14df1af7417a8",
+      "time_unit": "hours",
+      "cutoff_utc": "2026-03-06T00:00:00+00:00",
+      "missing_rule": "count equals zero and share is null",
+      "audit": {
+        "rows": 408,
+        "positive_rows": 167,
+        "missing_rows": 219,
+        "cutoff_mismatch_rows": 0,
+        "cutoff_agreement": 1.0,
+        "duration_identity_max_abs_error": 9.094947017729282e-13,
+        "event_lower_minus_cutoff": 96.45884182583333,
+        "event_upper_minus_cutoff": 167.798044735,
+        "horizon": 72,
+        "sufficient_condition_all_fast_missing": true,
+        "fast_but_covered_rows": 0,
+        "beyond_window_bound_rows": 172,
+        "beyond_window_bound_but_missing_rows": 0,
+        "forced_fast_zone_rows": 101,
+        "forced_fast_zone_nonfast_rows": 0,
+        "positive_rate_when_missing": 0.7625570776255708,
+        "positive_rate_when_covered": 0.0,
+        "fixed_missingness_rule": {
+          "tp": 167,
+          "fp": 52,
+          "fn": 0,
+          "tn": 189,
+          "precision": 0.7625570776255708,
+          "recall": 1.0,
+          "f1": 0.8652849740932642,
+          "balanced_accuracy": 0.892116182572614
+        },
+        "all_positive_reference": {
+          "tp": 167,
+          "fp": 241,
+          "fn": 0,
+          "tn": 0,
+          "precision": 0.40931372549019607,
+          "recall": 1.0,
+          "f1": 0.5808695652173913,
+          "balanced_accuracy": 0.5
+        },
+        "interpretation": "Descriptive mechanism audit; association alone does not prove future access or causal model dependence.",
+        "geometry_all_fast_origins_after_cutoff": true
+      },
+      "cohort": "frozen_validation"
+    },
+    {
+      "evidence_class": "aggregate recomputation from supplied event records",
+      "source_sha256": "4e4f235f534615d990e07b1e76f28b77df57b4b83987628f6f3936fcc651ec80",
+      "time_unit": "hours",
+      "cutoff_utc": "2026-03-06T00:00:00+00:00",
+      "missing_rule": "count equals zero and share is null",
+      "audit": {
+        "rows": 503,
+        "positive_rows": 208,
+        "missing_rows": 335,
+        "cutoff_mismatch_rows": 0,
+        "cutoff_agreement": 1.0,
+        "duration_identity_max_abs_error": 4.547473508864641e-13,
+        "event_lower_minus_cutoff": 174.22381125555555,
+        "event_upper_minus_cutoff": 264.00558764,
+        "horizon": 72,
+        "sufficient_condition_all_fast_missing": true,
+        "fast_but_covered_rows": 0,
+        "beyond_window_bound_rows": 148,
+        "beyond_window_bound_but_missing_rows": 0,
+        "forced_fast_zone_rows": 108,
+        "forced_fast_zone_nonfast_rows": 0,
+        "positive_rate_when_missing": 0.6208955223880597,
+        "positive_rate_when_covered": 0.0,
+        "fixed_missingness_rule": {
+          "tp": 208,
+          "fp": 127,
+          "fn": 0,
+          "tn": 168,
+          "precision": 0.6208955223880597,
+          "recall": 1.0,
+          "f1": 0.7661141804788214,
+          "balanced_accuracy": 0.7847457627118644
+        },
+        "all_positive_reference": {
+          "tp": 208,
+          "fp": 295,
+          "fn": 0,
+          "tn": 0,
+          "precision": 0.4135188866799205,
+          "recall": 1.0,
+          "f1": 0.5850914205344585,
+          "balanced_accuracy": 0.5
+        },
+        "interpretation": "Descriptive mechanism audit; association alone does not prove future access or causal model dependence.",
+        "geometry_all_fast_origins_after_cutoff": true
+      },
+      "cohort": "frozen_holdout"
+    }
+  ],
+  "historical_documented_evidence": {
+    "sources": [
+      {
+        "source_id": "frozen_lookup_replay",
+        "sha256": "89a65dc6010e84219554b2063c32861b16a266a1c58c3b08bd675a415530d5b3",
+        "evidence_class": "retained historical documentation; not a newly rerun database query"
+      },
+      {
+        "source_id": "frozen_formula_comparison",
+        "sha256": "2c143eaebf139ac858cfc2cfab6a6a94e1a580c65567edb7b05337604d09b574",
+        "evidence_class": "retained historical documentation; not a newly rerun database query"
+      },
+      {
+        "source_id": "full_prep_proxy_audit",
+        "sha256": "bcac82ac05cba02d9c7cc431e6e8bf36445851c7b53f82f9eeaba08e9bf289e6",
+        "evidence_class": "retained historical documentation; not a newly rerun database query"
+      },
+      {
+        "source_id": "population_postmortem",
+        "sha256": "8bed4ebbe18f38e2ede462255cbb7fbcc117f8b31c8f3139245805b1351c0e93",
+        "evidence_class": "retained historical documentation; not a newly rerun database query"
+      }
+    ],
+    "exact_lookup_replay": {
+      "rows": 47704,
+      "columns": 13,
+      "training_rows": 46793,
+      "validation_rows": 408,
+      "holdout_rows": 503,
+      "evidence_class": "historical exact lookup comparison reported in retained document; paused database not restarted"
+    },
+    "full_prep_origin_time_diagnostics": {
+      "validation": {
+        "rows": 1333,
+        "optimized_origin_only_f1": 0.8261,
+        "forced_fast_zone_rows": 99,
+        "forced_fast_zone_fast_rate": 1.0
+      },
+      "holdout": {
+        "rows": 1110,
+        "optimized_origin_only_f1": 0.8805,
+        "forced_fast_zone_rows": 94,
+        "forced_fast_zone_fast_rate": 1.0
+      },
+      "selection_contract": "Each split independently chooses the best threshold/direction using its own labels. These are descriptive diagnostic maxima, not a validation-selected holdout model comparison.",
+      "evidence_class": "values reported in retained historical audit; original CSV outputs not recovered at documented location"
+    }
+  },
+  "constructed_verification": {
+    "evidence_class": "new constructed mechanism experiment; not historical data or model validation",
+    "design": {
+      "population_rows": 3630,
+      "origin_days": [
+        0,
+        120
+      ],
+      "duration_days": [
+        1,
+        30
+      ],
+      "horizon_days": 3,
+      "coverage_cutoff_day": 100,
+      "outcome_selection_days_inclusive": [
+        104,
+        107
+      ],
+      "origin_selection_days_inclusive": [
+        96,
+        107
+      ],
+      "duration_and_origin_independent_by_construction": true,
+      "followup_complete_for_all_rows": true,
+      "rule_fitted_or_tuned": false,
+      "feature_values": "constant historical value; only its calendar-regime availability varies",
+      "availability_mechanism": "Known-at-origin mask M=1[origin>=100 days]; no outcome is used to assign M"
+    },
+    "scenarios": {
+      "outcome_time_selected_frozen": {
+        "rows": 120,
+        "positive_rows": 12,
+        "missing_rows": 22,
+        "cutoff_mismatch_rows": 0,
+        "cutoff_agreement": 1.0,
+        "duration_identity_max_abs_error": 0.0,
+        "event_lower_minus_cutoff": 96.0,
+        "event_upper_minus_cutoff": 168.0,
+        "horizon": 72.0,
+        "geometry_all_fast_origins_after_cutoff": true,
+        "sufficient_condition_all_fast_missing": true,
+        "fast_but_covered_rows": 0,
+        "beyond_window_bound_rows": 92,
+        "beyond_window_bound_but_missing_rows": 0,
+        "forced_fast_zone_rows": 6,
+        "forced_fast_zone_nonfast_rows": 0,
+        "positive_rate_when_missing": 0.5454545454545454,
+        "positive_rate_when_covered": 0.0,
+        "fixed_missingness_rule": {
+          "tp": 12,
+          "fp": 10,
+          "fn": 0,
+          "tn": 98,
+          "precision": 0.5454545454545454,
+          "recall": 1.0,
+          "f1": 0.7058823529411765,
+          "balanced_accuracy": 0.9537037037037037
+        },
+        "all_positive_reference": {
+          "tp": 12,
+          "fp": 108,
+          "fn": 0,
+          "tn": 0,
+          "precision": 0.1,
+          "recall": 1.0,
+          "f1": 0.18181818181818182,
+          "balanced_accuracy": 0.5
+        },
+        "interpretation": "Descriptive mechanism audit; association alone does not prove future access or causal model dependence."
+      },
+      "origin_time_selected_fully_matured": {
+        "rows": 360,
+        "positive_rows": 36,
+        "missing_rows": 240,
+        "cutoff_mismatch_rows": 0,
+        "cutoff_agreement": 1.0,
+        "duration_identity_max_abs_error": 0.0,
+        "event_lower_minus_cutoff": -72.0,
+        "event_upper_minus_cutoff": 888.0,
+        "horizon": 72.0,
+        "geometry_all_fast_origins_after_cutoff": false,
+        "sufficient_condition_all_fast_missing": false,
+        "fast_but_covered_rows": 12,
+        "beyond_window_bound_rows": 0,
+        "beyond_window_bound_but_missing_rows": 0,
+        "forced_fast_zone_rows": 0,
+        "forced_fast_zone_nonfast_rows": 0,
+        "positive_rate_when_missing": 0.1,
+        "positive_rate_when_covered": 0.1,
+        "fixed_missingness_rule": {
+          "tp": 24,
+          "fp": 216,
+          "fn": 12,
+          "tn": 108,
+          "precision": 0.1,
+          "recall": 0.6666666666666666,
+          "f1": 0.17391304347826086,
+          "balanced_accuracy": 0.5
+        },
+        "all_positive_reference": {
+          "tp": 36,
+          "fp": 324,
+          "fn": 0,
+          "tn": 0,
+          "precision": 0.1,
+          "recall": 1.0,
+          "f1": 0.18181818181818182,
+          "balanced_accuracy": 0.5
+        },
+        "interpretation": "Descriptive mechanism audit; association alone does not prove future access or causal model dependence."
+      },
+      "same_outcome_rows_after_coverage_refresh": {
+        "rows": 120,
+        "positive_rows": 12,
+        "missing_rows": 0,
+        "cutoff_mismatch_rows": 22,
+        "cutoff_agreement": 0.8166666666666667,
+        "duration_identity_max_abs_error": 0.0,
+        "event_lower_minus_cutoff": 96.0,
+        "event_upper_minus_cutoff": 168.0,
+        "horizon": 72.0,
+        "geometry_all_fast_origins_after_cutoff": true,
+        "sufficient_condition_all_fast_missing": false,
+        "fast_but_covered_rows": 12,
+        "beyond_window_bound_rows": 92,
+        "beyond_window_bound_but_missing_rows": 0,
+        "forced_fast_zone_rows": 6,
+        "forced_fast_zone_nonfast_rows": 0,
+        "positive_rate_when_missing": null,
+        "positive_rate_when_covered": 0.1,
+        "fixed_missingness_rule": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 12,
+          "tn": 108,
+          "precision": null,
+          "recall": 0.0,
+          "f1": 0.0,
+          "balanced_accuracy": 0.5
+        },
+        "all_positive_reference": {
+          "tp": 12,
+          "fp": 108,
+          "fn": 0,
+          "tn": 0,
+          "precision": 0.1,
+          "recall": 1.0,
+          "f1": 0.18181818181818182,
+          "balanced_accuracy": 0.5
+        },
+        "interpretation": "Descriptive mechanism audit; association alone does not prove future access or causal model dependence."
+      }
+    }
+  }
+}

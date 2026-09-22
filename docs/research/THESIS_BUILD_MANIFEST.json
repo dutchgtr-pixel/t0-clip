@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "output": "papers/marketneural/marketneural-thesis.pdf",
-  "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
-  "pages": 109,
+  "sha256": "a7f9c979bf40bef92f72fe0788eb232a08c3ca50e5739cea1d98122deb97ca46",
+  "pages": 118,
   "partial_development_build": false,
   "chapters": [
     {
@@ -55,15 +55,15 @@
     },
     {
       "path": "research/leakage/LEAKAGE_STUDY.md",
-      "sha256": "039e39d9b8b08d0a271b42a9e421de4e4ca81c47f03cd6304651fe72f470c783",
-      "words": 4452,
-      "sha256_lf": "039e39d9b8b08d0a271b42a9e421de4e4ca81c47f03cd6304651fe72f470c783"
+      "sha256": "48c2e4ed43abf62bd513068e301d62a469081951b8a411aa880a3ec1247c8906",
+      "words": 4937,
+      "sha256_lf": "48c2e4ed43abf62bd513068e301d62a469081951b8a411aa880a3ec1247c8906"
     },
     {
       "path": "papers/marketneural/chapters/06_empirical_evidence.md",
-      "sha256": "af07d686ce5832d73fecc39ece1318c6817fdc0111e8098fb237a61c50aaec0b",
-      "words": 3266,
-      "sha256_lf": "f8b8b046d5be4529287829c5ebfe9d167762d3c818095c34ac61b50267297273"
+      "sha256": "409e8ae8e6677ec3230423bb6956b79f7f4639a2a97dcf176fdbd29e508cdb8a",
+      "words": 4443,
+      "sha256_lf": "51275ced40fd4dd1bacce687e43ae34dda5d162929c51c20380a7237db302a8c"
     },
     {
       "path": "papers/marketneural/chapters/07_operations.md",
@@ -73,15 +73,15 @@
     },
     {
       "path": "papers/marketneural/chapters/12_original_contributions.md",
-      "sha256": "79917a297548c45867cf6e2319a7461e0a2b72b7b773fa6e2c2922e8c9cda953",
-      "words": 1136,
-      "sha256_lf": "abcfa49a2aefbcd11669e78e24fe6382ff9df1c5f0f1658e86fb4577cf1111d9"
+      "sha256": "02396771c445a639611e2d7e761aaaa81288dd8ef46d7f3a7f526e7f2e2bbf4b",
+      "words": 2491,
+      "sha256_lf": "02396771c445a639611e2d7e761aaaa81288dd8ef46d7f3a7f526e7f2e2bbf4b"
     },
     {
       "path": "papers/marketneural/chapters/08_discussion.md",
-      "sha256": "c2da389c6f0ad36d11f13e245d6878c4e868886daf23da06f5462db834854d85",
-      "words": 1815,
-      "sha256_lf": "9c7a33f36d919780b36cf23c59460051fb55bbda3595cefca6a215dd5a5da61c"
+      "sha256": "3f297e31aae2564a996f8750d46ec7b0ad39f181ba9784e63fede2a01e5e9fac",
+      "words": 2057,
+      "sha256_lf": "2c5a1d5ac4127a0095fcad126cb44583eb798aa90c2eb1370e99ca1624a1c074"
     },
     {
       "path": "papers/marketneural/chapters/10_agentic_decisions.md",
@@ -97,434 +97,534 @@
     },
     {
       "path": "papers/marketneural/chapters/09_reproduction.md",
-      "sha256": "e0f2318385de157af8773341e6463c2ff03566185f4b1d3b8e7b4a5cc32908d8",
-      "words": 2036,
-      "sha256_lf": "6d8ff4565accca9b98a3edcb94011481253bb9749cdc0f650a1c2d646f1cd87a"
+      "sha256": "69f9a4b2965141649c5268efa7be2b12d3436856a65c7073493e33811473cb17",
+      "words": 2234,
+      "sha256_lf": "583e4cb85ac522f0675308c4b72483817b3390a81f42f7012dc0ac3b6ee96a94"
     }
   ],
-  "word_count": 36145,
+  "word_count": 39602,
   "build_tools": {
     "pandoc": "pandoc 3.11",
     "tectonic": "Tectonic 0.17.0"
   },
   "scope": "Public inputs only; historical images and aggregates are not new model experiments.",
-  "source_hash_rule": "sha256 records the bytes used for this build; sha256_lf normalizes CRLF to LF for cross-platform source comparison.",
-  "figure_count": 23,
-  "bibliography_entries": 17,
+  "source_hash_rule": "sha256 identifies build bytes; sha256_lf normalizes CRLF to LF for cross-platform source checks.",
+  "figure_count": 25,
+  "bibliography_entries": 31,
   "author": "Ghaffar Masomi",
+  "edition": "0.5",
   "builder": {
     "path": "scripts/build_thesis.py",
-    "sha256_lf": "a9ebd1a4965ba32075abac03d37a9fe8ecb780d3035442854d41c8c63c44a775"
+    "sha256_lf": "51aa755af74fdf17bf12dcd97f243c2ec29732d677777c9fa694bc141bbfee41"
   },
-  "visual_review": {
-    "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
-    "pages": 109,
-    "reviewed_on": "2026-09-22",
-    "reference_full_review": {
-      "sha256": "e4339ab006b5e9009104aed7de87d8ad882bf8954cbc1bbdc7a37468797bfbe2",
-      "pages": 110,
-      "reviewed_ranges": [
-        [
-          1,
-          50
-        ],
-        [
-          51,
-          80
-        ],
-        [
-          81,
-          110
-        ]
-      ]
+  "supporting_sources": [
+    {
+      "path": "scripts/plot_thesis.py",
+      "sha256_lf": "9f3cc8ffce125f7e8ef9a6bc70ee740a52f623ee7e2289de41f66dadcfd501ef"
     },
-    "final_body_identical_page_count": 70,
-    "final_visually_rechecked_pages": [
+    {
+      "path": "papers/marketneural/references.bib",
+      "sha256_lf": "3b483479ad34563a9fe2f55c67fb8fb6788e32acc88527d54975eca722f0b0d4"
+    },
+    {
+      "path": "papers/marketneural/typesetting/header.tex",
+      "sha256_lf": "8ccd0765e832260a45044a0588a6d51af49a9a27bdd36e70cad41984c58ba2cf"
+    },
+    {
+      "path": "research/leakage/availability_mechanism_results.json",
+      "sha256_lf": "d6774d5ab424e9bd913af93c37cc87435e6aa1052df245a101d689610a311377"
+    },
+    {
+      "path": "research/thesis_evidence/experimental_contributions.json",
+      "sha256_lf": "1b56a5d5beefbd19553e68004ed5f64cf31ba378f7d9655007f580696e60e47e"
+    },
+    {
+      "path": "research/thesis_evidence/NOVELTY_PRIOR_ART.md",
+      "sha256_lf": "904733c60a0329fea0c2d0b2dac7c31717c31da2d94efd837e71e9bf76fb158a"
+    },
+    {
+      "path": "research/thesis_evidence/novelty_prior_art_sources.json",
+      "sha256_lf": "2642a8916be72263907d4ecd737616aee407e47fad1273d52b75fcaadf259a4d"
+    }
+  ],
+  "visual_review": {
+    "first_pass_sha256": "c175bf92a55c14ed3d648755d84c2532d46b7ec8e0c8c60ceb84735fcc58a72d",
+    "first_pass_pages": 118,
+    "coverage": "All118 physical pages visually inspected by three agents from90DPI Poppler renders; key math, tables, plots and bibliography enlarged.",
+    "refinements": "Widened contents numbering; disabled chapter-title hyphenation; kept two results tables with captions/rows.",
+    "final_unchanged_page_bodies": 93,
+    "final_changed_pages_rechecked": [
+      4,
       5,
       6,
       7,
-      9,
-      68,
-      69,
-      70,
-      71,
-      72,
-      73,
+      10,
+      13,
+      18,
+      23,
+      29,
+      37,
+      41,
+      51,
+      57,
       74,
       75,
       76,
-      83,
-      85,
-      86,
+      77,
+      78,
+      79,
+      80,
+      81,
       87,
-      88,
-      89,
-      90,
-      91,
-      92,
       93,
-      94,
-      95,
-      96,
-      97,
-      98,
-      99,
-      100,
-      101,
-      102,
-      103,
       104,
-      105,
-      106,
-      107,
-      108,
-      109
+      110
     ],
-    "rendering": "Poppler90DPI all-page renders; exact72DPI body-pixel comparison to fully reviewed110-page edition, then visual recheck of all39 changed final pages and shifted page furniture.",
-    "blocking_findings": 0,
-    "minor_observations": [
-      "Some original chapter endings remain sparse.",
-      "The72-hour prevalence-table caption ends physical page73 and its readable table continues on74."
-    ],
-    "reviewers": [
-      "operations_review",
-      "ml_review",
-      "application_review",
-      "parent integration review"
-    ]
+    "blocking_issues": 0,
+    "review_scope": "Automated agent visual and scientific cross-review, not external academic peer review."
   },
   "final_layout_comparison": {
-    "reference_sha256": "e4339ab006b5e9009104aed7de87d8ad882bf8954cbc1bbdc7a37468797bfbe2",
-    "sha256": "820999209d0134d0b7a92ab854866876a5e6a7a8ef5d29618f18f1a4d4b97b6e",
-    "reference_pages": 110,
-    "pages": 109,
-    "comparison": "Exact72DPI RGB body-pixel equality, excluding top43pt and bottom45pt page furniture; matching pages may shift after the shortened chapter.",
-    "body_identical_pages": [
+    "sha256": "a7f9c979bf40bef92f72fe0788eb232a08c3ca50e5739cea1d98122deb97ca46",
+    "pages": 118,
+    "unchanged_body_pages": [
       {
-        "final_page": 1,
-        "reviewed_reference_page": 1
+        "page": 1,
+        "prior_page": 1
       },
       {
-        "final_page": 2,
-        "reviewed_reference_page": 2
+        "page": 2,
+        "prior_page": 2
       },
       {
-        "final_page": 3,
-        "reviewed_reference_page": 3
+        "page": 3,
+        "prior_page": 3
       },
       {
-        "final_page": 4,
-        "reviewed_reference_page": 4
+        "page": 8,
+        "prior_page": 8
       },
       {
-        "final_page": 8,
-        "reviewed_reference_page": 8
+        "page": 9,
+        "prior_page": 9
       },
       {
-        "final_page": 10,
-        "reviewed_reference_page": 10
+        "page": 11,
+        "prior_page": 11
       },
       {
-        "final_page": 11,
-        "reviewed_reference_page": 11
+        "page": 12,
+        "prior_page": 12
       },
       {
-        "final_page": 12,
-        "reviewed_reference_page": 12
+        "page": 14,
+        "prior_page": 14
       },
       {
-        "final_page": 13,
-        "reviewed_reference_page": 13
+        "page": 15,
+        "prior_page": 15
       },
       {
-        "final_page": 14,
-        "reviewed_reference_page": 14
+        "page": 16,
+        "prior_page": 16
       },
       {
-        "final_page": 15,
-        "reviewed_reference_page": 15
+        "page": 17,
+        "prior_page": 17
       },
       {
-        "final_page": 16,
-        "reviewed_reference_page": 16
+        "page": 19,
+        "prior_page": 19
       },
       {
-        "final_page": 17,
-        "reviewed_reference_page": 17
+        "page": 20,
+        "prior_page": 20
       },
       {
-        "final_page": 18,
-        "reviewed_reference_page": 18
+        "page": 21,
+        "prior_page": 21
       },
       {
-        "final_page": 19,
-        "reviewed_reference_page": 19
+        "page": 22,
+        "prior_page": 22
       },
       {
-        "final_page": 20,
-        "reviewed_reference_page": 20
+        "page": 24,
+        "prior_page": 24
       },
       {
-        "final_page": 21,
-        "reviewed_reference_page": 21
+        "page": 25,
+        "prior_page": 25
       },
       {
-        "final_page": 22,
-        "reviewed_reference_page": 22
+        "page": 26,
+        "prior_page": 26
       },
       {
-        "final_page": 23,
-        "reviewed_reference_page": 23
+        "page": 27,
+        "prior_page": 27
       },
       {
-        "final_page": 24,
-        "reviewed_reference_page": 24
+        "page": 28,
+        "prior_page": 28
       },
       {
-        "final_page": 25,
-        "reviewed_reference_page": 25
+        "page": 30,
+        "prior_page": 30
       },
       {
-        "final_page": 26,
-        "reviewed_reference_page": 26
+        "page": 31,
+        "prior_page": 31
       },
       {
-        "final_page": 27,
-        "reviewed_reference_page": 27
+        "page": 32,
+        "prior_page": 32
       },
       {
-        "final_page": 28,
-        "reviewed_reference_page": 28
+        "page": 33,
+        "prior_page": 33
       },
       {
-        "final_page": 29,
-        "reviewed_reference_page": 29
+        "page": 34,
+        "prior_page": 34
       },
       {
-        "final_page": 30,
-        "reviewed_reference_page": 30
+        "page": 35,
+        "prior_page": 35
       },
       {
-        "final_page": 31,
-        "reviewed_reference_page": 31
+        "page": 36,
+        "prior_page": 36
       },
       {
-        "final_page": 32,
-        "reviewed_reference_page": 32
+        "page": 38,
+        "prior_page": 38
       },
       {
-        "final_page": 33,
-        "reviewed_reference_page": 33
+        "page": 39,
+        "prior_page": 39
       },
       {
-        "final_page": 34,
-        "reviewed_reference_page": 34
+        "page": 40,
+        "prior_page": 40
       },
       {
-        "final_page": 35,
-        "reviewed_reference_page": 35
+        "page": 42,
+        "prior_page": 42
       },
       {
-        "final_page": 36,
-        "reviewed_reference_page": 36
+        "page": 43,
+        "prior_page": 43
       },
       {
-        "final_page": 37,
-        "reviewed_reference_page": 37
+        "page": 44,
+        "prior_page": 44
       },
       {
-        "final_page": 38,
-        "reviewed_reference_page": 38
+        "page": 45,
+        "prior_page": 45
       },
       {
-        "final_page": 39,
-        "reviewed_reference_page": 39
+        "page": 46,
+        "prior_page": 46
       },
       {
-        "final_page": 40,
-        "reviewed_reference_page": 40
+        "page": 47,
+        "prior_page": 47
       },
       {
-        "final_page": 41,
-        "reviewed_reference_page": 41
+        "page": 48,
+        "prior_page": 48
       },
       {
-        "final_page": 42,
-        "reviewed_reference_page": 42
+        "page": 49,
+        "prior_page": 49
       },
       {
-        "final_page": 43,
-        "reviewed_reference_page": 43
+        "page": 50,
+        "prior_page": 50
       },
       {
-        "final_page": 44,
-        "reviewed_reference_page": 44
+        "page": 52,
+        "prior_page": 52
       },
       {
-        "final_page": 45,
-        "reviewed_reference_page": 45
+        "page": 53,
+        "prior_page": 53
       },
       {
-        "final_page": 46,
-        "reviewed_reference_page": 46
+        "page": 54,
+        "prior_page": 54
       },
       {
-        "final_page": 47,
-        "reviewed_reference_page": 47
+        "page": 55,
+        "prior_page": 55
       },
       {
-        "final_page": 48,
-        "reviewed_reference_page": 48
+        "page": 56,
+        "prior_page": 56
       },
       {
-        "final_page": 49,
-        "reviewed_reference_page": 49
+        "page": 58,
+        "prior_page": 58
       },
       {
-        "final_page": 50,
-        "reviewed_reference_page": 50
+        "page": 59,
+        "prior_page": 59
       },
       {
-        "final_page": 51,
-        "reviewed_reference_page": 51
+        "page": 60,
+        "prior_page": 60
       },
       {
-        "final_page": 52,
-        "reviewed_reference_page": 52
+        "page": 61,
+        "prior_page": 61
       },
       {
-        "final_page": 53,
-        "reviewed_reference_page": 53
+        "page": 62,
+        "prior_page": 62
       },
       {
-        "final_page": 54,
-        "reviewed_reference_page": 54
+        "page": 63,
+        "prior_page": 63
       },
       {
-        "final_page": 55,
-        "reviewed_reference_page": 55
+        "page": 64,
+        "prior_page": 64
       },
       {
-        "final_page": 56,
-        "reviewed_reference_page": 56
+        "page": 65,
+        "prior_page": 65
       },
       {
-        "final_page": 57,
-        "reviewed_reference_page": 57
+        "page": 66,
+        "prior_page": 66
       },
       {
-        "final_page": 58,
-        "reviewed_reference_page": 58
+        "page": 67,
+        "prior_page": 67
       },
       {
-        "final_page": 59,
-        "reviewed_reference_page": 59
+        "page": 68,
+        "prior_page": 68
       },
       {
-        "final_page": 60,
-        "reviewed_reference_page": 60
+        "page": 69,
+        "prior_page": 69
       },
       {
-        "final_page": 61,
-        "reviewed_reference_page": 61
+        "page": 70,
+        "prior_page": 70
       },
       {
-        "final_page": 62,
-        "reviewed_reference_page": 62
+        "page": 71,
+        "prior_page": 71
       },
       {
-        "final_page": 63,
-        "reviewed_reference_page": 63
+        "page": 72,
+        "prior_page": 72
       },
       {
-        "final_page": 64,
-        "reviewed_reference_page": 64
+        "page": 73,
+        "prior_page": 73
       },
       {
-        "final_page": 65,
-        "reviewed_reference_page": 65
+        "page": 82,
+        "prior_page": 82
       },
       {
-        "final_page": 66,
-        "reviewed_reference_page": 66
+        "page": 83,
+        "prior_page": 83
       },
       {
-        "final_page": 67,
-        "reviewed_reference_page": 67
+        "page": 84,
+        "prior_page": 84
       },
       {
-        "final_page": 77,
-        "reviewed_reference_page": 77
+        "page": 85,
+        "prior_page": 85
       },
       {
-        "final_page": 78,
-        "reviewed_reference_page": 78
+        "page": 86,
+        "prior_page": 86
       },
       {
-        "final_page": 79,
-        "reviewed_reference_page": 79
+        "page": 88,
+        "prior_page": 88
       },
       {
-        "final_page": 80,
-        "reviewed_reference_page": 80
+        "page": 89,
+        "prior_page": 89
       },
       {
-        "final_page": 81,
-        "reviewed_reference_page": 81
+        "page": 90,
+        "prior_page": 90
       },
       {
-        "final_page": 82,
-        "reviewed_reference_page": 82
+        "page": 91,
+        "prior_page": 91
       },
       {
-        "final_page": 84,
-        "reviewed_reference_page": 84
+        "page": 92,
+        "prior_page": 92
+      },
+      {
+        "page": 94,
+        "prior_page": 94
+      },
+      {
+        "page": 95,
+        "prior_page": 95
+      },
+      {
+        "page": 96,
+        "prior_page": 96
+      },
+      {
+        "page": 97,
+        "prior_page": 97
+      },
+      {
+        "page": 98,
+        "prior_page": 98
+      },
+      {
+        "page": 99,
+        "prior_page": 99
+      },
+      {
+        "page": 100,
+        "prior_page": 100
+      },
+      {
+        "page": 101,
+        "prior_page": 101
+      },
+      {
+        "page": 102,
+        "prior_page": 102
+      },
+      {
+        "page": 103,
+        "prior_page": 103
+      },
+      {
+        "page": 105,
+        "prior_page": 105
+      },
+      {
+        "page": 106,
+        "prior_page": 106
+      },
+      {
+        "page": 107,
+        "prior_page": 107
+      },
+      {
+        "page": 108,
+        "prior_page": 108
+      },
+      {
+        "page": 109,
+        "prior_page": 109
+      },
+      {
+        "page": 111,
+        "prior_page": 111
+      },
+      {
+        "page": 112,
+        "prior_page": 112
+      },
+      {
+        "page": 113,
+        "prior_page": 113
+      },
+      {
+        "page": 114,
+        "prior_page": 114
+      },
+      {
+        "page": 115,
+        "prior_page": 115
+      },
+      {
+        "page": 116,
+        "prior_page": 116
+      },
+      {
+        "page": 117,
+        "prior_page": 117
+      },
+      {
+        "page": 118,
+        "prior_page": 118
       }
     ],
-    "body_changed_pages": [
+    "changed_pages": [
+      4,
       5,
       6,
       7,
-      9,
-      68,
-      69,
-      70,
-      71,
-      72,
-      73,
+      10,
+      13,
+      18,
+      23,
+      29,
+      37,
+      41,
+      51,
+      57,
       74,
       75,
       76,
-      83,
-      85,
-      86,
+      77,
+      78,
+      79,
+      80,
+      81,
       87,
-      88,
-      89,
-      90,
-      91,
-      92,
       93,
-      94,
-      95,
-      96,
-      97,
-      98,
-      99,
-      100,
-      101,
-      102,
-      103,
       104,
-      105,
-      106,
-      107,
-      108,
-      109
-    ]
+      110
+    ],
+    "landmarks": {
+      "Reconstructing the coverage cutoff": [
+        5,
+        64
+      ],
+      "Recovered fixed-input ensemble": [
+        5,
+        74
+      ],
+      "Fixed-model feature-source": [
+        5,
+        76
+      ],
+      "Research contributions established": [
+        6,
+        87
+      ],
+      "Reproducing the mechanism": [
+        7,
+        111
+      ],
+      "Calendar selection can change": [
+        67
+      ],
+      "A paired Stage 1 hybrid": [
+        75
+      ],
+      "Retained ensemble comparisons": [
+        92
+      ]
+    },
+    "method": "Exact 72DPI RGB body equality excluding top43 and bottom45pt; all final pages separately reviewed from90DPI Poppler renders"
   },
-  "cohort_reconciliation": {
-    "path": "research/thesis_evidence/cohort_reconciliation.json",
-    "sha256_lf": "684694a75074c0b150058a330fbe432d6cf65bef901bf9b19275418a2cc3f738"
+  "validation": {
+    "python_tests_passed": 126,
+    "warnings": 2,
+    "warning_scope": "Existing estimator deprecation warnings",
+    "new_tests": 19,
+    "new_test_scope": "Cutoff mechanism/input validity and paired-analysis cohort/privacy invariants"
   }
 }

@@ -8,6 +8,14 @@ A useful novelty statement therefore focuses on the relationship between compone
 
 The project also illustrates a productive interaction between engineering incidents and research design. A visually induced identity correction led to a conflict-aware guard. Outcome-dependent missingness led to a revised feature boundary. Numerical serving comparisons led to explicit bundle contracts. Such fixes do not erase the earlier failure modes; they document how the system became more measurable. A mature account records both the discovery and the residual proof obligation.
 
+## Completed mechanism and component studies
+
+The expanded evidence resolves several questions that a platform inventory alone could not answer. The 911-row cutoff audit reconstructs a specific observed mechanism, with an exact temporal identity and no mask mismatches. The constructed origin-selected control separates the effect of cohort geometry from access to future information. A documented 441-score frozen-policy intervention isolates a feature-source correction at the report's stated level of control. Retained 523- and 413-row ensemble decisions permit actual paired reanalysis, rather than resampling unrelated confusion matrices.
+
+The results support a narrower and more testable contribution than a general assertion of a new neural architecture. Existing literature already covers informative missingness, prediction-time observability, bitemporal data, multimodal survival and horizon-specific ensembles. The specific empirical knowledge here concerns how a real coverage cutoff interacted with an outcome-selected survival population, how source reconstruction changed a fixed policy, and how the retained ensemble choices behaved on different stage-specific populations. The contribution chapter and nearest-prior-work comparison state those boundaries explicitly.
+
+The completed analyses also retain contrary evidence: the Stage 0 tree stack does not improve mean-logit F1, the repaired 441-row ensemble is below one recorded phase winner, and a separate 587-row replay has poor meta recall. These findings narrow transfer claims and identify why schema agreement, source fidelity, selection validity and predictive effectiveness require separate checks. The remaining prospective and modality studies extend this evidence; they are not used to imply that the platform has never been experimentally evaluated.
+
 ## Fast movement makes time origin a substantive choice
 
 In a rapidly changing market, a prediction can become stale before its nominal forecast horizon ends. Price changes, competitor arrivals, new photographs, and elapsed unsold time change the decision context. The same item can therefore warrant different predictions at first observation and several days later. Treating these as interchangeable rows hides the actual forecasting question.

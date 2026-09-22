@@ -339,3 +339,50 @@ private. The Downloads copy matches the released PDF bytes.
 
 Final publication screening passed for257 additions/changes since the original
 public baseline and all418 current public files, with zero findings.
+
+## Reconstructed mechanisms and retained experimental comparisons: edition 0.5
+
+The contribution argument now rests on specific completed analyses and explicit
+comparisons with the closest prior work. The new coverage audit verifies all
+911 frozen validation/evaluation masks against a documented origin cutoff, with
+zero mismatches and consistent duration identities. A formal derivation and an
+enumerated public negative control distinguish information availability from
+outcome-window selection. The documented 47,704-row, 13-column lookup replay
+retains its historical evidence classification.
+
+New paired reanalysis uses the actual retained decisions for seven Stage 0
+policies on 523 records and two Stage 1 policies on 413 records. The Stage 1
+hybrid's F1 is 0.875214 versus mean-logit 0.686567; the paired interval for the
+difference is [0.144285, 0.235651]. The all-positive reference and saved precision
+constraint are also reported. The Stage 0 tree stack does not improve mean-logit
+F1. A documented fixed-policy source correction raises F1 from 0.3077 to 0.7077
+on 441 scored records, while a separate 587-row replay has poor meta performance.
+These results remain separate from the earlier 964-row AFT/neural comparison.
+Intervals condition on retained fitted policies and are not selection-adjusted.
+
+Three agent reviews independently examined experiment reconstruction, the leakage
+mechanism and closest prior work, followed by cross-review of the new analysis
+scripts. Review found and corrected two input/interpretation issues: naive
+timestamps now fail closed, and the full sufficient-condition flag requires
+both the cutoff geometry and agreement of the observed mask. The evidence map
+classifies completed, confounded and unrecovered comparisons individually. No
+worldwide-priority, perfect-safety or universal neural-superiority claim was added.
+
+The final monograph by **Ghaffar Masomi** has **118 pages, 16 chapters, 39,602
+chapter words, 25 figures and 31 references**. Reviewers visually inspected all
+118 pages of the initial build, enlarging the new mathematics, result tables,
+figures and bibliography. After contents-number spacing, chapter-title wrapping
+and two table pagination refinements, 93 final page bodies matched the reviewed
+draft exactly. All 25 changed final pages received fresh visual review. No
+blocking layout or numerical issue remained. This is agent review of the
+artifact and evidence, not external academic peer review.
+
+Final PDF SHA-256:
+`a7f9c979bf40bef92f72fe0788eb232a08c3ca50e5739cea1d98122deb97ca46`.
+
+The complete Python suite passed **126 tests**, including 19 new mechanism and
+paired-analysis tests, with two existing estimator deprecation warnings.
+Historical row-level results were reanalyzed; no new production model was trained
+and no prospective outcome collection was claimed. Proprietary datasets, raw
+identifiers, private paths and fitted weights remain excluded. The Downloads
+copy matches the reviewed PDF bytes.
