@@ -2,7 +2,7 @@
 
 Ghaffar Masomi
 
-Technical edition 0.4 / 22 September 2026.
+Technical edition 0.5 / 22 September 2026.
 
 # The research problem and the system that made it measurable
 
@@ -824,6 +824,20 @@ This expression requires the relevant survival curve to be meaningful for the el
 
 Serving parity tests answer narrower questions. They can demonstrate that batch and warm inference use compatible schemas, vector ordering, masks, transforms and numerical operations. They can catch a missing feature block or an encoder-dimension mismatch. They cannot establish that the historical training inputs existed at the target time, that queued rows represent the original endpoint population, or that the final score is calibrated. Operational readiness and statistical validity are complementary capabilities, not substitutes.
 
+## Reconstructing the coverage cutoff and cohort geometry
+
+The new [mechanism audit](../../research/leakage/availability_mechanism.md) sharpens the earlier missingness finding using the retained frozen rows. Across all 408 validation and 503 evaluation observations, the zero-count/null-share pattern exactly equals an origin-at-or-after-6-March-2026 indicator. There are zero mismatches. The stored durations equal event time minus origin with maximum absolute discrepancy below $10^{-12}$ hours. The cutoff comes from the retained reconstruction and is checked against the rows; it is not selected to maximize the new audit's endpoint metric.
+
+Write origin as $O$, event date as $S$, duration as $D=S-O$, and the pattern as $M=\mathbf{1}\{O\geq c\}$. In a cohort selected by $a\leq S\leq b$, the mask also satisfies $M=\mathbf{1}\{D\leq S-c\}$. If $c\leq a-72$, every event within 72 hours necessarily has the pattern. Both historical cohorts satisfy this sufficient condition. An origin cutoff and an event-date window therefore explain the perfect recall of the pattern without assuming that the context values possess perfect semantic information about demand.
+
+This observation does not establish that the historical mask was available at the intended origin; that still requires its original availability history. It does establish a second mechanism that an availability check alone cannot rule out: a calendar regime that is genuinely known at origin can become outcome-predictive after conditioning on event date. The public constructed experiment separates this mechanism from future-information access.
+
+In that experiment, origin and duration are independent across a complete 3,630-record grid with fully observed outcomes. The fixed mask-only rule has balanced accuracy 0.9537 on an event-selected cohort, but exactly 0.5000 on an origin-selected cohort with complete follow-up. The cohorts differ because selection is the factor under examination. On the same first cohort, filling coverage while keeping labels and the rule fixed gives balanced accuracy 0.5000. These enumerated artificial controls establish the mechanism; they are not a neural-performance benchmark or new historical data.
+
+The recorded exact lookup replay covered 47,704 rows and 13 context columns. It establishes that the documented emulator reproduced the frozen feature surface. That is reconstruction fidelity, not a certificate that the surface was statistically appropriate. The present review kept the database paused and did not rerun those database queries.
+
+A later full-preparation audit also detected broad calendar priors acting as origin proxies. Its reported origin-only F1 values, 0.8261 and 0.8805, were optimized independently within each split and must remain descriptive diagnostics. They are not a selection-trained predictor transferred unchanged to holdout. The documented response removed those proxies and required origin-defined cohorts with mature follow-up. The source report and fresh aggregate receipts make the distinction between implemented remediation and a fully controlled post-remediation neural experiment explicit.
+
 ## A stronger validation design and bounded conclusion
 
 A decisive next evaluation would freeze one complete bundle: input schema, source-version rules, preprocessing, encoders, checkpoints, ensemble policy and threshold. It would record predictions and input digests at actual score time for a later cohort, retain unscored and insufficient-evidence rows, and wait for the relevant 72-hour, seven-day and 21-day follow-up. Outcomes would be resolved under a documented status and timestamp policy. The report would include event prevalence, censoring, readiness delay, abstention coverage and zero-duration sensitivity, so favorable precision could not conceal a narrow or changing eligible population.
@@ -840,6 +854,10 @@ The documented failure and corrections support a balanced conclusion. The system
 
 
 ![Key overlap in a later rebuilt source: both exported tail cohorts are contained in its training table. This reconstruction does not establish that the original locked training matrix was identical.](figures/r08_tail_overlap.svg)
+
+
+
+![Algebraic selection geometry, with arbitrary time units. Event-window selection constrains origin plus duration to a diagonal band, turning a coverage cutoff into a duration proxy. Origin-window selection with complete follow-up does not create that relationship when origin and duration are independent. This schematic is distinct from the separately executed historical audit and constructed experiment.](figures/r14_selection_geometry.svg)
 
 # Empirical evidence and its interpretation
 
@@ -955,6 +973,71 @@ The feature-store paper similarly explores live-stock pressure after stratifying
 
 Historical figure H07. The historical stock analysis compares slow-outcome rates across stock strata within price strata. It is an exploratory association plot; uncertainty and an independent incremental-performance comparison cannot be recovered from the image alone.
 
+## Recovered fixed-input ensemble comparisons
+
+The retained archive contains completed component comparisons beyond the February headline result. The new [experiment receipt](../../research/thesis_evidence/experimental_contributions.json) records exact key matching, endpoint agreement, invariant-field agreement, source hashes, saved policies and selection scope. Reanalysis uses the existing binary decisions without refitting models or choosing new thresholds. These experiments must retain their separate cohorts and target definitions.
+
+### Seven methods on the same Stage 0 population
+
+Seven combination methods share 523 evaluation records, including 104 events lasting more than 504 hours. They operate on the retained ten-seed neural prediction surface. Thresholds and fitted stacks use the 369-row selection population; the stacks' scores on that same population are in-sample diagnostics. The table is a comparison of fitted combination methods and their policies, not a neural-versus-tree comparison on raw features.
+
+\Needspace{22\baselineskip}
+
+Table. Retained Stage 0 combination methods, with paired differences against mean-logit.
+
+| Combination | Selection F1 | Evaluation F1 | Difference, 95% paired interval |
+|---|---:|---:|---|
+| Mean logit | 0.9595 | 0.8037 | Reference |
+| Median logit | 0.9467 | 0.8073 | 0.0036 [-0.0140, 0.0237] |
+| Mean probability | 0.9595 | 0.8057 | 0.0019 [-0.0174, 0.0205] |
+| Vote | 0.9517 | 0.7938 | -0.0099 [-0.0541, 0.0329] |
+| Weighted-logit stack | 0.9600 | 0.7909 | -0.0128 [-0.0411, 0.0162] |
+| Gradient-boosted tree stack | 1.0000 | 0.7553 | -0.0484 [-0.1021, 0.0012] |
+| SGD stack | 0.9536 | 0.8125 | 0.0088 [-0.0210, 0.0398] |
+
+Every interval includes zero. The tree stack's perfect in-sample selection F1 is followed by lower evaluation F1 than the simple mean-logit combination. That observation supports retaining simple combinations as serious comparators. It does not establish that stacking is always harmful. The separate 472-configuration regularization sweep explicitly ranked holdout performance, so it belongs to development analysis; its winning result cannot be treated as a fresh independent confirmation.
+
+### A paired Stage 1 hybrid comparison
+
+The separate Stage 1 experiment contains 413 common records, including 296 positives for the retained event-within-168-hours target. The two methods use the same documented neural-prediction surface. The direct audit verifies matching record keys, labels, row ordinals, observed durations and event indicators; Stage 1 also preserves matching base probability, threshold and decision fields. The full underlying ten-seed score matrix was not independently reconstructed. The histogram-gradient-boosting meta-layer uses a different fitted score mapping and threshold from the mean-logit baseline.
+
+Table. Saved Stage 1 policy results on 413 identical records.
+
+| Policy | TP / FP / FN / TN | Precision | Recall | F1 |
+|---|---|---:|---:|---:|
+| Mean-logit baseline | 161 / 12 / 135 / 105 | 0.9306 | 0.5439 | 0.6866 |
+| Neural-score/tree-stack hybrid | 256 / 33 / 40 / 84 | 0.8858 | 0.8649 | 0.8752 |
+| All-positive reference | 296 / 117 / 0 / 0 | 0.7167 | 1.0000 | 0.8350 |
+
+The hybrid gains 0.18865 F1 relative to mean-logit, with a paired 95% interval [0.14429, 0.23565]. It is correct on 97 records where mean-logit is wrong; mean-logit is uniquely correct on 23. The operating-point tradeoff is 95 fewer false negatives and 21 additional false positives. Against the all-positive reference, its F1 difference is 0.04024, with paired interval [0.00959, 0.07243] under the same resampling scope. The all-positive rule's precision, 0.7167, also falls below the saved policy precision floor of 0.8672; the hybrid's 0.8858 exceeds it on this cohort. The prevalence reference is informative but does not meet that operational constraint.
+
+The intervals in both studies use 5,000 IID paired row resamples with seed 20260922. They condition on the fitted models and saved thresholds; they do not include training variability, tuning, experiment selection, temporal dependence or multiplicity adjustment. The complete history of final method selection and holdout inspection is not reconstructed. These uncertainty estimates quantify variation in fixed retained predictions under the stated resampling assumptions. They do not convert historical development into a preregistered test.
+
+Together the studies demonstrate an executed component comparison and a stage/cohort-dependent result: a tree meta-layer is useful for the retained Stage 1 operating point, whereas it does not improve the retained Stage 0 mean-logit F1. The targets, populations and histories differ, so the between-study contrast is not a controlled causal estimate of stage identity. These results also rule out interpreting the system as a contest in which tree methods are inherently incapable of using neural representations.
+
+## Fixed-model feature-source intervention and later replay
+
+The retained forward-pass forensic report describes a frozen cohort of 443 observed records from 20-23 March 2026. There were 440 valid reconstructions, one degraded reconstruction and two invalid records; 441 received scores. After prior cohort/vector-contract fixes, a targeted change replaced the incorrect structured context and item-metadata relation with the decision-time feature source. The report records unchanged weights and labels and the same mean-logit ensemble threshold, approximately 0.720639.
+
+Table. Documented fixed-policy source correction on the 441 scored records.
+
+| Input-source state | Precision | Recall | F1 |
+|---|---:|---:|---:|
+| Before context-source correction | 0.5714 | 0.2105 | 0.3077 |
+| After context-source correction | 0.8519 | 0.6053 | 0.7077 |
+
+The corrected confusion counts are 46 true positives, eight false positives, 30 false negatives and 357 true negatives. This is a documented controlled input-source intervention, not retraining and not a new modality experiment. The complete paired before/after exports were not recovered at the report's recorded proof location, so this revision preserves its documentary evidence level. It supplies no invented paired confidence interval. The frozen cohort was reconstructed after outcomes and does not satisfy a sealed prospective protocol.
+
+The report also records single phase-winner F1 values of 0.7647, 0.6929 and 0.7188 on the repaired benchmark. The deployed ensemble's 0.7077 is therefore not the highest recorded value on this diagnostic cohort. This is further evidence that ensembling and policy selection need direct evaluation rather than an assumed advantage.
+
+A separate retained replay created on 20 April 2026 contains 587 matched records with 185 slow-tail positives. Fresh arithmetic gives base-policy F1 0.3701 and meta-policy F1 0.0909. The meta confusion matrix is 9/4/176/398; its precision is 0.6923 but recall only 0.0486. Saved serving checks report matching tabular metadata and no fallback path. Those checks do not establish complete decision-time feature fidelity, and the aggregate difference cannot isolate temporal decay. This unfavorable replay remains separate from the corrected 441-row experiment and from the February 964-row comparison.
+
+## Which experimental gaps the recovered archive resolves
+
+The archive establishes completed combiner comparisons, a documented frozen-policy source intervention, extensive development sweeps and reproducible reconstruction diagnostics. The present reanalysis adds paired uncertainty where row decisions are retained. It therefore supersedes a blanket characterization of all component experiments as merely proposed.
+
+Other comparisons need more exact controls. The recovered context-present/context-absent training configurations also changed censoring minimums, dropout, loss weights and trial budgets. They cannot isolate the context block's incremental contribution. Matched raw-text, image, generated-report and fitted dual-band ablations were not recovered in the audited sources. Neither was a fixed-test recency ablation or a matched whole-cascade versus single-model experiment. The evidence ledger distinguishes these unresolved questions from the experiments actually completed; it does not infer their absence throughout every uninspected archive.
+
 ## Later 72-hour policy results
 
 The later saved policy predictions allow direct recomputation of counts. The selection population contains 584 observations, the broader holdout 748, and a recent event-selected subset 283. The recent subset is nested within the 748-row holdout, with matching decisions. It is therefore useful for temporal characterization but is not an additional independent test that can be added to the holdout denominator.
@@ -992,6 +1075,8 @@ The research protocol should prespecify a treatment of same-time and already-res
 ## A reproducible synthetic comparison
 
 The public smoke experiments each generate 1,200 synthetic observations and use a fixed chronological split: 593 training, 267 selection-validation, and 340 test rows. Both use the same prespecified model seed and one candidate configuration per family. One fixture contains nonlinear structure; the second follows a proportional-hazards regime. These experiments exercise all six estimators and the shared censoring, selection, scoring, and artifact-writing paths.
+
+\Needspace{14\baselineskip}
 
 | Model | Nonlinear fixture test IBS | Proportional-hazards fixture test IBS |
 |---|---:|---:|
@@ -1114,61 +1199,111 @@ The appropriate assessment is consequently neither a toy prototype nor a proof o
 
 ![Retained database snapshot dated 28 April 2026: 55,260 listing rows and 240,622 image assets within 29.1 GB. The categories have different units and coverage; they must not be added as independent observations. Source: operational_counts.json.](figures/r02_platform_scale.svg)
 
-# Original contributions and the claims they establish
+# Research contributions established by reconstruction and experiment
 
-## A research contribution has a defined object
+## The object of the contribution
 
-This work explains how heterogeneous market evidence becomes a time-qualified survival prediction and an operational decision. Its contributions concern implemented contracts, generated measurements, fitted systems and diagnosed failures. Originality concerns what this arrangement makes possible to discover and test; predictive validity concerns performance on a specified population.
+The central research object is a multimodal survival decision whose inputs are produced asynchronously, whose outcome is observed later, and whose evaluation depends on how records enter a cohort. The platform made this object observable through source reconstruction, retained prediction files, feature-version audits, model experiments and serving investigations. The scientific contribution is expressed through specific findings about that object, with an explicit comparator and a test for each claim.
 
-Established components give the work a foundation and locate its contribution. DeepSurv develops neural proportional-hazards prediction; DeepHit learns event-time distributions; Deep Survival Machines learns parametric survival mixtures. Their existence makes the relevant comparison more precise: the contribution here concerns a particular multimodal, temporal and operational formulation rather than the general invention of neural survival analysis. [Katzman et al., 2018](https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-018-0482-1); [Lee et al., 2018](https://ojs.aaai.org/index.php/AAAI/article/view/11842); [Nagpal et al., 2021](https://arxiv.org/abs/2003.01176).
+Three questions organize the completed work. First, can an apparently valid feature become a duration shortcut through the observation and cohort-selection process? Second, how much can restoring the feature contract change a fixed model's behavior? Third, what do retained common-population comparisons establish about the developed neural systems and their ensemble policies? The following sections connect these questions to existing experiments and new reanalysis of retained artifacts. Prospective prediction, modality attribution and optimal recency weighting remain separate questions.
 
-## Contribution 1: an executable contract for decision-time evidence
+The underlying ideas have precedents. Kaufman and colleagues already formalized prediction-time legitimacy and discussed missingness and downstream processing as leakage sources. Temporal databases distinguish valid time from transaction time. Neural survival distributions, multimodal attention and horizon-specific ensembles are established methods. Originality therefore concerns the measured failure, its explicit reconstruction, the tested intervention and the operational contract. The [prior-work comparison](../../research/thesis_evidence/NOVELTY_PRIOR_ART.md) identifies the closest methods, differences and falsifiers. [Kaufman et al., 2011](https://www.cs.umb.edu/~ding/history/470_670_fall_2011/papers/cs670_Tran_PreferredPaper_LeakingInDataMining.pdf); [Snodgrass and Ahn, 1986](https://www2.cs.arizona.edu/~rts/pubs/Computer.pdf).
 
-The first contribution connects the statistical prediction origin to the actual production of its inputs. An image can exist before its embedding is computed; a report can be generated from revised content; an anchor can contain outcomes learned after its nominal historical window. Accordingly, event time, observation time, information availability, computation time and label maturity have distinct roles.
+## Finding 1: a cohort-induced shortcut can survive correct time filtering
 
-The implemented framework makes these distinctions inspectable through feature ownership, entity keys, version references, temporal joins, fitted-artifact provenance and guarded reads. The public temporal example exercises late evidence, future labels, historical anchors and certificate failures. Its executed tests establish the behavior of those specific mechanisms; historical source reconstruction documents where stronger provenance was absent.
+The historical feature investigation found a mixed zero-count/null-share pattern that included every fast-event positive in two frozen matrices: 167 of 167 in 408 validation rows and 208 of 208 in 503 evaluation rows. The pattern alone gives F1 0.8653 and 0.7661. Those are calculated diagnostic results, not attributed neural-model gains. Their importance is the direct relationship between a production coverage pattern and the supervised endpoint.
 
-Temporal joins and versioning are established techniques. The contribution is their composition around asynchronous multimodal survival decisions, including the conditions under which otherwise valid components fail to produce a valid historical observation. This gives the research a concrete unit of analysis: a decision with admissible evidence, rather than an arbitrary current database row.
+A fresh audit of the retained matrices verifies that the mask follows the documented 6 March 2026 UTC origin cutoff on all 911 rows, with zero mismatches. Stored duration equals event time minus origin to numerical precision. Every row has an observed event. The association is consequently stronger evidence than a suspicious correlation alone: the calendar rule reproduces the pattern and the cohort rule explains its relation to duration. This verifies the stored pattern; it does not recover when that pattern first became available to a live predictor. The [mechanism receipt](../../research/leakage/availability_mechanism_results.json) preserves aggregate counts and source hashes.
 
-## Contribution 2: a measured availability shortcut and its remediation
+Let $O$ be the prediction origin, $D$ the observed duration and $S=O+D$ the event date. Let an operational coverage boundary produce a mask
 
-The second contribution is an empirical finding about the observation process. In one frozen validation matrix, a mixed zero-count and null-share pattern appeared on 219 of 408 rows and included all 167 fast-event positives. In the corresponding evaluation matrix, it appeared on 335 of 503 rows and included all 208 positives. A rule using that pattern alone therefore attains F1 values of approximately 0.8653 and 0.7661, respectively. These are diagnostic calculations from observed counts, not neural-model results.
+$$
+M=\mathbf{1}\{O\geq c\}.
+$$
 
-The important mechanism is that feature presence can encode later lifecycle processing even when the feature values describe apparently ordinary context. A temporal aggregate may exclude future event dates while its availability still discloses future information. The recorded refresh incident and subsequent corrections connect this mechanism to real model behavior. Remediation spans producer writes, export exclusions and consumer checks.
+Within a cohort selected by $a\leq S\leq b$, the identity becomes
 
-Leakage and hidden system dependencies have substantial prior literature. This contribution supplies a specific measured mechanism, a reconstruction of its operational origin and an executable response. [Kapoor and Narayanan, 2023](https://doi.org/10.1016/j.patter.2023.100804); [Sculley et al., 2015](https://proceedings.neurips.cc/paper/2015/hash/86df7dcfd896fcaf2674f757a2463eba-Abstract.html).
+$$
+M=\mathbf{1}\{D\leq S-c\}.
+$$
 
-## Contribution 3: a staged multimodal survival decision system
+A mask associated with origin time becomes a duration proxy when event date is constrained. This is an exact algebraic consequence of the selection rule. No future feature value needs to enter the model for the effect to occur. In particular, if $c\leq a-h$, every observed event with $D\leq h$ satisfies $O=S-D\geq a-h\geq c$ and therefore $M=1$. The historical cohorts satisfy this sufficient condition for $h=72$ hours.
 
-The third contribution is a concrete formulation coupling event-time estimation with distinct decision horizons. The historical cascade uses separate models and policies around 504, 168 and 72 hours. Censoring masks, horizon-specific losses, recency weights, training populations, ensemble combinations and routing rules determine what each stage learns and how its output is used. The later K8 lane is separately specified because its multiple image and report slots change the input contract.
+If the selected event date is uniform on $[a,b]$ conditional on duration, an illustrative special case is
 
-Perceiver establishes latent attention as a way to process heterogeneous inputs. Discrete-time neural survival establishes learnable hazard curves, and MoME demonstrates multimodal experts for survival prediction in another setting. These are relevant precedents, not evidence that the present implementation duplicates their complete methods. [Jaegle et al., 2021](https://proceedings.mlr.press/v139/jaegle21a.html); [Gensheimer and Narasimhan, 2019](https://arxiv.org/abs/1805.00917); [Xiong et al., 2024](https://papers.miccai.org/miccai-2024/531-Paper2168.html).
+$$
+P(M=1\mid D=d,\ a\leq S\leq b)
+=\operatorname{clip}\!\left(\frac{b-c-d}{b-a},0,1\right).
+$$
 
-The original system-level contribution is the implemented coupling of these modeling ideas to temporally qualified market evidence and staged selection objectives. Its reusable numerical code exposes the distinction between expert survival mixtures, independent scalar heads and downstream policy combinations. That precision permits meaningful comparisons and component ablations.
+The uniformity condition belongs to this illustrative calculation; it is not imposed on the historical data. The transition interval $[a-c,b-c]$ supplies a diagnostic prediction to compare with observed coverage. Reversing the mask coding reverses the association.
 
-## Contribution 4: generated interpretation as a governed measurement layer
+The new public construction supplies a controlled counterexample with origin and duration independent before selection. The mask is known at origin and the feature value is nonpredictive. Nevertheless, selection by event date produces strong apparent discrimination. Selecting instead by origin with complete follow-up removes the induced balanced-accuracy advantage. Filling coverage on the same frozen event-selected rows changes the fixed mask rule again. These are constructed mechanism tests, separately labeled from historical performance and documented fully in the [executable mechanism study](../../research/leakage/availability_mechanism.md).
 
-The fourth contribution makes image and text interpretation part of a reproducible measurement process. Bounded tasks assign ownership of damage, accessories, quality and identity-related fields. Structured outputs preserve uncertainty and conflicts. Eight semantic image slots maintain links between visual evidence, generated reports and separate image/report availability masks. An investigated identity-correction failure produced a stronger conflict-aware guard.
+Two distinct checks follow. An information-availability check asks whether the value and its presence state were known at $O$. A population check asks whether selected records represent the origin-defined decisions for which the model will be used. A system can pass the first and fail the second. A created-time cutoff addresses genuinely late information but cannot, by itself, change an event-selected evaluation population.
 
-Frozen visual and textual encoders, generated attributes and the trained survival network have different responsibilities. Their separation permits testing whether a report contributes useful information beyond its source image, whether explicit conflicts improve prediction, and whether apparent gains arise from processing availability. Reports remain dependent transformations of evidence; multiple tensor branches do not create independent observations.
+The closest identified comparison on calendar-dependent survival artifacts concerns administrative censoring: a fixed end of follow-up can let time-indexed inputs reveal how much observation is possible. The mechanism here conditions on event date and uses a coverage boundary as an origin proxy. These selection rules differ, even though both connect calendar information with apparent survival performance. This gives a specific comparison to test rather than a claim of first discovery of temporal bias. [Xu et al., 2026, version 1](https://arxiv.org/html/2607.10466v1).
 
-Representation transforms also require provenance. WhiteningBERT provides an established example of sentence-embedding whitening. An ordinary-plus-whitened design becomes a reproducible experimental factor only when its fitted transform and training population are retained. The inspected neural interface does not itself establish two independently wired text branches. [Huang et al., 2021](https://aclanthology.org/2021.findings-emnlp.23/).
+Informative missingness can also be legitimate. GRU-D deliberately uses observed masks and elapsed time. Genuine changes in a market can make calendar features useful. The remediation objective is to remove inadmissible information and unintended cohort geometry while retaining legitimate information about current conditions. Removing every date or mask indiscriminately would not establish success. [Che et al., 2018](https://www.nature.com/articles/s41598-018-24271-9).
 
-## Contribution 5: empirical comparison linked to executable artifacts
+## Finding 2: feature reconstruction is an experimentally consequential part of the model
 
-The fifth contribution connects model development to inspectable comparative evidence. The reconciled later exports contain 964 common observations with matching duration labels. Restricting the AFT predictions to those records gives F1 0.855967. The retained neural meta-ensemble reports F1 0.9209, approximately 6.5 percentage points higher. Its reported operating point trades higher precision for lower recall. The final meta confusion counts are inferred from its rounded metrics and surrounding cohort counts, rather than presented as independently recovered row-level decisions. The earlier 941-row F1 of 0.8462 belongs to a different evaluation week.
+The retained forward-pass investigation records a fixed-policy intervention on a frozen cohort of 443 observed records, of which 441 were scored. Correcting the structured context and item-metadata source raised ensemble F1 from 0.3077 to 0.7077; precision moved from 0.5714 to 0.8519 and recall from 0.2105 to 0.6053. The documented model weights, labels and ensemble threshold were unchanged. The corrected confusion matrix is 46 true positives, eight false positives, 30 false negatives and 357 true negatives.
 
-Hundreds of retained neural trial outputs and thousands of ensemble candidates establish substantial experimental work. Numerical serving replay and restoration checks connect research artifacts to an operated platform. These checks support reproducibility and feasibility alongside predictive evidence.
+This experiment measures a different effect from retraining a neural model with an extra feature group. The intervention restores the input representation expected by an existing predictor. Its result shows that serving-source fidelity can dominate the observed score of that predictor. It supports treating reconstruction policy and source identity as part of the experimental model, rather than assuming checkpoint identity alone defines a repeatable comparison.
 
-The result is specific to the compared systems and recorded population. Strong tree performance on ordinary tabular benchmarks remains relevant prior evidence, while this multimodal comparison tests a different setting. [Grinsztajn et al., 2022](https://proceedings.nips.cc/paper_files/paper/2022/hash/0378c7692da36807bdec87ab043cdadc-Abstract-Datasets_and_Benchmarks.html).
+The result is documented in the retained forensic report. The complete paired before/after prediction exports have not been recovered in this revision, so the report is not relabeled as a newly executed paired experiment or given a reconstructed confidence interval. Other fixes were made during the broader investigation; the claimed contrast is the documented context-source correction within the frozen benchmark. The 443/441 eligibility boundary is retained. This reconstruction of observed outcomes does not constitute a sealed prospective cohort.
 
-## What a sealed prospective evaluation would establish
+The methodological lesson has a direct counterfactual form: keep the evaluated cases, outcome labels, trained function and threshold fixed; change the defined source reconstruction; measure the resulting predictions and contract agreement. A report that changed any of those constants would support a weaker conclusion. Preserving those constants makes the incident an empirical systems result even though feature-serving skew is a known general problem.
 
-A successful sealed evaluation would establish useful predictions recorded before outcomes, under frozen readiness and decision rules. Repeated future periods would test stability; matched ablations would attribute gains to representations, fusion, recency or ensembling. Separately measured actions and costs would establish operational utility.
+## Finding 3: ensemble benefit depends on the stage and retained population
 
-Prospective success does not establish novelty by itself. Conversely, the implemented contracts, numerical formulations and measured availability failure already support methodological, systems and empirical contributions. Future evaluation tests additional claims about prediction and transfer.
+Retained row-level decisions support two additional completed comparisons. In the later Stage 0 experiment, seven combination methods share 523 records, matching labels and invariant fields; the positive class is duration greater than 504 hours, with 104 positives. The mean-logit combination has F1 0.803738; the histogram-gradient-boosting combiner has 0.755319. The latter minus the former gives a paired difference of -0.048419, with a 95% bootstrap interval from -0.102077 to 0.001227. The SGD combiner has F1 0.812500, but its difference from mean-logit also has an interval containing zero.
 
-Three questions organize that extension: does the neural advantage persist under equal admissible inputs and selection budgets; do generated reports add information beyond their source images; and does availability-consistent reconstruction remove the shortcut while preserving legitimate signal? These are observable research questions, each requiring its own experiment.
+In the separate Stage 1 experiment, 413 matched records permit direct comparison of the mean-logit baseline and retained histogram-gradient-boosting hybrid. Its positive class is an event within 168 hours under the retained gate contract, with 296 positives. Their F1 values are 0.686567 and 0.875214. The hybrid minus the baseline gives a difference of 0.188647, with a paired 95% interval from 0.144285 to 0.235651. The hybrid is uniquely correct on 97 records, while the baseline is uniquely correct on 23.
+
+Both analyses resample the same records jointly, using 5,000 paired IID bootstrap draws with seed 20260922. They condition on the fitted models, selected policies and available cohorts. They do not include model fitting, experiment selection, tuning uncertainty, temporal dependence or multiplicity adjustment. These are retrospective component comparisons; they are not fresh sealed tests.
+
+The Stage 1 hybrid combines neural outputs using a tree-based meta-model. Its advantage is evidence for that hybrid combination on the recorded population, not evidence that neural methods universally beat tree methods. The less favorable Stage 0 result is retained because it limits the generalization of the finding. Different stages have different targets, cohorts and development histories; the contrast is not a controlled estimate of an intrinsic stage effect.
+
+A separate retained replay on 587 records supplies a further negative result. At their saved operating points, the base output has F1 0.370079 and the meta output has F1 0.090909. Saved checks report exact tabular metadata, no serving fallback and no missing feature-contract fields; those checks do not establish semantic feature parity at the original decision time. This replay is distinct from the corrected 441-row benchmark. Its poor performance cannot be assigned uniquely to temporal decay, source reconstruction or the meta architecture, but it rules out presenting the archive as uniformly successful ensemble transfer. The [experimental receipt](../../research/thesis_evidence/experimental_contributions.json) preserves these results alongside the favorable comparisons.
+
+The research contribution is a reproducible comparison of existing policy-combination choices on fixed retained populations, with both favorable and unfavorable outcomes preserved. Matching verifies the retained decisions, labels and declared invariant fields; it does not reconstruct the entire underlying seed-score matrix. It establishes that an executed component study exists. It does not automatically establish the incremental contribution of a raw image, report, text embedding, whitening transform, loss term or recency setting.
+
+## The common-population neural and AFT comparison
+
+The earlier model-family comparison is reconciled separately. All 964 retained neural export keys and duration labels match the later AFT export. Applying the saved AFT rule to those common records gives F1 0.855967. The associated final neural meta-ensemble run records F1 0.9209, approximately 6.5 percentage points higher. Precision improves while recall decreases. This supports a developed-system comparison on that historical population.
+
+The final neural meta decision vector for this February result has not been recovered. Its integer confusion matrix is uniquely compatible with the rounded metrics and recorded class counts, but separate confusion matrices do not identify the row-by-row disagreement structure. They therefore do not determine a unique paired bootstrap interval. No interval from the later 523- or 413-row experiments is assigned to the 964-row headline result.
+
+A neural-system advantage does not isolate architecture from representation, ensembling, calibration and selection. Choosing a winner after examining evaluation scores does not produce an untouched final test. The archive distinguishes Stage 0's February prediction pool from Stage 1's later 8,000 ensemble candidates. Trial counts and search-seed counts are not additional independent evaluation populations.
+
+## The executable method: information, population and reconstruction
+
+The reusable method connects prediction-time evidence to cohort construction and serving fidelity. Its unit of analysis is a decision with a defined origin, admissible source versions, fitted transformations, available labels, model identity and downstream policy. The released implementation exposes these components separately so that a failed comparison can be traced to a specific boundary.
+
+Event time and known time are necessary dimensions, but their distinction is established. Feast's 2022 historical-reconstruction discussion and its July 2026 per-row created-time implementation are concrete comparators. An implementation preceding the latter merge does not establish priority over the principle. The platform's additional research object includes image/report masks, label maturity, anchor fitting membership, cohort eligibility and fixed-policy reconstruction. Each additional condition needs a named failure case; a long checklist alone is not an evaluated method. [Feast discussion, 2022](https://github.com/feast-dev/feast/issues/2980); [created-time implementation, 2026](https://github.com/feast-dev/feast/pull/6617).
+
+The public tests demonstrate declared contract behaviors. The documented historical replay reports agreement with frozen source values; the database comparison was not rerun in this revision. The calendar-selection construction demonstrates why a population error can survive a valid availability rule. The source intervention measures a documented downstream consequence of reconstruction. Together they address distinct failure mechanisms. They are not a guarantee that arbitrary production data are perfectly free from leakage.
+
+## Model and enrichment contributions relative to established methods
+
+The three-stage system implements separate 504-, 168- and 72-hour policies, stage-specific populations, short-censor masks, survival losses, recency weighting and ensemble selection. That is a concrete, released formulation. WRSE already combines horizon-specific classifiers; neural survival and multimodal co-attention have direct precedents. The distinguishing experiment for a broad cascade advantage compares this routing system with one survival model queried at all three horizons and independent horizon heads using the same inputs and policy. Current stage-local and ensemble results do not automatically answer that end-to-end question. [Heitz et al., 2021](https://proceedings.mlr.press/v146/heitz21a.html); [Chen et al., 2021](https://openaccess.thecvf.com/content/ICCV2021/html/Chen_Multimodal_Co-Attention_Transformer_for_Survival_Prediction_in_Gigapixel_Whole_Slide_ICCV_2021_paper.html).
+
+Generated interpretation is implemented through bounded tasks, field ownership, uncertainty, conflict checks and paired image/report slots. This makes generated attributes part of a governed measurement process. Concept bottleneck models and earlier multimodal survival work using generated reports provide relevant comparisons. A report remains a dependent transformation of its source, and schema compliance does not establish perceptual accuracy. The contribution concerns the implemented measurement contract and documented incidents; incremental report benefit requires a matched modality experiment. [Koh et al., 2020](https://proceedings.mlr.press/v119/koh20a.html); [Song et al., 2025, version 1](https://arxiv.org/abs/2505.07683v1).
+
+The ordinary-plus-whitened text design remains distinct from the selected network actually inspected. A preserved covariance transform, fitted population and corresponding model wiring are required before treating it as an executed dual-band ablation. Whitening has established precedents. [Huang et al., 2021](https://aclanthology.org/2021.findings-emnlp.23/).
+
+## What the research now demonstrates
+
+The supported contribution is a reconstructed observation-process failure, an explicit distinction between information admissibility and outcome-conditioned cohort geometry, a documented fixed-policy reconstruction intervention, and retained common-population comparisons of survival systems and ensemble policies. Released code, aggregate receipts and named counterexamples connect these claims to inspectable experiments.
+
+These claims identify what another researcher can reproduce, challenge or extend. A failed cutoff reconstruction would weaken the incident mechanism. A changed cohort or threshold would weaken the source-intervention interpretation. A simpler contract that catches the same defects would narrow the claim for additional controls. A matched future comparison that reverses the neural advantage would limit its predictive transfer.
+
+A sealed prospective evaluation would add evidence about prediction under later conditions. It would not, by itself, establish that any general principle or neural component is new. The completed studies remain scientific evidence while answering narrower questions than universal model superiority. The originality argument rests on the measured mechanisms and comparisons, assessed against specific precedents rather than inferred from platform size or experiment count.
+
+
+![New paired reanalysis of retained decisions, relative to each study's saved mean-logit policy. Stage 0 has 523 records and a 504-hour tail target; Stage 1 has 413 records and a 168-hour fast-event target. Intervals use 5,000 IID paired row resamples conditional on fitted models and policies; no selection, temporal-dependence or multiplicity correction is included. The tree stack is a meta-layer over neural scores, not a raw-feature tree baseline.](figures/r15_paired_ensembles.svg)
 
 # Discussion, limitations, and a program of decisive experiments
 
@@ -1179,6 +1314,14 @@ The work combines survival modeling with a temporal multimodal measurement platf
 A useful novelty statement therefore focuses on the relationship between components. The system does not merely concatenate embeddings with a table. It manages field ownership, image roles, evidence quality, temporal readiness, historical comparison support, stage routing, policy outputs, and operational recovery. These controls make it possible to ask whether a multimodal model improves an actionable time-to-event prediction under a defined information set. The scientific claim concerns that structured experiment, not an assertion that attention, mixtures, AFT, or hierarchical shrinkage were invented here.
 
 The project also illustrates a productive interaction between engineering incidents and research design. A visually induced identity correction led to a conflict-aware guard. Outcome-dependent missingness led to a revised feature boundary. Numerical serving comparisons led to explicit bundle contracts. Such fixes do not erase the earlier failure modes; they document how the system became more measurable. A mature account records both the discovery and the residual proof obligation.
+
+## Completed mechanism and component studies
+
+The expanded evidence resolves several questions that a platform inventory alone could not answer. The 911-row cutoff audit reconstructs a specific observed mechanism, with an exact temporal identity and no mask mismatches. The constructed origin-selected control separates the effect of cohort geometry from access to future information. A documented 441-score frozen-policy intervention isolates a feature-source correction at the report's stated level of control. Retained 523- and 413-row ensemble decisions permit actual paired reanalysis, rather than resampling unrelated confusion matrices.
+
+The results support a narrower and more testable contribution than a general assertion of a new neural architecture. Existing literature already covers informative missingness, prediction-time observability, bitemporal data, multimodal survival and horizon-specific ensembles. The specific empirical knowledge here concerns how a real coverage cutoff interacted with an outcome-selected survival population, how source reconstruction changed a fixed policy, and how the retained ensemble choices behaved on different stage-specific populations. The contribution chapter and nearest-prior-work comparison state those boundaries explicitly.
+
+The completed analyses also retain contrary evidence: the Stage 0 tree stack does not improve mean-logit F1, the repaired 441-row ensemble is below one recorded phase winner, and a separate 587-row replay has poor meta recall. These findings narrow transfer claims and identify why schema agreement, source fidelity, selection validity and predictive effectiveness require separate checks. The remaining prospective and modality studies extend this evidence; they are not used to imply that the platform has never been experimentally evaluated.
 
 ## Fast movement makes time origin a substantive choice
 
@@ -1450,6 +1593,26 @@ The configuration names its input paths. Use a new output directory for each exp
 
 For offline SQL inspection, run the inventory module and focused feature-store tests. The optional PGlite script executes only the five portable SQL files against an in-memory engine. The recorded result contains seven temporal fixture assertions and three challenged certificate failures: an empty uncertified state, changed content and an expired certificate. One artificial entity exercises these cases; it is not a scale benchmark or proof of production concurrency behavior.
 
+## Reproducing the mechanism and retained-policy audits
+
+The coverage-cutoff experiment is fully public and requires no proprietary data:
+
+```sh
+python scripts/analyze_availability_mechanism.py
+python -m pytest tests/test_availability_mechanism.py
+```
+
+It enumerates an artificial population with independent origins and durations, applies two cohort-selection rules, and reports a fixed mask-only rule. Its historical-data mode accepts explicitly mapped timestamp and pattern columns and emits aggregate counts and hashes. It rejects censored inputs and inconsistent clock identities because the demonstrated proposition concerns observed event durations.
+
+The retained-policy comparison tool accepts authorized private prediction exports and emits no row identities:
+
+```sh
+python scripts/analyze_retained_ensemble_comparison.py --help
+python -m pytest tests/test_retained_ensemble_comparison.py
+```
+
+Every model must supply the same complete unique key set, endpoint labels and configured invariant fields. The tool rejects mismatches rather than silently taking a convenient intersection. Paired IID bootstrap intervals condition on the retained fitted decisions and their thresholds. They do not account for search, temporal dependence or final-method selection. Public aggregate receipts preserve the exact settings and evidence boundaries; proprietary input files remain available only through separately approved access.
+
 ## Building the monograph
 
 The PDF is built from chapter files, methods chapters, reviewed historical crops, selected image cases, a bibliography and plots generated from public aggregate JSON. ReportLab produces the title page. Pandoc and Tectonic typeset the body, equations, contents, references and figures. The build script resolves inputs from the repository and records their hashes. It requires the `paper` extra and explicit executable paths when the typesetting tools are not on the system path.
@@ -1485,7 +1648,7 @@ Selection and calibration must finish before final-test inspection. Report survi
 
 Decision value needs its own study. A model can improve a statistical metric while making no useful difference to an operator or agent. Prospective shadow evaluation should record what was reviewed, what information was available, which proposals were accepted, what executed, and which outcomes became observable. Economic analysis must include costs and unresolved outcomes rather than assume that fast turnover implies profitable action.
 
-This sequence would convert the current systems study into a stronger empirical contribution. The present release makes mechanisms, historical successes and discovered weaknesses inspectable. Its scientific credibility depends on preserving that openness when the next experiment produces an inconvenient result.
+These extensions test claims beyond the completed retrospective studies. The present release already contains measured failure analysis, fixed-policy feature reconstruction, comparisons of retained ensemble decisions, and a common-population neural/tree comparison. Each has a different experimental control. The new mechanism and experiment receipts make those controls explicit rather than describing all ablations as future work. Further evaluation should preserve the same distinction when a result is unfavorable.
 
 
 ## What a sealed future cohort would establish
@@ -1513,9 +1676,39 @@ A successful first window would support prospective validity in that window. Rep
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 
+<div id="ref-feast2026knowntime" class="csl-entry">
+
+<span class="nocase">addenergyx</span>. 2026. *As-of-Known-Time Retrieval: Feast Issue 6615*. <https://github.com/feast-dev/feast/issues/6615>.
+
+</div>
+
+<div id="ref-feast2026createdcutoff" class="csl-entry">
+
+<span class="nocase">addenergyx, and Feast Project Contributors</span>. 2026. *Opt-in Created-Timestamp Cutoff for Historical Retrieval: Feast Pull Request 6617*. <https://github.com/feast-dev/feast/pull/6617>.
+
+</div>
+
 <div id="ref-born2018price" class="csl-entry">
 
 Born, Alexander, Nikoleta Kovachka, Stefan Lessmann, and Hsin-Vonn Seow. 2018. *Price Management in the Used-Car Market: An Evaluation of Survival Analysis*. Nos. 2018-065. Humboldt University of Berlin, IRTG 1792. <https://www.wiwi.hu-berlin.de/de/forschung/irtg/results/discussion-papers/discussion-papers-2017-1/irtg1792dp2018-065.pdf>.
+
+</div>
+
+<div id="ref-feast2022historical" class="csl-entry">
+
+<span class="nocase">cburroughs</span>. 2022. *Reproducible Historical Feature Queries: Feast Issue 2980*. <https://github.com/feast-dev/feast/issues/2980>.
+
+</div>
+
+<div id="ref-che2018missing" class="csl-entry">
+
+Che, Zhengping, Sanjay Purushotham, Kyunghyun Cho, David Sontag, and Yan Liu. 2018. “Recurrent Neural Networks for Multivariate Time Series with Missing Values.” *Scientific Reports* 8: 6085. <https://doi.org/10.1038/s41598-018-24271-9>.
+
+</div>
+
+<div id="ref-chen2021mcat" class="csl-entry">
+
+Chen, Richard J., Ming Y. Lu, Wei-Hung Weng, et al. 2021. “Multimodal Co-Attention Transformer for Survival Prediction in Gigapixel Whole Slide Images.” *Proceedings of the IEEE/CVF International Conference on Computer Vision*, 4015–25. <https://openaccess.thecvf.com/content/ICCV2021/html/Chen_Multimodal_Co-Attention_Transformer_for_Survival_Prediction_in_Gigapixel_Whole_Slide_ICCV_2021_paper.html>.
 
 </div>
 
@@ -1549,6 +1742,12 @@ Grinsztajn, Léo, Edouard Oyallon, and Gaël Varoquaux. 2022. “Why Do Tree-Bas
 
 </div>
 
+<div id="ref-heitz2021wrse" class="csl-entry">
+
+Heitz, Jonathan, Joanna Ficek, Martin Faltys, Tobias M. Merz, Gunnar Ratsch, and Matthias Huser. 2021. “WRSE: A Non-Parametric Weighted-Resolution Ensemble for Predicting Individual Survival Distributions in the ICU.” *Proceedings of AAAI Spring Symposium on Survival Prediction: Algorithms, Challenges, and Applications*, Proceedings of machine learning research, vol. 146: 54–69. <https://proceedings.mlr.press/v146/heitz21a.html>.
+
+</div>
+
 <div id="ref-huang2021whitening" class="csl-entry">
 
 Huang, Junjie, Duyu Tang, Wanjun Zhong, et al. 2021. “WhiteningBERT: An Easy Unsupervised Sentence Embedding Approach.” *Findings of the Association for Computational Linguistics: EMNLP 2021*, 238–44. <https://doi.org/10.18653/v1/2021.findings-emnlp.23>.
@@ -1579,9 +1778,27 @@ Katzman, Jared L., Uri Shaham, Alexander Cloninger, Jonathan Bates, Tingting Jia
 
 </div>
 
+<div id="ref-kaufman2011leakage" class="csl-entry">
+
+Kaufman, Shachar, Saharon Rosset, and Claudia Perlich. 2011. “Leakage in Data Mining: Formulation, Detection, and Avoidance.” *Proceedings of the 17th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 556–63. <https://doi.org/10.1145/2020408.2020496>.
+
+</div>
+
+<div id="ref-koh2020bottleneck" class="csl-entry">
+
+Koh, Pang Wei, Thao Nguyen, Yew Siang Tang, et al. 2020. “Concept Bottleneck Models.” *Proceedings of the 37th International Conference on Machine Learning*, Proceedings of machine learning research, vol. 119: 5338–48. <https://proceedings.mlr.press/v119/koh20a.html>.
+
+</div>
+
 <div id="ref-lee2018deephit" class="csl-entry">
 
 Lee, Changhee, William R. Zame, Jinsung Yoon, and Mihaela van der Schaar. 2018. “DeepHit: A Deep Learning Approach to Survival Analysis with Competing Risks.” *Proceedings of the AAAI Conference on Artificial Intelligence* 32. <https://doi.org/10.1609/aaai.v32i1.11842>.
+
+</div>
+
+<div id="ref-mcgee2022presence" class="csl-entry">
+
+McGee, Glen, Sebastien Haneuse, Brent A. Coull, Marc G. Weisskopf, and Ran S. Rotem. 2022. “On the Nature of Informative Presence Bias in Analyses of Electronic Health Records.” *Epidemiology* 33 (1): 105–13. <https://doi.org/10.1097/EDE.0000000000001432>.
 
 </div>
 
@@ -1603,6 +1820,24 @@ Sculley, D., Gary Holt, Daniel Golovin, et al. 2015. “Hidden Technical Debt in
 
 </div>
 
+<div id="ref-snodgrass1986temporal" class="csl-entry">
+
+Snodgrass, Richard, and Ilsoo Ahn. 1986. “Temporal Databases.” *Computer* 19 (9): 35–42. <https://www2.cs.arizona.edu/~rts/pubs/Computer.pdf>.
+
+</div>
+
+<div id="ref-song2025multimodal" class="csl-entry">
+
+Song, Steven, Morgan Borjigin-Wang, Irene Madejski, and Robert L. Grossman. 2025. *Multimodal Survival Modeling in the Age of Foundation Models*. <https://arxiv.org/abs/2505.07683v1>.
+
+</div>
+
+<div id="ref-suissa2008immortal" class="csl-entry">
+
+Suissa, Samy. 2008. “Immortal Time Bias in Pharmaco-Epidemiology.” *American Journal of Epidemiology* 167 (4): 492–99. <https://doi.org/10.1093/aje/kwm324>.
+
+</div>
+
 <div id="ref-vancalster2019calibration" class="csl-entry">
 
 Van Calster, Ben, David J. McLernon, Maarten van Smeden, Laure Wynants, and Ewout W. Steyerberg. 2019. “Calibration: The Achilles Heel of Predictive Analytics.” *BMC Medicine* 17: 230. <https://doi.org/10.1186/s12916-019-1466-7>.
@@ -1612,6 +1847,18 @@ Van Calster, Ben, David J. McLernon, Maarten van Smeden, Laure Wynants, and Ewou
 <div id="ref-xiong2024mome" class="csl-entry">
 
 Xiong, Conghao, Hao Chen, Hao Zheng, et al. 2024. “MoME: Mixture of Multimodal Experts for Cancer Survival Prediction.” *Medical Image Computing and Computer Assisted Intervention – MICCAI 2024*, Lecture notes in computer science, vol. 15004: 318–28. <https://papers.miccai.org/miccai-2024/531-Paper2168.html>.
+
+</div>
+
+<div id="ref-xu2026administrative" class="csl-entry">
+
+Xu, Yanqi, Hui Dai, Carlos Fernandez-Granda, Krzysztof J. Geras, and Yiqiu Shen. 2026. *Pitfalls of Administrative Censoring in Survival Models with Time-Indexed Inputs*. <https://arxiv.org/html/2607.10466v1>.
+
+</div>
+
+<div id="ref-zelen2004recurrence" class="csl-entry">
+
+Zelen, Marvin. 2004. “Forward and Backward Recurrence Times and Length Biased Sampling: Age Specific Models.” *Lifetime Data Analysis* 10 (4): 325–34. <https://doi.org/10.1007/s10985-004-4770-1>.
 
 </div>
 

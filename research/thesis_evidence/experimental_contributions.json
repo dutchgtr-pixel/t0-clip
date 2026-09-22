@@ -1,0 +1,824 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-09-22",
+  "kind": "retained_experimental_contribution_audit",
+  "scope": "New paired reanalysis of retained historical decisions and explicit separation of documented interventions, exploratory experiments and unrecovered controls. No new model fitting or prospective experiment.",
+  "privacy": "Only aggregates, methodological descriptions and hashes. Private paths, identifiers, raw data and fitted weights are excluded.",
+  "findings": {
+    "stage0_seven_method_523": {
+      "schema_version": 1,
+      "scope": "Retrospective paired analysis of fixed retained binary predictions",
+      "matching": {
+        "n": 523,
+        "unique_complete_keys": true,
+        "identical_key_sets": true,
+        "identical_labels": true,
+        "identical_invariants": true,
+        "invariant_count": 3,
+        "verified_key_semantics": [
+          "entity identity",
+          "prediction-origin timestamp, exact stored representation"
+        ],
+        "verified_invariant_semantics": [
+          "row ordinal",
+          "observed duration",
+          "event-observed indicator"
+        ],
+        "all_ten_seed_score_matrices_independently_reconstructed": false
+      },
+      "privacy": "Only aggregate counts, metrics and source hashes; no row data or source paths",
+      "reference": "mean_logit",
+      "models": {
+        "mean_logit": {
+          "n": 523,
+          "positives": 104,
+          "tp": 86,
+          "fp": 24,
+          "fn": 18,
+          "tn": 395,
+          "precision": 0.7818181818181819,
+          "recall": 0.8269230769230769,
+          "f1": 0.8037383177570093,
+          "source": {
+            "sha256": "348ce7ee7a3e7ddaa935675dfdc0b7da61065597222f08a19df634c23ce6d871",
+            "bytes": 62739
+          },
+          "threshold": 0.5882079065589141,
+          "selection_metrics": {
+            "f1": 0.9594594594594595,
+            "precision": 0.9342105263157895,
+            "recall": 0.9861111111111112,
+            "tp": 71,
+            "fp": 5,
+            "fn": 1,
+            "tn": 292,
+            "n": 369
+          }
+        },
+        "median_logit": {
+          "n": 523,
+          "positives": 104,
+          "tp": 88,
+          "fp": 26,
+          "fn": 16,
+          "tn": 393,
+          "precision": 0.7719298245614035,
+          "recall": 0.8461538461538461,
+          "f1": 0.8073394495412844,
+          "source": {
+            "sha256": "6b773e2491e95d0808d97e2e61197cb4380ce7e92bd21dc91e0168a8daa9a228",
+            "bytes": 62726
+          },
+          "threshold": 0.5772532221418044,
+          "selection_metrics": {
+            "f1": 0.9466666666666667,
+            "precision": 0.9102564102564102,
+            "recall": 0.9861111111111112,
+            "tp": 71,
+            "fp": 7,
+            "fn": 1,
+            "tn": 290,
+            "n": 369
+          }
+        },
+        "mean_prob": {
+          "n": 523,
+          "positives": 104,
+          "tp": 85,
+          "fp": 22,
+          "fn": 19,
+          "tn": 397,
+          "precision": 0.794392523364486,
+          "recall": 0.8173076923076923,
+          "f1": 0.8056872037914692,
+          "source": {
+            "sha256": "5a41328d1ff247060b3dce328efa8f19b0d1d88b500cf74ddf3ae07affcfa28d",
+            "bytes": 62010
+          },
+          "threshold": 0.586492493671324,
+          "selection_metrics": {
+            "f1": 0.9594594594594595,
+            "precision": 0.9342105263157895,
+            "recall": 0.9861111111111112,
+            "tp": 71,
+            "fp": 5,
+            "fn": 1,
+            "tn": 292,
+            "n": 369
+          }
+        },
+        "vote": {
+          "n": 523,
+          "positives": 104,
+          "tp": 77,
+          "fp": 13,
+          "fn": 27,
+          "tn": 406,
+          "precision": 0.8555555555555555,
+          "recall": 0.7403846153846154,
+          "f1": 0.7938144329896907,
+          "source": {
+            "sha256": "b5fddc83ca9bc02343505b9ccf6765d5b19753177dab4dc4f75f4e9bef15067e",
+            "bytes": 45924
+          },
+          "threshold": 0.9,
+          "selection_metrics": {
+            "f1": 0.9517241379310345,
+            "precision": 0.9452054794520548,
+            "recall": 0.9583333333333334,
+            "tp": 69,
+            "fp": 4,
+            "fn": 3,
+            "tn": 293,
+            "n": 369
+          }
+        },
+        "stack_wlogit": {
+          "n": 523,
+          "positives": 104,
+          "tp": 87,
+          "fp": 29,
+          "fn": 17,
+          "tn": 390,
+          "precision": 0.75,
+          "recall": 0.8365384615384616,
+          "f1": 0.7909090909090909,
+          "source": {
+            "sha256": "4062c741037a6dc784134cddf3df2017ee120f4a0c221f8ec4a46ebcd23cb2e2",
+            "bytes": 62869
+          },
+          "threshold": 0.2364292053461367,
+          "selection_metrics": {
+            "f1": 0.9600000000000001,
+            "precision": 0.9230769230769231,
+            "recall": 1.0,
+            "tp": 72,
+            "fp": 6,
+            "fn": 0,
+            "tn": 291,
+            "n": 369
+          }
+        },
+        "stack_hgb": {
+          "n": 523,
+          "positives": 104,
+          "tp": 71,
+          "fp": 13,
+          "fn": 33,
+          "tn": 406,
+          "precision": 0.8452380952380952,
+          "recall": 0.6826923076923077,
+          "f1": 0.7553191489361702,
+          "source": {
+            "sha256": "4de3633a16a74321b37466d68a3667b28dd122cea852fedeec929e065ffdd99d",
+            "bytes": 62922
+          },
+          "threshold": 0.9801506668420509,
+          "selection_metrics": {
+            "f1": 1.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "tp": 72,
+            "fp": 0,
+            "fn": 0,
+            "tn": 297,
+            "n": 369
+          }
+        },
+        "stack_sgd": {
+          "n": 523,
+          "positives": 104,
+          "tp": 91,
+          "fp": 29,
+          "fn": 13,
+          "tn": 390,
+          "precision": 0.7583333333333333,
+          "recall": 0.875,
+          "f1": 0.8125,
+          "source": {
+            "sha256": "56d2d3f8c7d9919f4822b16b36650c9ab1f17cf0e7638ad4861b14ebb8c7925d",
+            "bytes": 64371
+          },
+          "threshold": 1.5314933795545204e-09,
+          "selection_metrics": {
+            "f1": 0.9536423841059603,
+            "precision": 0.9113924050632911,
+            "recall": 1.0,
+            "tp": 72,
+            "fp": 7,
+            "fn": 0,
+            "tn": 290,
+            "n": 369
+          }
+        }
+      },
+      "all_positive_reference": {
+        "n": 523,
+        "positives": 104,
+        "tp": 104,
+        "fp": 419,
+        "fn": 0,
+        "tn": 0,
+        "precision": 0.1988527724665392,
+        "recall": 1.0,
+        "f1": 0.3317384370015949
+      },
+      "bootstrap": {
+        "resamples": 5000,
+        "seed": 20260922,
+        "method": "Percentile interval from IID paired row resampling",
+        "interval_level": 0.95,
+        "scope": "Conditional on fitted models, selected thresholds and retained cohort; excludes fitting, search, selection and temporal dependence uncertainty; intervals are not multiplicity-adjusted"
+      },
+      "contrasts": {
+        "median_logit": {
+          "f1_difference": 0.0036011317842751245,
+          "f1_difference_interval": [
+            -0.014027481440979575,
+            0.02368687726678269
+          ],
+          "candidate_only_correct": 2,
+          "reference_only_correct": 2,
+          "both_correct": 479,
+          "both_wrong": 40
+        },
+        "mean_prob": {
+          "f1_difference": 0.0019488860344598624,
+          "f1_difference_interval": [
+            -0.01742071110079024,
+            0.020502899877899838
+          ],
+          "candidate_only_correct": 3,
+          "reference_only_correct": 2,
+          "both_correct": 479,
+          "both_wrong": 39
+        },
+        "vote": {
+          "f1_difference": -0.009923884767318647,
+          "f1_difference_interval": [
+            -0.05409025808589418,
+            0.03288321252530031
+          ],
+          "candidate_only_correct": 11,
+          "reference_only_correct": 9,
+          "both_correct": 472,
+          "both_wrong": 31
+        },
+        "stack_wlogit": {
+          "f1_difference": -0.012829226847918429,
+          "f1_difference_interval": [
+            -0.041096257644918484,
+            0.016222246009872234
+          ],
+          "candidate_only_correct": 4,
+          "reference_only_correct": 8,
+          "both_correct": 473,
+          "both_wrong": 38
+        },
+        "stack_hgb": {
+          "f1_difference": -0.048419168820839076,
+          "f1_difference_interval": [
+            -0.1020774735933619,
+            0.0012267877977873664
+          ],
+          "candidate_only_correct": 11,
+          "reference_only_correct": 15,
+          "both_correct": 466,
+          "both_wrong": 31
+        },
+        "stack_sgd": {
+          "f1_difference": 0.008761682242990676,
+          "f1_difference_interval": [
+            -0.02098484256380974,
+            0.03982562371782151
+          ],
+          "candidate_only_correct": 6,
+          "reference_only_correct": 6,
+          "both_correct": 475,
+          "both_wrong": 36
+        }
+      },
+      "all_positive_contrasts": {
+        "mean_logit": {
+          "f1_difference": 0.47199988075541444,
+          "f1_difference_interval": [
+            0.40872712624640944,
+            0.531391143300369
+          ]
+        },
+        "median_logit": {
+          "f1_difference": 0.47560101253968956,
+          "f1_difference_interval": [
+            0.41375900598442267,
+            0.5335815681614418
+          ]
+        },
+        "mean_prob": {
+          "f1_difference": 0.4739487667898743,
+          "f1_difference_interval": [
+            0.4093418264267087,
+            0.5349788174617793
+          ]
+        },
+        "vote": {
+          "f1_difference": 0.4620759959880958,
+          "f1_difference_interval": [
+            0.3880426985521317,
+            0.5299616040326034
+          ]
+        },
+        "stack_wlogit": {
+          "f1_difference": 0.459170653907496,
+          "f1_difference_interval": [
+            0.3979940369200147,
+            0.5190909365286778
+          ]
+        },
+        "stack_hgb": {
+          "f1_difference": 0.42358071193457536,
+          "f1_difference_interval": [
+            0.3450300150414821,
+            0.4959960262020687
+          ]
+        },
+        "stack_sgd": {
+          "f1_difference": 0.4807615629984051,
+          "f1_difference_interval": [
+            0.4233574556185282,
+            0.5377798377158052
+          ]
+        }
+      },
+      "target": "duration greater than 504 hours",
+      "selection_scope": "Seven combiners of the retained ten-seed neural prediction surface; thresholds and stacking are fitted using selection data. In-sample selection metrics are not independent validation of the fitted stack. Later diagnostic sweeps explicitly rank the holdout. No claim of fully untouched final method selection.",
+      "interpretation": "On this fixed cohort the added tree stack did not improve mean-logit F1; all six paired 95% intervals against mean-logit include zero. This is a stage-specific combiner comparison, not raw-feature neural versus tree estimation."
+    },
+    "stage1_two_method_413": {
+      "schema_version": 1,
+      "scope": "Retrospective paired analysis of fixed retained binary predictions",
+      "matching": {
+        "n": 413,
+        "unique_complete_keys": true,
+        "identical_key_sets": true,
+        "identical_labels": true,
+        "identical_invariants": true,
+        "invariant_count": 3,
+        "verified_key_semantics": [
+          "entity identity",
+          "prediction-origin timestamp, exact stored representation"
+        ],
+        "verified_invariant_semantics": [
+          "row ordinal",
+          "observed duration",
+          "event-observed indicator"
+        ],
+        "all_ten_seed_score_matrices_independently_reconstructed": false
+      },
+      "privacy": "Only aggregate counts, metrics and source hashes; no row data or source paths",
+      "reference": "mean_logit",
+      "models": {
+        "mean_logit": {
+          "n": 413,
+          "positives": 296,
+          "tp": 161,
+          "fp": 12,
+          "fn": 135,
+          "tn": 105,
+          "precision": 0.930635838150289,
+          "recall": 0.543918918918919,
+          "f1": 0.6865671641791045,
+          "source": {
+            "sha256": "8d3ceea9d622bd1536f6b3159ed5e51fa2d1aeb32ce9cd7ad327616332386ac5",
+            "bytes": 57829
+          },
+          "threshold": 0.7756128394457595,
+          "selection_metrics": {
+            "n": 293,
+            "precision": 1.0,
+            "recall": 0.5370370370370371
+          }
+        },
+        "stack_hgb": {
+          "n": 413,
+          "positives": 296,
+          "tp": 256,
+          "fp": 33,
+          "fn": 40,
+          "tn": 84,
+          "precision": 0.8858131487889274,
+          "recall": 0.8648648648648649,
+          "f1": 0.8752136752136752,
+          "source": {
+            "sha256": "c2b50d5b98c4afdc740e23405bb246c4fab6acc340f9b23ac4af3909e350ab2e",
+            "bytes": 57919
+          },
+          "threshold": 0.9038264799364361,
+          "selection_metrics": {
+            "n": 293,
+            "precision": 1.0,
+            "recall": 1.0
+          }
+        }
+      },
+      "all_positive_reference": {
+        "n": 413,
+        "positives": 296,
+        "tp": 296,
+        "fp": 117,
+        "fn": 0,
+        "tn": 0,
+        "precision": 0.7167070217917676,
+        "recall": 1.0,
+        "f1": 0.8349788434414669
+      },
+      "bootstrap": {
+        "resamples": 5000,
+        "seed": 20260922,
+        "method": "Percentile interval from IID paired row resampling",
+        "interval_level": 0.95,
+        "scope": "Conditional on fitted models, selected thresholds and retained cohort; excludes fitting, search, selection and temporal dependence uncertainty; intervals are not multiplicity-adjusted"
+      },
+      "contrasts": {
+        "stack_hgb": {
+          "f1_difference": 0.18864651103457075,
+          "f1_difference_interval": [
+            0.14428525197176073,
+            0.23565136671500878
+          ],
+          "candidate_only_correct": 97,
+          "reference_only_correct": 23,
+          "both_correct": 243,
+          "both_wrong": 50
+        }
+      },
+      "all_positive_contrasts": {
+        "mean_logit": {
+          "f1_difference": -0.14841167926236243,
+          "f1_difference_interval": [
+            -0.2038703896327899,
+            -0.09426130727616455
+          ]
+        },
+        "stack_hgb": {
+          "f1_difference": 0.040234831772208324,
+          "f1_difference_interval": [
+            0.009587169049072631,
+            0.07242816241785464
+          ]
+        }
+      },
+      "base_prediction_surface": {
+        "identical_retained_columns": {
+          "base_probability": true,
+          "base_threshold": true,
+          "base_decision": true
+        },
+        "declared_source_seed_list": [
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51
+        ],
+        "scope": "Matching retained base scores and declared source seed identities; the meta-layer was not refitted in this audit."
+      },
+      "recorded_policy_precision_floor": {
+        "value": 0.8672054776762477,
+        "source_evidence_ids": [
+          "stage1-mean_logit-aggregate",
+          "stage1-stack_hgb-aggregate"
+        ],
+        "all_positive_holdout_precision": 0.7167070217917676,
+        "all_positive_meets_floor": false,
+        "interpretation": "The all-positive reference is descriptive context, not a feasible comparator under this recorded precision requirement. A selection-time precision floor is not a guarantee of future precision."
+      },
+      "target": "fast event within 168 hours under the retained gate contract",
+      "selection_scope": "Two methods declared to combine the same ten-seed prediction surface and verified to preserve the same retained base probability, threshold and decision columns on a common cohort. All ten seed-score matrices and meta fitting were not independently reconstructed. Meta-layer and threshold fitting use selection data; the complete history of final method selection and holdout inspection is not reconstructed.",
+      "interpretation": "The tree meta-layer trades 21 additional false positives for 95 fewer false negatives relative to mean-logit at the saved operating points. The fixed-model paired F1 gain is supported on this cohort; it is not an architecture-only effect or proof of prospective transfer."
+    },
+    "feature_source_intervention_441": {
+      "evidence_level": "Documented historical intervention; raw before/after prediction vectors not recovered in this audit",
+      "source_evidence_id": "feature-source-intervention-report",
+      "frozen_rows": 443,
+      "scored_rows": 441,
+      "valid_rows": 440,
+      "degraded_rows": 1,
+      "invalid_rows": 2,
+      "event_date_window": "2026-03-20 through 2026-03-23",
+      "intervention": "Replace the incorrect live device-context relation with the certified decision-time feature source for an already frozen cohort; exact vector and base-feature requirements had been applied before this comparison.",
+      "fixed_contract": {
+        "ensemble_search_seeds": [
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51
+        ],
+        "combiner": "mean_logit",
+        "threshold": 0.7206386799644702,
+        "reported_weights_unchanged": true,
+        "reported_labels_unchanged": true
+      },
+      "before_reported": {
+        "precision": 0.5714,
+        "recall": 0.2105,
+        "f1": 0.3077
+      },
+      "after_reported": {
+        "n": 441,
+        "positives": 76,
+        "tp": 46,
+        "fp": 8,
+        "fn": 30,
+        "tn": 357,
+        "precision": 0.8518518518518519,
+        "recall": 0.6052631578947368,
+        "f1": 0.7076923076923077
+      },
+      "difference_from_rounded_reported_f1": 0.4,
+      "interpretation": "Evidence that preserving the trained feature-source contract materially changes inference performance without retraining. This intervention repairs input provenance; it is not an ablation proving intrinsic semantic value, a prospective test, or a newly replicated paired analysis.",
+      "phase_winner_comparison_reported_f1": {
+        "phase_a": 0.7647,
+        "phase_b": 0.6929,
+        "phase_c": 0.7188,
+        "published_ensemble": 0.7077
+      },
+      "artifact_gap": "The report names a serving proof directory that is not available at its recorded location. Frozen cohort keys are retained, but both prediction vectors were not recovered."
+    },
+    "later_replay_587": {
+      "evidence_level": "Recomputed from retained one-to-one joined private labels and predictions",
+      "n": 587,
+      "positives": 185,
+      "models": {
+        "base": {
+          "n": 587,
+          "positives": 185,
+          "tp": 47,
+          "fp": 22,
+          "fn": 138,
+          "tn": 380,
+          "precision": 0.6811594202898551,
+          "recall": 0.25405405405405407,
+          "f1": 0.3700787401574803,
+          "threshold_unique": [
+            0.004658938385546207
+          ]
+        },
+        "meta": {
+          "n": 587,
+          "positives": 185,
+          "tp": 9,
+          "fp": 4,
+          "fn": 176,
+          "tn": 398,
+          "precision": 0.6923076923076923,
+          "recall": 0.04864864864864865,
+          "f1": 0.09090909090909091,
+          "threshold_unique": [
+            0.7206386799644702
+          ]
+        }
+      },
+      "replay_created_at_utc": "2026-04-20T01:46:39Z",
+      "serving_checks": {
+        "fallback_path_observed": false,
+        "feature_contract_missing": 0,
+        "live_forward_ready": true,
+        "tabmeta_exact_all": true,
+        "tabmeta_shape_aligned_any": false
+      },
+      "interpretation": "A later historical replay has poor fixed-policy performance despite exact saved tabular metadata and no reported serving fallback. Those checks do not establish decision-time semantic feature parity or isolate temporal decay. Preserve this negative result; do not merge it with the distinct corrected 441-row benchmark or claim universal ensemble improvement."
+    }
+  },
+  "evidence_ledger": [
+    {
+      "question": "Does the combiner matter at fixed cohort and neural-score inputs?",
+      "status": "demonstrated_retrospective_comparison",
+      "evidence": [
+        "stage0_seven_method_523",
+        "stage1_two_method_413"
+      ],
+      "remaining": "Complete selection history and prospective transfer; the difference is method plus fitted policy."
+    },
+    {
+      "question": "Does correcting the feature-source contract affect a frozen model?",
+      "status": "documented_historical_intervention",
+      "evidence": [
+        "feature_source_intervention_441"
+      ],
+      "remaining": "Recover raw before/after vectors for fresh pairing and replay."
+    },
+    {
+      "question": "Do context features alone improve performance?",
+      "status": "confounded_existing_training_comparison",
+      "evidence": [
+        "context-comparison-manifest-0",
+        "context-comparison-manifest-1"
+      ],
+      "remaining": "Training configurations differ in censoring minimum (7 versus 21 days), dropout settings, loss weights and trial budgets; cannot isolate the feature group."
+    },
+    {
+      "question": "Does regularizing the meta-layer affect performance?",
+      "status": "completed_exploratory_sweep",
+      "evidence": [
+        "stage0-regularization-sweep"
+      ],
+      "remaining": "472 candidates include explicit holdout ranking. Treat as development analysis, not untouched confirmation."
+    },
+    {
+      "question": "Do text, images, generated reports or dual text representations each add value?",
+      "status": "controlled_incremental_comparison_not_recovered_in_audited_sources",
+      "remaining": "Keep model implementation, attribution and planned toggles distinct from completed matched ablations."
+    },
+    {
+      "question": "Is a two-month recency window optimal?",
+      "status": "controlled_fixed_test_window_ablation_not_recovered_in_audited_sources",
+      "remaining": "Recency parameters are implemented and tuned among changing configurations. Isolate training age/weighting while holding test rows and other choices fixed."
+    },
+    {
+      "question": "Does the complete three-stage cascade improve on a single-stage model?",
+      "status": "matched_whole_cascade_ablation_not_recovered_in_audited_sources",
+      "remaining": "Stage-specific targets and results exist. They do not isolate the incremental effect of routing versus a single-stage control."
+    },
+    {
+      "question": "Can the headline 964-row final Stage0 result now receive paired uncertainty?",
+      "status": "final_meta_decision_vector_not_recovered",
+      "remaining": "Available March 523-row meta outputs and later 441/587-row diagnostics are different experiments. Do not substitute them for the February 964-row result."
+    }
+  ],
+  "source_receipts": [
+    {
+      "evidence_id": "stage0-mean_logit-aggregate",
+      "sha256": "5cd847f249df27205cbec4f3051863603e2bb3d2f3300a3ed66eb3bf322934bd",
+      "bytes": 636,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage0-mean_logit-decisions",
+      "sha256": "348ce7ee7a3e7ddaa935675dfdc0b7da61065597222f08a19df634c23ce6d871",
+      "bytes": 62739,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage0-median_logit-aggregate",
+      "sha256": "0782e9ea3c5377692a6d897ae731c0fcfa41cc081e79b601badc0ba6cb046bed",
+      "bytes": 638,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage0-median_logit-decisions",
+      "sha256": "6b773e2491e95d0808d97e2e61197cb4380ce7e92bd21dc91e0168a8daa9a228",
+      "bytes": 62726,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage0-mean_prob-aggregate",
+      "sha256": "8bd5499e8008deedefc0e017efdc2a5ea6487816a6b55942eee79b22a8377d8f",
+      "bytes": 633,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage0-mean_prob-decisions",
+      "sha256": "5a41328d1ff247060b3dce328efa8f19b0d1d88b500cf74ddf3ae07affcfa28d",
+      "bytes": 62010,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage0-vote-aggregate",
+      "sha256": "0ea3cf0371e467e7b0b664b2a74a47b70bb5f87c824d62fac6bc0e6318000bc7",
+      "bytes": 646,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage0-vote-decisions",
+      "sha256": "b5fddc83ca9bc02343505b9ccf6765d5b19753177dab4dc4f75f4e9bef15067e",
+      "bytes": 45924,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage0-stack_wlogit-aggregate",
+      "sha256": "a81e6f6fb86d9f2214fd9aecb3d63179ce07dae646d6ce4feb20653d2a38dfd2",
+      "bytes": 609,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage0-stack_wlogit-decisions",
+      "sha256": "4062c741037a6dc784134cddf3df2017ee120f4a0c221f8ec4a46ebcd23cb2e2",
+      "bytes": 62869,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage0-stack_hgb-aggregate",
+      "sha256": "7a5d97cab3ccb9463ce74e3694d16537a76d5061bca42f1d1380ce36e3cb6e70",
+      "bytes": 590,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage0-stack_hgb-decisions",
+      "sha256": "4de3633a16a74321b37466d68a3667b28dd122cea852fedeec929e065ffdd99d",
+      "bytes": 62922,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage0-stack_sgd-aggregate",
+      "sha256": "417f963f201e88f1caf08a633a2c29e373154f0ae41b48e8bffc6c6e443fe181",
+      "bytes": 599,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage0-stack_sgd-decisions",
+      "sha256": "56d2d3f8c7d9919f4822b16b36650c9ab1f17cf0e7638ad4861b14ebb8c7925d",
+      "bytes": 64371,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage1-mean_logit-aggregate",
+      "sha256": "4228594f78e9b2bca211415029fadb96a1ab36764cad35acd3a0a3f70f28bc2c",
+      "bytes": 1751,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage1-mean_logit-decisions",
+      "sha256": "8d3ceea9d622bd1536f6b3159ed5e51fa2d1aeb32ce9cd7ad327616332386ac5",
+      "bytes": 57829,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "stage1-stack_hgb-aggregate",
+      "sha256": "efefee87e2b643eb02ca80499f0b86cda7ac6bb0f3de45500ebd43c8b1d6d210",
+      "bytes": 1694,
+      "description": "Retained model-combiner selection and holdout aggregate"
+    },
+    {
+      "evidence_id": "stage1-stack_hgb-decisions",
+      "sha256": "c2b50d5b98c4afdc740e23405bb246c4fab6acc340f9b23ac4af3909e350ab2e",
+      "bytes": 57919,
+      "description": "Private retained fixed holdout decisions, not redistributed"
+    },
+    {
+      "evidence_id": "later-replay-replay_labels",
+      "sha256": "3092e476cd66897f6aee5cd3650cfb39bc6ac16a63b3d581588c26f75753adf8",
+      "bytes": 81979,
+      "description": "Retained later replay artifact, private rows not redistributed"
+    },
+    {
+      "evidence_id": "later-replay-replay_output_ensemble",
+      "sha256": "b55684183a7c32c906b3cc3ac901806a667ccb9967224a132598d45184e38d19",
+      "bytes": 29142,
+      "description": "Retained later replay artifact, private rows not redistributed"
+    },
+    {
+      "evidence_id": "later-replay-replay_audit_ensemble",
+      "sha256": "53b398ec2fee4a3eb138eccaec7f2e686e02ce17ea9923aaadaaf5442e16776c",
+      "bytes": 97944,
+      "description": "Retained later replay artifact, private rows not redistributed"
+    },
+    {
+      "evidence_id": "later-replay-replay_metrics_ensemble",
+      "sha256": "383886daf7f44a68333300298b94973115f22730c2be364eb28e4a81749e50ba",
+      "bytes": 2972,
+      "description": "Retained later replay artifact, private rows not redistributed"
+    },
+    {
+      "evidence_id": "feature-source-intervention-report",
+      "sha256": "0f58e9e9f085360e8d55bd3d032466c7ff4feb8a5c32cd723c3f8aa54e24add2",
+      "bytes": 24554,
+      "description": "Historical frozen-cohort feature-source intervention and forensic report"
+    },
+    {
+      "evidence_id": "stage0-regularization-sweep",
+      "sha256": "b0be36f3068ae25b36c6791f8ff2453d87d37d3c01c383571b198a1c6aee62ff",
+      "bytes": 8574,
+      "description": "472 configuration diagnostic, includes ranking by holdout"
+    },
+    {
+      "evidence_id": "context-comparison-manifest-0",
+      "sha256": "8fac2e079ce556d9267a3deebdd24fe8eb0bd0ce7f528a9891718f8fa916b9ae",
+      "bytes": 28271,
+      "description": "Training manifest used to test whether a context-feature comparison was controlled"
+    },
+    {
+      "evidence_id": "context-comparison-manifest-1",
+      "sha256": "1846381c368773c8f40db503b338b85a2320dde6613df5b620bd8fe090be0271",
+      "bytes": 27987,
+      "description": "Training manifest used to test whether a context-feature comparison was controlled"
+    }
+  ],
+  "reproduction": {
+    "script": "scripts/analyze_retained_ensemble_comparison.py",
+    "bootstrap_resamples": 5000,
+    "seed": 20260922,
+    "source_data_access": "Private retained prediction exports; eligible research access governed separately",
+    "output_contains_private_rows": false
+  }
+}

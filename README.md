@@ -14,7 +14,12 @@ is **0.8560**, compared with the associated neural meta-ensemble's recorded
 The [empirical chapter](papers/marketneural/chapters/06_empirical_evidence.md)
 reconciles the dated experiments, and the
 [contribution chapter](papers/marketneural/chapters/12_original_contributions.md)
-states the novelty argument and its supporting evidence.
+connects specific contributions to reconstructed mechanisms, completed
+interventions and the closest prior work. The expanded evidence includes an
+exact **911-record coverage-cutoff audit**, paired ensemble comparisons on
+**523 and 413 records**, and a documented fixed-policy feature-source correction.
+The [experiment receipt](research/thesis_evidence/experimental_contributions.json)
+preserves unfavorable results and the scope of each comparison.
 
 The monograph is authored by **Ghaffar Masomi**.
 

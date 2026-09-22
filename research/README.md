@@ -161,6 +161,20 @@ reviewed synthetic aggregates belong under `research/examples/`.
 The [saved demonstrations and figure](examples/README.md) report the measured
 results from two artificial-data regimes with unchanged model settings.
 
+## Recovered mechanism and component experiments
+
+The [coverage/cohort mechanism study](leakage/availability_mechanism.md) verifies
+911 historical masks and provides an executable constructed negative control.
+The [retained experimental receipt](thesis_evidence/experimental_contributions.json)
+contains paired fixed-policy comparisons on 523 and 413 records, a documented
+source intervention, and an unfavorable later replay. These are completed
+retrospective studies with declared controls and selection limits.
+
+The [closest-prior-work comparison](thesis_evidence/NOVELTY_PRIOR_ART.md) identifies
+what these findings establish beyond a generic platform description. Raw input
+records remain proprietary; public scripts expose the analysis and aggregate
+receipts preserve source identity without distributing the observations.
+
 The release scanner screens changed files for credentials, private paths, source
 fingerprints and data/checkpoint artifacts. It is a heuristic and cannot replace
 manual diff review. Historical papers are separately documented source-neutral

@@ -190,7 +190,66 @@ def make_figures(out):
     box(ax,.9,.45,8.2,1,"Selection boundary is part of the model","Repeated SVAL tuning can overfit selection.\nNeural seeds, ensemble-search seeds and refits differ.",NAVY)
     arrow(ax,(5,2.38),(5,1.52));save(fig,"r13_training_selection",out)
 
+def paired_ensemble_comparisons(out):
+    """Plot fixed-policy paired contrasts, preserving the two study scopes."""
+    findings = read("research/thesis_evidence/experimental_contributions.json")["findings"]
+    stage0 = findings["stage0_seven_method_523"]["contrasts"]
+    stage1 = findings["stage1_two_method_413"]["contrasts"]
+    rows = [("Stage 0: median logit", stage0["median_logit"], TEAL),
+            ("Stage 0: mean probability", stage0["mean_prob"], TEAL),
+            ("Stage 0: vote", stage0["vote"], TEAL),
+            ("Stage 0: weighted-logit stack", stage0["stack_wlogit"], TEAL),
+            ("Stage 0: tree stack", stage0["stack_hgb"], TEAL),
+            ("Stage 0: SGD stack", stage0["stack_sgd"], TEAL),
+            ("Stage 1: tree stack", stage1["stack_hgb"], NAVY)]
+    fig, ax = plt.subplots(figsize=(9, 4.7))
+    for y, (label, item, color) in enumerate(rows[::-1]):
+        delta = 100 * item["f1_difference"]
+        lo, hi = [100 * x for x in item["f1_difference_interval"]]
+        ax.errorbar(delta, y, xerr=[[delta-lo], [hi-delta]], fmt="o",
+                    color=color, capsize=4, markersize=6)
+        ax.text(25.5, y, f"{delta:+.2f}", va="center", fontsize=9, color=color)
+    ax.axvline(0, color=GREY, linewidth=1, linestyle="--")
+    ax.axhline(.5, color=GREY, linewidth=.8, alpha=.5)
+    ax.set_yticks(range(len(rows)), [r[0] for r in rows[::-1]])
+    ax.set_xlim(-13, 29)
+    ax.set_xlabel("F1 difference vs saved mean-logit policy (percentage points)")
+    ax.set_title("Retained ensemble comparisons with paired uncertainty", fontsize=12)
+    ax.grid(axis="x", alpha=.15)
+    fig.tight_layout()
+    save(fig, "r15_paired_ensembles", out)
+
+
+def selection_geometry(out):
+    """Draw the algebraic cohort geometry, not a fitted data experiment."""
+    fig, axes = plt.subplots(1, 2, figsize=(9, 4.2))
+    origins = np.linspace(0, 10, 501)
+    for ax in axes:
+        ax.set(xlim=(0, 10), ylim=(0, 10), xlabel="Origin time O", ylabel="Duration D")
+        ax.axvline(5, color=GOLD, linewidth=1.6, linestyle="--")
+        ax.axhline(5, color=GREY, linewidth=1, linestyle=":")
+        ax.grid(alpha=.12)
+    axes[0].fill_between(origins, np.maximum(0, 9.5-origins),
+                         np.minimum(10, 10.5-origins), color=TEAL, alpha=.3)
+    axes[0].plot(origins, 10-origins, color=TEAL, linewidth=1.4)
+    axes[0].set_title("Outcome-window cohort", fontsize=11)
+    axes[0].text(.4, 1.2, "Retain 9.5 <= O + D <= 10.5\nM = 1[O >= 5] becomes a duration proxy",
+                 fontsize=8.5, color=NAVY)
+    axes[0].text(5.25, 8.6, "Coverage\ncutoff c", color=GOLD, fontsize=9)
+    axes[1].axvspan(4.5, 5.5, color=NAVY, alpha=.17)
+    axes[1].set_title("Origin-window cohort with follow-up", fontsize=11)
+    axes[1].text(.4, 1.2, "Retain 4.5 <= O <= 5.5\nKeep unresolved records with censoring",
+                 fontsize=8.5, color=NAVY)
+    axes[1].text(5.75, 8.6, "Coverage\ncutoff c", color=GOLD, fontsize=9)
+    fig.suptitle("Calendar selection can change what a missingness mask means", fontsize=12, weight="bold")
+    fig.tight_layout(rect=(0, 0, 1, .94))
+    save(fig, "r14_selection_geometry", out)
+
+
 if __name__ == "__main__":
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output",type=Path,default=ROOT/"results/thesis/figures")
-    make_figures(parser.parse_args().output)
+    output = parser.parse_args().output
+    make_figures(output)
+    selection_geometry(output)
+    paired_ensemble_comparisons(output)
