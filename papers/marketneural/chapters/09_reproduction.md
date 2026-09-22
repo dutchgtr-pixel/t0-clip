@@ -35,6 +35,26 @@ The configuration names its input paths. Use a new output directory for each exp
 
 For offline SQL inspection, run the inventory module and focused feature-store tests. The optional PGlite script executes only the five portable SQL files against an in-memory engine. The recorded result contains seven temporal fixture assertions and three challenged certificate failures: an empty uncertified state, changed content and an expired certificate. One artificial entity exercises these cases; it is not a scale benchmark or proof of production concurrency behavior.
 
+## Reproducing the mechanism and retained-policy audits
+
+The coverage-cutoff experiment is fully public and requires no proprietary data:
+
+```sh
+python scripts/analyze_availability_mechanism.py
+python -m pytest tests/test_availability_mechanism.py
+```
+
+It enumerates an artificial population with independent origins and durations, applies two cohort-selection rules, and reports a fixed mask-only rule. Its historical-data mode accepts explicitly mapped timestamp and pattern columns and emits aggregate counts and hashes. It rejects censored inputs and inconsistent clock identities because the demonstrated proposition concerns observed event durations.
+
+The retained-policy comparison tool accepts authorized private prediction exports and emits no row identities:
+
+```sh
+python scripts/analyze_retained_ensemble_comparison.py --help
+python -m pytest tests/test_retained_ensemble_comparison.py
+```
+
+Every model must supply the same complete unique key set, endpoint labels and configured invariant fields. The tool rejects mismatches rather than silently taking a convenient intersection. Paired IID bootstrap intervals condition on the retained fitted decisions and their thresholds. They do not account for search, temporal dependence or final-method selection. Public aggregate receipts preserve the exact settings and evidence boundaries; proprietary input files remain available only through separately approved access.
+
 ## Building the monograph
 
 The PDF is built from chapter files, methods chapters, reviewed historical crops, selected image cases, a bibliography and plots generated from public aggregate JSON. ReportLab produces the title page. Pandoc and Tectonic typeset the body, equations, contents, references and figures. The build script resolves inputs from the repository and records their hashes. It requires the `paper` extra and explicit executable paths when the typesetting tools are not on the system path.
@@ -70,7 +90,7 @@ Selection and calibration must finish before final-test inspection. Report survi
 
 Decision value needs its own study. A model can improve a statistical metric while making no useful difference to an operator or agent. Prospective shadow evaluation should record what was reviewed, what information was available, which proposals were accepted, what executed, and which outcomes became observable. Economic analysis must include costs and unresolved outcomes rather than assume that fast turnover implies profitable action.
 
-This sequence would convert the current systems study into a stronger empirical contribution. The present release makes mechanisms, historical successes and discovered weaknesses inspectable. Its scientific credibility depends on preserving that openness when the next experiment produces an inconvenient result.
+These extensions test claims beyond the completed retrospective studies. The present release already contains measured failure analysis, fixed-policy feature reconstruction, comparisons of retained ensemble decisions, and a common-population neural/tree comparison. Each has a different experimental control. The new mechanism and experiment receipts make those controls explicit rather than describing all ablations as future work. Further evaluation should preserve the same distinction when a result is unfavorable.
 
 
 ## What a sealed future cohort would establish

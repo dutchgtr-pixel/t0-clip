@@ -1,0 +1,166 @@
+{
+  "reviewed_at": "2026-09-22",
+  "scope": "Targeted nearest-prior-art review of information availability, observation selection, multimodal survival, staged horizons and generated measurements; not an exhaustive priority search.",
+  "sources": [
+    {
+      "id": "kaufman2011",
+      "authors": ["Shachar Kaufman", "Saharon Rosset", "Claudia Perlich"],
+      "title": "Leakage in Data Mining: Formulation, Detection, and Avoidance",
+      "date": "2011-08",
+      "date_type": "KDD conference, 21-24 August 2011",
+      "url": "https://www.cs.umb.edu/~ding/history/470_670_fall_2011/papers/cs670_Tran_PreferredPaper_LeakingInDataMining.pdf",
+      "primary_source": "Original conference paper hosted by a university",
+      "comparison": "Sections 2-4 already cover missing diagnosis-code patterns, downstream processing, prediction-time observability and learn-predict separation. The generic missingness-leakage mechanism is established."
+    },
+    {
+      "id": "che2018",
+      "authors": ["Zhengping Che", "Sanjay Purushotham", "Kyunghyun Cho", "David Sontag", "Yan Liu"],
+      "title": "Recurrent Neural Networks for Multivariate Time Series with Missing Values",
+      "date": "2018-04-17",
+      "date_type": "Journal publication; first preprint 2016-06-06",
+      "url": "https://www.nature.com/articles/s41598-018-24271-9",
+      "primary_source": "Scientific Reports original article",
+      "comparison": "GRU-D models observation masks and intervals as predictive information. Informative missingness can be admissible; association alone does not establish leakage."
+    },
+    {
+      "id": "mcgee2022",
+      "authors": ["Glen McGee", "Sebastien Haneuse", "Brent A. Coull", "Marc G. Weisskopf", "Ran S. Rotem"],
+      "title": "On the Nature of Informative Presence Bias in Analyses of Electronic Health Records",
+      "date": "2022-01-01",
+      "date_type": "Journal issue; copyright 2021",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34711733/",
+      "primary_source": "Original article abstract and publisher links indexed by PubMed",
+      "comparison": "Observation opportunities can induce differential misclassification. A related mechanism, not automatic proof of the same causal structure in this platform."
+    },
+    {
+      "id": "suissa2008",
+      "authors": ["Samy Suissa"],
+      "title": "Immortal time bias in pharmaco-epidemiology",
+      "date": "2008-02-15",
+      "date_type": "Journal issue; first online 2007-12-03",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/18056625/",
+      "primary_source": "Original article abstract and publisher links indexed by PubMed",
+      "comparison": "Immortal time concerns an outcome-impossible period induced by exposure or cohort definitions. Calendar-dependent feature coverage alone does not establish this condition."
+    },
+    {
+      "id": "zelen2004",
+      "authors": ["Marvin Zelen"],
+      "title": "Forward and backward recurrence times and length biased sampling: age specific models",
+      "date": "2004-12",
+      "date_type": "Journal issue",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/15690988/",
+      "primary_source": "Original article abstract and publisher links indexed by PubMed",
+      "comparison": "Prevalent sampling and recurrence-time selection differ from an event-date-window cohort; length-proportional inclusion cannot be assumed without the relevant sampling law."
+    },
+    {
+      "id": "xu2026",
+      "authors": ["Yanqi Xu", "Hui Dai", "Carlos Fernandez-Granda", "Krzysztof J. Geras", "Yiqiu Shen"],
+      "title": "Pitfalls of Administrative Censoring in Survival Models with Time-Indexed Inputs",
+      "date": "2026-07-11",
+      "date_type": "First preprint submission; version 1 reviewed",
+      "url": "https://arxiv.org/html/2607.10466v1",
+      "primary_source": "Author preprint",
+      "comparison": "Reference-date clues plus a shared study endpoint create censoring-related shortcuts. The present event-date-conditioned coverage identity has a different selection predicate; broader observation-design arguments overlap."
+    },
+    {
+      "id": "snodgrass1986",
+      "authors": ["Richard Snodgrass", "Ilsoo Ahn"],
+      "title": "Temporal Databases",
+      "date": "1986-09",
+      "date_type": "IEEE Computer volume 19 issue 9",
+      "url": "https://www2.cs.arizona.edu/~rts/pubs/Computer.pdf",
+      "primary_source": "Author-hosted original article",
+      "comparison": "Valid time and transaction time are established database concepts; adding a knowledge-time axis is not a new principle."
+    },
+    {
+      "id": "feast2980",
+      "authors": ["cburroughs"],
+      "title": "reproducible historical feature queries (#2980)",
+      "date": "2022-07-28",
+      "date_type": "Issue opened",
+      "url": "https://github.com/feast-dev/feast/issues/2980",
+      "primary_source": "Original project issue",
+      "comparison": "Proposes a global created-time cutoff to make historical retrieval robust to late or restated records; predates the present implementation."
+    },
+    {
+      "id": "feast6615",
+      "authors": ["addenergyx"],
+      "title": "feat: Opt-in created_timestamp <= entity_timestamp cutoff in point-in-time joins (as-of-known-time retrieval) (#6615)",
+      "date": "2026-07-19",
+      "date_type": "Issue opened",
+      "url": "https://github.com/feast-dev/feast/issues/6615",
+      "primary_source": "Original project issue",
+      "comparison": "Distinguishes event-time filtering from per-row known-time retrieval."
+    },
+    {
+      "id": "feast6617",
+      "authors": ["addenergyx", "Feast project contributors"],
+      "title": "feat: Add opt-in filter_by_created_timestamp cutoff to get_historical_features (#6617)",
+      "date": "2026-07-31",
+      "date_type": "Pull request merged; merge commit 79b33ce",
+      "url": "https://github.com/feast-dev/feast/pull/6617",
+      "primary_source": "Original implementation and merge history",
+      "comparison": "Implements an opt-in known-time predicate. Predating this merge would not prove priority over established temporal database or leakage principles."
+    },
+    {
+      "id": "chen2021mcat",
+      "authors": ["Richard J. Chen", "Ming Y. Lu", "Wei-Hung Weng", "Tiffany Y. Chen", "Drew F. K. Williamson", "Trevor Manz", "Maha Shady", "Faisal Mahmood"],
+      "title": "Multimodal Co-Attention Transformer for Survival Prediction in Gigapixel Whole Slide Images",
+      "date": "2021-10",
+      "date_type": "ICCV proceedings",
+      "url": "https://openaccess.thecvf.com/content/ICCV2021/html/Chen_Multimodal_Co-Attention_Transformer_for_Survival_Prediction_in_Gigapixel_Whole_Slide_ICCV_2021_paper.html",
+      "primary_source": "Official open-access conference paper",
+      "comparison": "Direct prior work for attention-based multimodal survival modeling."
+    },
+    {
+      "id": "xiong2024mome",
+      "authors": ["Conghao Xiong", "Hao Chen", "Hao Zheng", "Dong Wei", "Yefeng Zheng", "Joseph J. Y. Sung", "Irwin King"],
+      "title": "MoME: Mixture of Multimodal Experts for Cancer Survival Prediction",
+      "date": "2024-10",
+      "date_type": "MICCAI proceedings; first preprint 2024-06-14",
+      "url": "https://papers.miccai.org/miccai-2024/531-Paper2168.html",
+      "primary_source": "Official accepted conference paper",
+      "comparison": "Progressive fusion and multimodal expert selection are established. The specific trained system and policy must carry the present contribution."
+    },
+    {
+      "id": "jaegle2021",
+      "authors": ["Andrew Jaegle", "Felix Gimeno", "Andy Brock", "Oriol Vinyals", "Andrew Zisserman", "Joao Carreira"],
+      "title": "Perceiver: General Perception with Iterative Attention",
+      "date": "2021-07",
+      "date_type": "ICML proceedings",
+      "url": "https://proceedings.mlr.press/v139/jaegle21a.html",
+      "primary_source": "Official conference proceedings",
+      "comparison": "Latent attention over heterogeneous inputs is prior art."
+    },
+    {
+      "id": "heitz2021",
+      "authors": ["Jonathan Heitz", "Joanna Ficek", "Martin Faltys", "Tobias M. Merz", "Gunnar Ratsch", "Matthias Huser"],
+      "title": "WRSE - a non-parametric weighted-resolution ensemble for predicting individual survival distributions in the ICU",
+      "date": "2021-03",
+      "date_type": "AAAI Spring Symposium, 22-24 March",
+      "url": "https://proceedings.mlr.press/v146/heitz21a.html",
+      "primary_source": "Official conference proceedings",
+      "comparison": "Combines horizon-specific classifiers with resolution emphasizing near-term prediction; differs from ordered rejection gates but precedes broad multi-horizon ensemble claims."
+    },
+    {
+      "id": "koh2020",
+      "authors": ["Pang Wei Koh", "Thao Nguyen", "Yew Siang Tang", "Stephen Mussmann", "Emma Pierson", "Been Kim", "Percy Liang"],
+      "title": "Concept Bottleneck Models",
+      "date": "2020-07",
+      "date_type": "ICML proceedings, 13-18 July",
+      "url": "https://proceedings.mlr.press/v119/koh20a.html",
+      "primary_source": "Official conference proceedings",
+      "comparison": "Predicting interpretable concepts before outcomes and intervening on them is established. Parallel feature branches do not form a strict concept bottleneck."
+    },
+    {
+      "id": "song2025v1",
+      "authors": ["Steven Song", "Morgan Borjigin-Wang", "Irene Madejski", "Robert L. Grossman"],
+      "title": "Multimodal Survival Modeling in the Age of Foundation Models",
+      "date": "2025-05-12",
+      "date_type": "First preprint submission; version 1 reviewed; later version has a changed title",
+      "url": "https://arxiv.org/abs/2505.07683v1",
+      "primary_source": "Author preprint",
+      "comparison": "Frozen multimodal representations, classical survival models, generated report summarization and hallucination interventions provide a close pre-existing comparison."
+    }
+  ]
+}

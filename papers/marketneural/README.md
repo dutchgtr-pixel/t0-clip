@@ -3,8 +3,8 @@
 **Author: Ghaffar Masomi**
 
 Read [Learning Time in Moving Markets](marketneural-thesis.pdf), the thesis-style
-PDF, or its [assembled Markdown manuscript](manuscript.md). Across 109 pages,
-sixteen chapters and roughly 36,000 words combine the mathematical method with the implemented system,
+PDF, or its [assembled Markdown manuscript](manuscript.md). Across 118 pages,
+sixteen chapters and roughly 40,000 words combine the mathematical method with the implemented system,
 real image examples, architecture diagrams, historical results and reproducible
 engineering checks.
 
@@ -18,8 +18,11 @@ identical keys and duration labels. Recomputed XGBoost AFT F1 is **0.8560**;
 the associated neural meta-ensemble run records **0.9209**, about **6.5 F1 points**
 higher, with improved precision and a recall tradeoff. The empirical chapter
 reconciles the dated exports, preserves source hashes and provides reproducible
-aggregate audits. The novelty chapter states the original contributions and
-separates retrospective evidence from prospective predictive validity.
+aggregate audits. The contribution chapter now develops the exactly reconstructed
+911-record coverage/cohort mechanism, a documented fixed-policy source correction,
+and paired ensemble comparisons on 523 and 413 records. An adverse later replay
+is retained. The nearest-prior-work comparison defines the specific differences
+from established methods; the bibliography contains 31 references.
 
 Raw-plus-whitened vectors are an operator-described design for which a fitted
 transform artifact was not recovered; the inspected selected network consumes one

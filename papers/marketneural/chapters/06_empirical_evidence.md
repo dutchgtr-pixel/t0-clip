@@ -112,6 +112,71 @@ The feature-store paper similarly explores live-stock pressure after stratifying
 
 Historical figure H07. The historical stock analysis compares slow-outcome rates across stock strata within price strata. It is an exploratory association plot; uncertainty and an independent incremental-performance comparison cannot be recovered from the image alone.
 
+## Recovered fixed-input ensemble comparisons
+
+The retained archive contains completed component comparisons beyond the February headline result. The new [experiment receipt](../../../research/thesis_evidence/experimental_contributions.json) records exact key matching, endpoint agreement, invariant-field agreement, source hashes, saved policies and selection scope. Reanalysis uses the existing binary decisions without refitting models or choosing new thresholds. These experiments must retain their separate cohorts and target definitions.
+
+### Seven methods on the same Stage 0 population
+
+Seven combination methods share 523 evaluation records, including 104 events lasting more than 504 hours. They operate on the retained ten-seed neural prediction surface. Thresholds and fitted stacks use the 369-row selection population; the stacks' scores on that same population are in-sample diagnostics. The table is a comparison of fitted combination methods and their policies, not a neural-versus-tree comparison on raw features.
+
+\Needspace{22\baselineskip}
+
+Table. Retained Stage 0 combination methods, with paired differences against mean-logit.
+
+| Combination | Selection F1 | Evaluation F1 | Difference, 95% paired interval |
+|---|---:|---:|---|
+| Mean logit | 0.9595 | 0.8037 | Reference |
+| Median logit | 0.9467 | 0.8073 | 0.0036 [-0.0140, 0.0237] |
+| Mean probability | 0.9595 | 0.8057 | 0.0019 [-0.0174, 0.0205] |
+| Vote | 0.9517 | 0.7938 | -0.0099 [-0.0541, 0.0329] |
+| Weighted-logit stack | 0.9600 | 0.7909 | -0.0128 [-0.0411, 0.0162] |
+| Gradient-boosted tree stack | 1.0000 | 0.7553 | -0.0484 [-0.1021, 0.0012] |
+| SGD stack | 0.9536 | 0.8125 | 0.0088 [-0.0210, 0.0398] |
+
+Every interval includes zero. The tree stack's perfect in-sample selection F1 is followed by lower evaluation F1 than the simple mean-logit combination. That observation supports retaining simple combinations as serious comparators. It does not establish that stacking is always harmful. The separate 472-configuration regularization sweep explicitly ranked holdout performance, so it belongs to development analysis; its winning result cannot be treated as a fresh independent confirmation.
+
+### A paired Stage 1 hybrid comparison
+
+The separate Stage 1 experiment contains 413 common records, including 296 positives for the retained event-within-168-hours target. The two methods use the same documented neural-prediction surface. The direct audit verifies matching record keys, labels, row ordinals, observed durations and event indicators; Stage 1 also preserves matching base probability, threshold and decision fields. The full underlying ten-seed score matrix was not independently reconstructed. The histogram-gradient-boosting meta-layer uses a different fitted score mapping and threshold from the mean-logit baseline.
+
+Table. Saved Stage 1 policy results on 413 identical records.
+
+| Policy | TP / FP / FN / TN | Precision | Recall | F1 |
+|---|---|---:|---:|---:|
+| Mean-logit baseline | 161 / 12 / 135 / 105 | 0.9306 | 0.5439 | 0.6866 |
+| Neural-score/tree-stack hybrid | 256 / 33 / 40 / 84 | 0.8858 | 0.8649 | 0.8752 |
+| All-positive reference | 296 / 117 / 0 / 0 | 0.7167 | 1.0000 | 0.8350 |
+
+The hybrid gains 0.18865 F1 relative to mean-logit, with a paired 95% interval [0.14429, 0.23565]. It is correct on 97 records where mean-logit is wrong; mean-logit is uniquely correct on 23. The operating-point tradeoff is 95 fewer false negatives and 21 additional false positives. Against the all-positive reference, its F1 difference is 0.04024, with paired interval [0.00959, 0.07243] under the same resampling scope. The all-positive rule's precision, 0.7167, also falls below the saved policy precision floor of 0.8672; the hybrid's 0.8858 exceeds it on this cohort. The prevalence reference is informative but does not meet that operational constraint.
+
+The intervals in both studies use 5,000 IID paired row resamples with seed 20260922. They condition on the fitted models and saved thresholds; they do not include training variability, tuning, experiment selection, temporal dependence or multiplicity adjustment. The complete history of final method selection and holdout inspection is not reconstructed. These uncertainty estimates quantify variation in fixed retained predictions under the stated resampling assumptions. They do not convert historical development into a preregistered test.
+
+Together the studies demonstrate an executed component comparison and a stage/cohort-dependent result: a tree meta-layer is useful for the retained Stage 1 operating point, whereas it does not improve the retained Stage 0 mean-logit F1. The targets, populations and histories differ, so the between-study contrast is not a controlled causal estimate of stage identity. These results also rule out interpreting the system as a contest in which tree methods are inherently incapable of using neural representations.
+
+## Fixed-model feature-source intervention and later replay
+
+The retained forward-pass forensic report describes a frozen cohort of 443 observed records from 20-23 March 2026. There were 440 valid reconstructions, one degraded reconstruction and two invalid records; 441 received scores. After prior cohort/vector-contract fixes, a targeted change replaced the incorrect structured context and item-metadata relation with the decision-time feature source. The report records unchanged weights and labels and the same mean-logit ensemble threshold, approximately 0.720639.
+
+Table. Documented fixed-policy source correction on the 441 scored records.
+
+| Input-source state | Precision | Recall | F1 |
+|---|---:|---:|---:|
+| Before context-source correction | 0.5714 | 0.2105 | 0.3077 |
+| After context-source correction | 0.8519 | 0.6053 | 0.7077 |
+
+The corrected confusion counts are 46 true positives, eight false positives, 30 false negatives and 357 true negatives. This is a documented controlled input-source intervention, not retraining and not a new modality experiment. The complete paired before/after exports were not recovered at the report's recorded proof location, so this revision preserves its documentary evidence level. It supplies no invented paired confidence interval. The frozen cohort was reconstructed after outcomes and does not satisfy a sealed prospective protocol.
+
+The report also records single phase-winner F1 values of 0.7647, 0.6929 and 0.7188 on the repaired benchmark. The deployed ensemble's 0.7077 is therefore not the highest recorded value on this diagnostic cohort. This is further evidence that ensembling and policy selection need direct evaluation rather than an assumed advantage.
+
+A separate retained replay created on 20 April 2026 contains 587 matched records with 185 slow-tail positives. Fresh arithmetic gives base-policy F1 0.3701 and meta-policy F1 0.0909. The meta confusion matrix is 9/4/176/398; its precision is 0.6923 but recall only 0.0486. Saved serving checks report matching tabular metadata and no fallback path. Those checks do not establish complete decision-time feature fidelity, and the aggregate difference cannot isolate temporal decay. This unfavorable replay remains separate from the corrected 441-row experiment and from the February 964-row comparison.
+
+## Which experimental gaps the recovered archive resolves
+
+The archive establishes completed combiner comparisons, a documented frozen-policy source intervention, extensive development sweeps and reproducible reconstruction diagnostics. The present reanalysis adds paired uncertainty where row decisions are retained. It therefore supersedes a blanket characterization of all component experiments as merely proposed.
+
+Other comparisons need more exact controls. The recovered context-present/context-absent training configurations also changed censoring minimums, dropout, loss weights and trial budgets. They cannot isolate the context block's incremental contribution. Matched raw-text, image, generated-report and fitted dual-band ablations were not recovered in the audited sources. Neither was a fixed-test recency ablation or a matched whole-cascade versus single-model experiment. The evidence ledger distinguishes these unresolved questions from the experiments actually completed; it does not infer their absence throughout every uninspected archive.
+
 ## Later 72-hour policy results
 
 The later saved policy predictions allow direct recomputation of counts. The selection population contains 584 observations, the broader holdout 748, and a recent event-selected subset 283. The recent subset is nested within the 748-row holdout, with matching decisions. It is therefore useful for temporal characterization but is not an additional independent test that can be added to the holdout denominator.
@@ -149,6 +214,8 @@ The research protocol should prespecify a treatment of same-time and already-res
 ## A reproducible synthetic comparison
 
 The public smoke experiments each generate 1,200 synthetic observations and use a fixed chronological split: 593 training, 267 selection-validation, and 340 test rows. Both use the same prespecified model seed and one candidate configuration per family. One fixture contains nonlinear structure; the second follows a proportional-hazards regime. These experiments exercise all six estimators and the shared censoring, selection, scoring, and artifact-writing paths.
+
+\Needspace{14\baselineskip}
 
 | Model | Nonlinear fixture test IBS | Proportional-hazards fixture test IBS |
 |---|---:|---:|
